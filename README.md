@@ -4,7 +4,7 @@
 
 Welcome to **Atlas Chess**, a web-based chess application built with modern web technologies.
 
-This is my very first software project, developed with the assistance of AI. My primary intention behind this project is deeply cultural: I wanted to create a platform that allows people to easily play lost historical chess variants that are otherwise nearly impossible to experience today. Furthermore, I aim to preserve and provide access to various regional chess variants from around the world, saving you a trip across the globe just to play a unique game.
+This is my very first software project outside my CS studies and it has been developed with the assistance of AI. My primary intention behind this project is deeply cultural: I wanted to create a platform that allows people to easily play lost historical chess variants that are otherwise nearly impossible to experience today. Furthermore, I aim to preserve and provide access to various regional chess variants from around the world, saving you a trip across the globe just to play a unique game.
 
 ## Features
 
@@ -82,7 +82,7 @@ Make sure you have Node.js installed on your machine.
 ## Roadmap
 
 - [ ] Build desktop executables (Windows/Mac/Linux) using **Electron**.
-- [ ] Add variant explanation and how to play.
+- [x] Add variant explanation and how to play.
 - [ ] Add more historical and regional variants.
 - [ ] Better UI.
 - [ ] Implement move sound effects.
@@ -90,7 +90,7 @@ Make sure you have Node.js installed on your machine.
 
 ## Feedback & Suggestions
 
-While I am not currently accepting direct code contributions or pull requests for this project, I highly value your feedback! Feel free to open an issue to suggest new features, report bugs, or request the addition of specific historical or regional variants.
+I highly value your feedback! Feel free to open an issue to suggest new features, report bugs, or request the addition of specific historical or regional variants.
 
 ## License
 
@@ -110,4 +110,4 @@ You are free to share and adapt the material for non-commercial purposes, as lon
   - Short assize
   - Chess from other centuries?
 
-- Regional:
+- Regional: under research

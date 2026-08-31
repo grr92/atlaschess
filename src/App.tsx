@@ -8,7 +8,9 @@ import { MoveHistory } from './components/board/MoveHistory';
 import { CapturedPieces } from './components/board/CapturedPieces';
 import { Undo2, RefreshCcw, Save } from 'lucide-react';
 import { BackButton } from "./components/ui/BackButton";
-import {GameTimer} from "./components/board/GameTimer.tsx";
+import { GameTimer } from "./components/board/GameTimer.tsx";
+import { InfoButton } from "./components/ui/InfoButton";
+import { VariantInfoModal } from "./components/modals/VariantInfoModal";
 
 export const App = () => {
     const currentScreen = useNavStore((state) => state.currentScreen);
@@ -18,6 +20,8 @@ export const App = () => {
 
     // state to control the confirmation pop-ups
     const [confirmAction, setConfirmAction] = useState<'exit' | 'restart' | null>(null);
+    // state for the info modal
+    const [infoModalOpen, setInfoModalOpen] = useState(false);
 
     // function to process the "yes" confirmation
     const handleConfirm = () => {
@@ -108,7 +112,16 @@ export const App = () => {
 
                         {/* 3. right column: match history */}
                         <div className="w-full lg:w-72 flex-shrink-0 flex flex-col">
-                            <GameTimer />
+
+                            {/* header wrapper containing the info button and the timer */}
+                            <div className="flex justify-between items-end w-full">
+                                <div className="h-12 pb-2 flex items-end">
+                                    <InfoButton onClick={() => setInfoModalOpen(true)} />
+                                </div>
+                                <div className="flex-1">
+                                    <GameTimer />
+                                </div>
+                            </div>
 
                             <div className="flex-grow py-4 h-full">
                                 <MoveHistory />
@@ -148,10 +161,19 @@ export const App = () => {
                 </div>
             )}
 
+            {/* info modal */}
+            {infoModalOpen && (
+                <VariantInfoModal
+                    variantId={currentVariantId}
+                    onClose={() => setInfoModalOpen(false)}
+                />
+            )}
+
             {currentScreen === 'VARIANTS' && (
                 <VariantsCatalog />
             )}
 
+            {/*
             {currentScreen === 'SETTINGS' && (
                 <div className="flex flex-col items-center justify-center min-h-screen p-4">
                     <div className="max-w-md w-full bg-atlas-surface rounded-2xl p-8 shadow-2xl text-center">
@@ -163,6 +185,7 @@ export const App = () => {
                     </div>
                 </div>
             )}
+            */}
         </main>
     );
 };

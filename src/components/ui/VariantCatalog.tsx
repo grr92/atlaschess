@@ -1,10 +1,16 @@
+import { useState } from "react";
 import { useNavStore } from '../../store/useNavStore';
 import { useGameStore } from '../../store/useGameStore';
 import { BackButton } from './BackButton';
+import { InfoButton } from './InfoButton';
+import { VariantInfoModal } from '../modals/VariantInfoModal';
 
 export const VariantsCatalog = () => {
     const setScreen = useNavStore((state) => state.setScreen);
     const initGame = useGameStore((state) => state.initGame);
+
+    // state to control which variant info is being displayed in the modal
+    const [infoVariantId, setInfoVariantId] = useState<string | null>(null);
 
     // Initialize the selected engine variant and route directly to the game screen
     const handleSelectVariant = (variantId: string) => {
@@ -33,15 +39,20 @@ export const VariantsCatalog = () => {
                             Regional Variants
                         </h3>
                         <div className="space-y-3">
-                            <button
-                                onClick={() => handleSelectVariant('classic')}
-                                className="w-full text-left p-4 bg-atlas-surface hover:bg-atlas-hover rounded-xl transition-all duration-200 shadow-sm group"
-                            >
-                                <div className="font-bold text-lg text-atlas-title Text opacity-90 group-hover:opacity-100">Classic Chess</div>
-                                <div className="text-sm opacity-60 mt-1">
-                                    The modern standard version of the game.
+                            <div className="relative flex w-full bg-atlas-surface rounded-xl shadow-sm">
+                                <button
+                                    onClick={() => handleSelectVariant('classic')}
+                                    className="flex-1 text-left p-4 hover:bg-atlas-hover transition-colors duration-200 group"
+                                >
+                                    <div className="font-bold text-lg text-atlas-titleText opacity-90 group-hover:opacity-100">Classic Chess</div>
+                                    <div className="text-sm opacity-60 mt-1">
+                                        The modern standard version of the game.
+                                    </div>
+                                </button>
+                                <div className="flex items-center justify-center px-4 border-l border-atlas-hover/30">
+                                    <InfoButton onClick={() => setInfoVariantId('classic')} />
                                 </div>
-                            </button>
+                            </div>
                         </div>
                     </div>
 
@@ -51,20 +62,32 @@ export const VariantsCatalog = () => {
                             Historical Variants
                         </h3>
                         <div className="space-y-3">
-                            <button
-                                onClick={() => handleSelectVariant('chaturanga')}
-                                className="w-full text-left p-4 bg-atlas-surface hover:bg-atlas-hover rounded-xl transition-all duration-200 shadow-sm group"
-                            >
-                                <div className="font-bold text-lg text-atlas-titleText opacity-90 group-hover:opacity-100">Chaturanga</div>
-                                <div className="text-sm opacity-60 mt-1">
-                                    The ancient Indian ancestor of chess.
+                            <div className="relative flex w-full bg-atlas-surface rounded-xl shadow-sm">
+                                <button
+                                    onClick={() => handleSelectVariant('chaturanga')}
+                                    className="flex-1 text-left p-4 hover:bg-atlas-hover transition-colors duration-200 group"
+                                >
+                                    <div className="font-bold text-lg text-atlas-titleText opacity-90 group-hover:opacity-100">Chaturanga</div>
+                                    <div className="text-sm opacity-60 mt-1">
+                                        The first known ancestor of chess.
+                                    </div>
+                                </button>
+                                <div className="flex items-center justify-center px-4 border-l border-atlas-hover/30">
+                                    <InfoButton onClick={() => setInfoVariantId('chaturanga')} />
                                 </div>
-                            </button>
+                            </div>
                         </div>
                     </div>
 
                 </div>
             </div>
+            {/* variant info modal rendering */}
+            {infoVariantId && (
+                <VariantInfoModal
+                    variantId={infoVariantId}
+                    onClose={() => setInfoVariantId(null)}
+                />
+            )}
         </div>
     );
 };

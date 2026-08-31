@@ -1,5 +1,5 @@
 import React, {useRef} from 'react';
-import { ChessKnight, Globe, Settings, Save } from 'lucide-react';
+import { ChessKnight, Globe, Save } from 'lucide-react';
 import { useNavStore } from '../../store/useNavStore';
 import { useGameStore } from '../../store/useGameStore';
 import { VerticalFusionLogo } from "../logos/VerticalFusionLogo";
@@ -103,11 +103,13 @@ export const MainMenu: React.FC = () => {
                         label="Load game"
                     />
 
+                    {/*
                     <MenuButton
                         onClick={() => setScreen('SETTINGS')}
                         icon={<Settings className="w-6 h-6 opacity-80" />}
                         label="Settings"
                     />
+                    */}
                 </div>
 
                 {/* Footer Metadata */}
