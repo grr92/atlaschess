@@ -44,7 +44,7 @@ export const App = () => {
                     <div className="flex flex-col lg:flex-row justify-center items-stretch gap-6 w-full max-w-[90rem]">
 
                         {/* 1. left column: buttons and captured pieces */}
-                        <div className="flex flex-col w-full lg:w-56 xl:w-64 flex-shrink-0">
+                        <div className="flex flex-col w-full lg:w-56 xl:w-64 flex-shrink-0 min-h-0">
 
                             <div className="flex items-end h-12 pb-2 gap-2 mb-2 lg:mb-0">
                                 <BackButton onClick={() => setConfirmAction('exit')} />
@@ -89,8 +89,10 @@ export const App = () => {
                             </div>
 
                             {/* perfect mirror of the right column (history) */}
-                            <div className="flex-grow py-4 h-full">
-                                <CapturedPieces />
+                            <div className="flex-1 relative w-full min-h-[250px] lg:min-h-0">
+                                <div className="absolute inset-0 py-4">
+                                    <CapturedPieces />
+                                </div>
                             </div>
                         </div>
 
@@ -111,7 +113,7 @@ export const App = () => {
                         </div>
 
                         {/* 3. right column: match history */}
-                        <div className="w-full lg:w-72 flex-shrink-0 flex flex-col">
+                        <div className="w-full lg:w-72 flex-shrink-0 flex flex-col min-h-0">
 
                             {/* header wrapper containing the info button and the timer */}
                             <div className="flex justify-between items-end w-full">
@@ -123,8 +125,10 @@ export const App = () => {
                                 </div>
                             </div>
 
-                            <div className="flex-grow py-4 h-full">
-                                <MoveHistory />
+                            <div className="flex-1 relative w-full min-h-[300px] lg:min-h-0">
+                                <div className="absolute inset-0 py-4">
+                                    <MoveHistory />
+                                </div>
                             </div>
                         </div>
 

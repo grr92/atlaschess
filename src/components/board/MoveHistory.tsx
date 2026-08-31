@@ -27,7 +27,7 @@ export const MoveHistory = () => {
     }
 
     return (
-        <div className="bg-atlas-surface rounded-xl p-4 w-full h-full flex flex-col shadow-sm">
+        <div className="bg-atlas-surface rounded-xl p-4 w-full h-full flex flex-col shadow-sm overflow-hidden min-h-0">
 
             <h3 className="font-bold mb-3 pb-2 opacity-80 text-sm text-atlas-titleText tracking-wide uppercase">
                 Match History

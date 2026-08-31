@@ -15,6 +15,7 @@ interface GameStore {
     history: Move[];
     currentVariantId: string; // Tracks the currently active game variant
     pendingPromotion: { from: Position, to: Position } | null; // Pawn promotion state variable
+    gameTime: number; // Timer global state
 
     // Store actions
     initGame: (variantId?: string) => void;
@@ -29,6 +30,7 @@ interface GameStore {
     // Load / save actions
     saveGame: () => void;
     loadGame: (jsonData: string) => boolean;
+    setGameTime: (fn: (prev: number) => number) => void; // Timer updater
 }
 
 export const useGameStore = create<GameStore>((set, get) => ({
@@ -40,6 +42,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
     history: [],
     currentVariantId: 'classic',
     pendingPromotion: null,
+    gameTime: 0,
+
+    setGameTime: (fn) => set((state) => ({ gameTime: fn(state.gameTime) })),
 
     // Initialize the game engine based on the selected variant
     initGame: (variantId = 'classic') => {
@@ -66,6 +71,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
             currentTurn: engine.currentTurn,
             history: engine.history,
             currentVariantId: variantId,
+            gameTime: 0,
         });
     },
 
@@ -141,8 +147,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
         // If history is empty, there is nothing to undo
         if (history.length === 0) return;
 
-        // Save the original history excluding the last move
+        // Save the original history excluding the last move and the time
         const newHistory = history.slice(0, -1);
+        const originalTime = get().gameTime;
 
         // Reset the board from scratch
         initGame(currentVariantId);
@@ -171,7 +178,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
             gameState: engine.state,
             currentTurn: engine.currentTurn,
             history: engine.history, // Use the freshly rebuilt history from the engine
-            pendingPromotion: null
+            pendingPromotion: null,
+            gameTime: originalTime // The clock is restored
         });
     },
 
@@ -199,10 +207,10 @@ export const useGameStore = create<GameStore>((set, get) => ({
     },
 
     saveGame: () => {
-        const { currentVariantId, history } = get();
+        const { currentVariantId, history, gameTime } = get();
         if (history.length === 0) return; // Game cannot be saved if it has not been played
 
-        const saveData = { variantId: currentVariantId, history: history };
+        const saveData = { variantId: currentVariantId, history: history, time: gameTime };
         const jsonString = JSON.stringify(saveData, null, 2);
 
         // Create a virtual file in the browser
@@ -254,6 +262,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
                 engine.executeMove(move.from, move.to, promotionPiece);
             }
 
+            // Read the saved time or put 0 if no time is found
+            const loadedTime = typeof parsed.time === 'number' ? parsed.time : 0;
+
             // Interface update with the loaded state
             set({
                 engine,
@@ -262,7 +273,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
                 gameState: engine.state,
                 currentTurn: engine.currentTurn,
                 history: engine.history,
-                pendingPromotion: null
+                pendingPromotion: null,
+                gameTime: loadedTime
             });
             return true;
 

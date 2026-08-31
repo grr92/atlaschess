@@ -114,7 +114,7 @@ export const MainMenu: React.FC = () => {
 
                 {/* Footer Metadata */}
                 <div className="mt-8 text-xs text-atlas-normalText opacity-40 tracking-wider">
-                    Version 0.2.0 • Built with React + Zustand
+                    Version 0.3.1 • Built with React + Zustand
                 </div>
             </div>
         </div>
