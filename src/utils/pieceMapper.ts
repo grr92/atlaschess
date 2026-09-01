@@ -23,12 +23,16 @@ export const getPieceImage = (piece: Piece | null): string | null => {
     let pieceChar = '';
     switch (piece.name) {
         case 'King': case 'Raja': case 'Shah': pieceChar = 'k'; break;
-        case 'Queen': case 'Mantri': case 'Ferz': pieceChar = 'q'; break;
+        case 'Queen': case 'Mantri': case 'Ferz': case 'Wazir': pieceChar = 'q'; break;
         case 'Rook': case 'Ratha': case 'Rukh': pieceChar = 'r'; break;
-        case 'Bishop': pieceChar = 'b'; break;
+        case 'Bishop': case 'Talia': pieceChar = 'b'; break;
         case 'Knight': case 'Asva': case 'Asb': pieceChar = 'n'; break;
         case 'Pawn': case 'Padati': case 'Sarbaz': pieceChar = 'p'; break;
         case 'Gaja': case 'Pil': pieceChar = 'e'; break;
+        case 'Zurafa': pieceChar = 'g'; break;
+        case 'Dabbaba': pieceChar = 'd'; break;
+        case 'Jamal': pieceChar = 'c'; break;
+
         default: return null;
     }
 
@@ -55,8 +59,8 @@ export const getSquareBackground = (x: number, y: number, variantId: string): st
         ];
         isMarked = markedSquares.includes(`${x},${y}`);
         colorChar = 'l';
-    } else if (variantId === 'shatranj') {
-        // Shatranj used the same board as Chaturanga but without the X's
+    } else if (variantId === 'shatranj' || variantId === 'tamerlane') {
+        // Those games used the same board as Chaturanga but without the X's
         isMarked = false;
         colorChar = 'l';
     }

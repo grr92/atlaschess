@@ -2,13 +2,13 @@ import { Board } from '../models/Board';
 import type {GameVariant} from './GameVariant';
 import { Raja, Ratha, Asva, Mantri, Gaja, Padati } from '../pieces/piecesIndex';
 
-export class ChaturangaVariant implements GameVariant {
+export class Chaturanga implements GameVariant {
     name = 'Chaturanga';
 
     setupBoard(): Board {
         const board = new Board(8, 8);
 
-        // black army (ranks 0 and 1)
+        // black army (ranks 1 and 2)
 
         // rank 0 - main pieces
         board.setPiece(new Ratha('r1_b', 'black', { x: 0, y: 0 }), 0, 0);
@@ -25,7 +25,7 @@ export class ChaturangaVariant implements GameVariant {
             board.setPiece(new Padati(`p_b_${x}`, 'black', { x, y: 1 }), x, 1);
         }
 
-        // white army (ranks 6 and 7)
+        // white army (ranks 7 and 8)
 
         // rank 7 - main pieces
         board.setPiece(new Ratha('r1_w', 'white', { x: 0, y: 7 }), 0, 7);

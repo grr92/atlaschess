@@ -90,6 +90,20 @@ export const VariantsCatalog = () => {
                                     <InfoButton onClick={() => setInfoVariantId('shatranj')} />
                                 </div>
                             </div>
+                            <div className="relative flex w-full bg-atlas-surface rounded-xl shadow-sm mt-3">
+                                <button
+                                    onClick={() => handleSelectVariant('tamerlane')}
+                                    className="flex-1 text-left p-4 hover:bg-atlas-hover transition-colors duration-200 group"
+                                >
+                                    <div className="font-bold text-lg text-atlas-titleText opacity-90 group-hover:opacity-100">Temarlane Chess</div>
+                                    <div className="text-sm opacity-60 mt-1">
+                                        Timur's epic 112-square variant. Command Camels, Giraffes, and siege the enemy Citadel!
+                                    </div>
+                                </button>
+                                <div className="flex items-center justify-center px-4 border-l border-atlas-hover/30">
+                                    <InfoButton onClick={() => setInfoVariantId('tamerlane')} />
+                                </div>
+                            </div>
                         </div>
                     </div>
 

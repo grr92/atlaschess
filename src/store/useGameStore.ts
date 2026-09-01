@@ -2,9 +2,11 @@ import { create } from 'zustand';
 import { BaseEngine } from '../core/engine/BaseEngine';
 import { ClassicChessEngine } from '../core/engine/ClassicChessEngine';
 import { ChaturangaEngine } from "../core/engine/ChaturangaEngine.ts";
+import { TamerlaneEngine } from "../core/engine/TamerlaneEngine.ts";
 import { ClassicChess } from '../core/variants/ClassicChess';
-import { ChaturangaVariant } from "../core/variants/Chaturanga.ts";
-import { ShatranjVariant } from "../core/variants/Shatranj.ts";
+import { Chaturanga } from "../core/variants/Chaturanga.ts";
+import { Shatranj } from "../core/variants/Shatranj.ts";
+import { TamerlaneChess } from "../core/variants/TamerlaneChess.ts";
 import type {Position, GameState, Move, PieceColor} from '../types';
 import {ShatranjEngine} from "../core/engine/ShatranjEngine.ts";
 
@@ -58,10 +60,13 @@ export const useGameStore = create<GameStore>((set, get) => ({
                 engine = new ClassicChessEngine(new ClassicChess());
                 break;
             case 'chaturanga':
-                engine = new ChaturangaEngine(new ChaturangaVariant());
+                engine = new ChaturangaEngine(new Chaturanga());
                 break;
             case 'shatranj':
-                engine = new ShatranjEngine(new ShatranjVariant());
+                engine = new ShatranjEngine(new Shatranj());
+                break;
+            case 'tamerlane':
+                engine = new TamerlaneEngine(new TamerlaneChess());
                 break;
             default:
                 console.warn(`'${variantId}' variant unknown. Loading classic chess variant.`);

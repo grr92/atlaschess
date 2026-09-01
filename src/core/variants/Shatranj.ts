@@ -2,13 +2,13 @@ import { Board } from '../models/Board';
 import type { GameVariant } from './GameVariant';
 import { Shah, Rukh, Asb, Ferz, Pil, Sarbaz } from '../pieces/piecesIndex';
 
-export class ShatranjVariant implements GameVariant {
+export class Shatranj implements GameVariant {
     name = 'Shatranj';
 
     setupBoard(): Board {
         const board = new Board(8, 8);
 
-        // Black army (ranks 0 and 1)
+        // Black army (ranks 1 and 2)
         board.setPiece(new Rukh('r1_b', 'black', { x: 0, y: 0 }), 0, 0);
         board.setPiece(new Asb('n1_b', 'black', { x: 1, y: 0 }), 1, 0);
         board.setPiece(new Pil('a1_b', 'black', { x: 2, y: 0 }), 2, 0);
@@ -22,7 +22,7 @@ export class ShatranjVariant implements GameVariant {
             board.setPiece(new Sarbaz(`p_b_${x}`, 'black', { x, y: 1 }), x, 1);
         }
 
-        // White army (ranks 6 and 7)
+        // White army (ranks 7 and 8)
         board.setPiece(new Rukh('r1_w', 'white', { x: 0, y: 7 }), 0, 7);
         board.setPiece(new Asb('n1_w', 'white', { x: 1, y: 7 }), 1, 7);
         board.setPiece(new Pil('a1_w', 'white', { x: 2, y: 7 }), 2, 7);

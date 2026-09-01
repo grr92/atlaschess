@@ -101,7 +101,8 @@ export const App = () => {
 
                             <div className="flex justify-between items-end h-12 pb-2 px-4 w-full">
                                 <h2 className="text-atlas-titleText text-xl font-bold capitalize">
-                                    {currentVariantId === 'classic' ? 'Classic Chess' : currentVariantId}
+                                    {currentVariantId === 'classic' ? 'Classic Chess' :
+                                        currentVariantId === 'tamerlane' ? 'Tamerlane Chess' : currentVariantId}
                                 </h2>
                                 <p className="text-atlas-titleText text-sm capitalize opacity-80">
                                     Turn: <span className="font-bold">{currentTurn}</span> | Status: <span className="font-bold">{gameState}</span>

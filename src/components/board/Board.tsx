@@ -35,33 +35,50 @@ export const Board = () => {
 
     return (
         <div className="flex justify-center items-center p-4">
-            <div className="grid grid-cols-8 grid-rows-8 border-4 border-slate-950 shadow-2xl rounded overflow-hidden">
+            <div
+                className="grid border-4 border-slate-950 shadow-2xl rounded overflow-hidden relative"
+                style={{
+                    gridTemplateColumns: `repeat(${board.cols}, minmax(0, 1fr))`,
+                    gridTemplateRows: `repeat(${board.rows}, minmax(0, 1fr))`
+                }}
+            >
                 {board.grid.map((row, y) =>
                     row.map((piece, x) => {
+                        const isPlayable = !board.isOutOfBounds(x, y);
+                        // If the square is "out of bounds", a transparent square is drawn
+                        if (!isPlayable) {
+                            return <div key={`${x}-${y}`} className="w-8 h-8 md:w-11 md:h-11 lg:w-[3.8rem] lg:h-[3.8rem] bg-transparent" />;
+                        }
+
                         const isLight = (x + y) % 2 === 0;
-                        const isChaturangaBoard = currentVariantId === 'chaturanga' || 'shatranj'; // If uses chaturanga board use only light tiles
+                        const isMonochrome = currentVariantId === 'chaturanga' || currentVariantId === 'shatranj' || currentVariantId === 'tamerlane';
                         const bgImage = getSquareBackground(x, y, currentVariantId);
                         const pieceImage = getPieceImage(piece);
 
                         const isSelected = selectedPosition?.x === x && selectedPosition?.y === y;
                         const isLegalMove = legalMoves.some((m) => m.x === x && m.y === y);
 
-                        // Coordinate logic
-                        const isBottomRow = y === board.rows - 1; // Bottom-most row
-                        const isRightCol = x === board.cols - 1;  // Rightmost column
-                        const fileLetter = String.fromCharCode(97 + x); // 0 -> a, 1 -> b...
-                        const rankNumber = board.rows - y; // 8, 7, 6...
+                        // Coordinate logic and tamerlane variant case
+                        const isTamerlane = currentVariantId === 'tamerlane';
+                        const fileIndex = isTamerlane ? x - 1 : x;
+                        const fileLetter = fileIndex >= 0 && fileIndex <= 10 ? String.fromCharCode(97 + fileIndex) : '';
+                        const rankNumber = board.rows - y;
+                        const isBottomRow = y === board.rows - 1 && fileIndex >= 0;
+                        const isRightCol = isTamerlane ? x === 11 : x === board.cols - 1;
 
-                        // If uses chaturanga board use only light tiles and add a black separator
-                        const cssBgClass = (isLight || isChaturangaBoard) ? 'bg-atlas-boardLight' : 'bg-atlas-boardDark';
-                        const chaturangaBorder = isChaturangaBoard ? 'ring-1 ring-inset ring-black/20' : '';
-                        const textColor = (isLight || isChaturangaBoard) ? 'text-atlas-boardDark' : 'text-atlas-boardLight';                         // If the square is light, the text must be dark (and vice versa)
+                        // If uses monocrome board use only light tiles and add a black separator
+                        const cssBgClass = (isLight || isMonochrome) ? 'bg-atlas-boardLight' : 'bg-atlas-boardDark';
+                        const textColor = (isLight || isMonochrome) ? 'text-atlas-boardDark' : 'text-atlas-boardLight';                         // If the square is light, the text must be dark (and vice versa)
+                        const monochromeBorder = isMonochrome ? 'ring-1 ring-inset ring-black/20' : '';
+
+                        // To rotate the Queen icon to represent the Wazir
+                        const isWazir = piece?.name === 'Wazir';
 
                         return (
                             <div
                                 key={`${x}-${y}`}
                                 onClick={() => selectSquare({ x, y })}
-                                className={`w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 flex justify-center items-center bg-cover bg-center cursor-pointer relative ${cssBgClass} ${chaturangaBorder}`}
+                                className={`w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 flex justify-center items-center bg-cover bg-center cursor-pointer relative ${cssBgClass} ${monochromeBorder}`}
                                 style={{
                                     backgroundImage: bgImage ? `url("${bgImage}")` : undefined,
                                 }}
@@ -90,9 +107,8 @@ export const Board = () => {
                                     <img
                                         src={pieceImage}
                                         alt={piece?.name}
-                                        className={`w-full h-full object-contain relative z-10 select-none ${
-                                            isSelected ? 'scale-110' : ''
-                                        } transition-transform`}
+                                        className={`w-full h-full object-contain relative z-10 select-none 
+                                        transition-transform ${isSelected ? 'scale-110' : ''} ${isWazir ? 'rotate-180' : ''}`}
                                     />
                                 )}
 

@@ -25,3 +25,9 @@ export * from './shatranj/Rukh';
 export * from './shatranj/Sarbaz';
 export * from './shatranj/Shah';
 
+// Tamerlane Chess
+export * from './tamerlane/Dabbaba';
+export * from './tamerlane/Jamal';
+export * from './tamerlane/Talia';
+export * from './tamerlane/Wazir';
+export * from './tamerlane/Zurafa';

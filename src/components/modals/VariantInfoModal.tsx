@@ -21,6 +21,16 @@ interface VariantInfo {
         bullet6Desc?: ReactNode;
         bullet7Title?: ReactNode;
         bullet7Desc?: ReactNode;
+        bullet8Title?: ReactNode;
+        bullet8Desc?: ReactNode;
+        bullet9Title?: ReactNode;
+        bullet9Desc?: ReactNode;
+        bullet10Title?: ReactNode;
+        bullet10Desc?: ReactNode;
+        bullet11Title?: ReactNode;
+        bullet11Desc?: ReactNode;
+        bullet12Title?: ReactNode;
+        bullet12Desc?: ReactNode;
         proTip: ReactNode;
     };
     history: {
@@ -112,49 +122,49 @@ const variantDictionary: Record<string, VariantInfo> = {
             bullet1Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Raja', color: 'white' } as any)!} alt="Raja" className="w-5 h-5 object-contain -mt-1" />
-                    The Raja (King):
+                    Raja (King):
                 </span>
             ),
             bullet1Desc: 'moves like a modern king, but there is no castling available to hide him.',
             bullet2Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Gaja', color: 'white' } as any)!} alt="Gaja" className="w-5 h-5 object-contain -mt-1" />
-                    The Gaja (Elephant):
+                    Gaja (Elephant):
                 </span>
             ),
             bullet2Desc: 'leaps exactly two squares diagonally, jumping over any pieces in between.',
             bullet3Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Queen', color: 'white' } as any)!} alt="Mantri" className="w-5 h-5 object-contain -mt-1" />
-                    Mantri (minister)
+                    Mantri (minister):
                 </span>
             ),
             bullet3Desc: 'moves one step diagonally in any direction',
             bullet4Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Rook', color: 'white' } as any)!} alt="Ratha" className="w-5 h-5 object-contain -mt-1" />
-                    Ratha (chariot)
+                    Ratha (chariot):
                 </span>
             ),
             bullet4Desc: 'moves the same as a rook in chess: horizontally or vertically, through any number of unoccupied squares, with the only difference being the lack of castling.',
             bullet5Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Knight', color: 'white' } as any)!} alt="Ashva" className="w-5 h-5 object-contain -mt-1" />
-                    Ashva (horse)
+                    Ashva (horse):
                 </span>
             ),
             bullet5Desc: 'moves the same as a knight in chess.',
             bullet6Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Pawn', color: 'white' } as any)!} alt="Padati" className="w-5 h-5 object-contain -mt-1" />
-                    Padati or Bhata (foot-soldier or infantry)
+                    Padati or Bhata (foot-soldier or infantry):
                 </span>
             ),
             bullet6Desc: 'moves and captures the same as a pawn in chess, but without a double-step option on the first move.',
             bullet7Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <X className="w-5 h-5"/>
-                    Ashtāpada X\'s
+                    Ashtāpada X\'s:
                 </span>
             ),
             bullet7Desc: 'The board has special markings, the meaning of which are unknown today. These marks were not related to chaturanga, but were drawn on the board by tradition. These special markings coincide with squares unreachable by any of the four gajas that start on the board due to movement rules.',
@@ -176,42 +186,42 @@ const variantDictionary: Record<string, VariantInfo> = {
             bullet1Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Shah', color: 'white' } as any)!} alt="Shah" className="w-5 h-5 object-contain -mt-1" />
-                    The Shah (King):
+                    Shah (King):
                 </span>
             ),
             bullet1Desc: 'moves like a modern king, but there is no castling available to hide him.',
             bullet2Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Pil', color: 'white' } as any)!} alt="Pïl" className="w-5 h-5 object-contain -mt-1" />
-                    The Pïl or Alfil (Elephant):
+                    Pïl or Alfil (Elephant):
                 </span>
             ),
             bullet2Desc: 'leaps exactly two squares diagonally, jumping over any pieces in between.',
             bullet3Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Ferz', color: 'white' } as any)!} alt="Ferz" className="w-5 h-5 object-contain -mt-1" />
-                    Ferz or Wazir (Counselor)
+                    Ferz or Wazir (Counselor):
                 </span>
             ),
             bullet3Desc: 'moves exactly one step diagonally in any direction.',
             bullet4Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Rukh', color: 'white' } as any)!} alt="Rukh" className="w-5 h-5 object-contain -mt-1" />
-                    Rukh (Chariot)
+                    Rukh (Chariot):
                 </span>
             ),
             bullet4Desc: 'moves the same as a rook in chess: horizontally or vertically, through any number of unoccupied squares.',
             bullet5Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Asb', color: 'white' } as any)!} alt="Asb" className="w-5 h-5 object-contain -mt-1" />
-                    Asb or Faras (Horse)
+                    Asb or Faras (Horse):
                 </span>
             ),
             bullet5Desc: 'moves the same as a knight in chess.',
             bullet6Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Sarbaz', color: 'white' } as any)!} alt="Sarbaz" className="w-5 h-5 object-contain -mt-1" />
-                    Sarbaz / Piyadeh or Baydaq (Pawn)
+                    Sarbaz / Piyadeh or Baydaq (Pawn):
                 </span>
             ),
             bullet6Desc: 'moves and captures the same as a modern pawn, but without a double-step option on the first move. Upon reaching the last rank, it automatically promotes to a Ferz.',
@@ -223,6 +233,104 @@ const variantDictionary: Record<string, VariantInfo> = {
             leftBoxDesc: 'After Chaturanga arrived in Sasanian Persia, it was renamed Chatrang. Following the Islamic conquest of Persia in the 7th century, the game was adapted into Shatranj. Arab masters formalized the rules, recorded the first algebraic notations, and wrote extensively on chess strategy, creating complex puzzles known as "mansubat".',
             rightBoxTitle: 'The Journey to Europe',
             rightBoxDesc: 'Shatranj was introduced to Europe via the Islamic conquest of the Iberian Peninsula (Al-Andalus) and through Byzantine and Italian trade routes. It remained largely unchanged until the late 15th century in Spain, when the weak Ferz and Pïl were replaced by the modern Queen and Bishop, radically speeding up the game.'
+        }
+    },
+    tamerlane: {
+        name: 'Tamerlane Chess',
+        rules: {
+            intro: 'Played on a massive 11x10 uncheckered board with two extra protruding squares called citadels (112 squares total). White moves first. The objective is to checkmate the opponent\'s Shah. If a Shah reaches the enemy citadel, the game is declared a draw.',
+            bullet1Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Shah', color: 'white' } as any)!} alt="Shah" className="w-5 h-5 object-contain -mt-1" />
+                    Shah (King):
+                </span>
+            ),
+            bullet1Desc: 'moves like a modern king. It is the only piece allowed to enter the opponent\'s citadel to force a draw and once during the game it may switch places with any of its own pieces to evade check/checkmate or stalemate.',
+            bullet2Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Ferz', color: 'white' } as any)!} alt="Ferz" className="w-5 h-5 object-contain -mt-1" />
+                    Ferz (General or Counselor)
+                </span>
+            ),
+            bullet2Desc: 'moves exactly one step diagonally in any direction.',
+            bullet3Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Wazir', color: 'white' } as any)!} alt="Wazir" className="w-5 h-5 object-contain -mt-1 rotate-180" />
+                    Wazir (Vizier or Governor)
+                </span>
+            ),
+            bullet3Desc: 'moves exactly one step orthogonally in any direction.',
+            bullet4Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Zurafa', color: 'white' } as any)!} alt="Zurafa" className="w-5 h-5 object-contain -mt-1" />
+                    Zurafa (Giraffe):
+                </span>
+            ),
+            bullet4Desc: 'moves one square diagonally, and then slides horizontally or vertically for a minimum of three squares.',
+            bullet5Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Talia', color: 'white' } as any)!} alt="Talia" className="w-5 h-5 object-contain -mt-1" />
+                    Talia (Picket / Scout):
+                </span>
+            ),
+            bullet5Desc: 'slides diagonally like a bishop, but must move a minimum of two squares.',
+            bullet6Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Asb', color: 'white' } as any)!} alt="Faras" className="w-5 h-5 object-contain -mt-1" />
+                    Faras (Horse)
+                </span>
+            ),
+            bullet6Desc: 'moves the same as a knight in chess.',
+            bullet7Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Rukh', color: 'white' } as any)!} alt="Rukh" className="w-5 h-5 object-contain -mt-1" />
+                    Rukh (Chariot)
+                </span>
+            ),
+            bullet7Desc: 'moves the same as a rook in chess: horizontally or vertically, through any number of unoccupied squares.',
+            bullet8Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Pil', color: 'white' } as any)!} alt="Pil" className="w-5 h-5 object-contain -mt-1" />
+                    Pil (Elephant):
+                </span>
+            ),
+            bullet8Desc: 'leaps exactly two squares diagonally, jumping over any pieces in between.',
+            bullet9Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Jamal', color: 'white' } as any)!} alt="Jamal" className="w-5 h-5 object-contain -mt-1" />
+                    Jamal (Camel):
+                </span>
+            ),
+            bullet9Desc: 'leaps in an elongated "L" shape (one square diagonally and two straight, or 3x1), jumping over any pieces in between.',
+            bullet10Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Dabbaba', color: 'white' } as any)!} alt="Dabbaba" className="w-5 h-5 object-contain -mt-1" />
+                    Dabbaba (War Engine):
+                </span>
+            ),
+            bullet10Desc: 'leaps exactly two squares orthogonally, jumping over any pieces in between.',
+            bullet11Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Sarbaz', color: 'white' } as any)!} alt="Sarbaz" className="w-5 h-5 object-contain -mt-1" />
+                    Pawn:
+                </span>
+            ),
+            bullet11Desc: 'moves and captures the same as a modern pawn, but without a double-step option on the first move. Every piece (including the pawn) has a corresponding pawn. Hence; there is: (1) a pawn of pawns, (2) a pawn of dabbabas, (3) a pawn of camels, (4) a pawn of elephants, (5) a pawn of giraffes, (6) a pawn of king, (7) a pawn of vizier, (8) a pawn of counselor, (9) a pawn of scouts, (10) a pawn of horses, and (11) a pawn of rooks. Upon reaching the last rank, it automatically promotes to a it\'s piece type.',
+            bullet12Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <div className="w-4 h-4 bg-amber-700/40 ring-2 ring-inset ring-amber-500 rounded-sm -mt-0.5" />
+                    The Citadels:
+                </span>
+            ),
+            bullet12Desc: 'two extra squares extending from the board. You cannot enter your own citadel. If your Shah reaches the enemy\'s citadel, you force a heroic draw.',
+            proTip: 'Pro tip: Master the long-range exotic pieces. The Zurafa and Talia cover immense ground but have blind spots up close, while the Jamal can leap out of danger. Keep your Wazir and Ferz close to defend the Shah.'
+        },
+        history: {
+            intro: 'Tamerlane chess is a strategic behemoth developed in the 14th century during the reign of Timur (Tamerlane), the Turco-Mongol conqueror. It is the most famous and complex variant of "Great Chess" (Shatranj Kamil).',
+            leftBoxTitle: 'The Game of a Conqueror',
+            leftBoxDesc: 'Timur himself loved to play chess, and he preferred the large board variants over the smaller 8×8 shatranj. As such, the invention of this game has also been attributed to Timur himself. He is known to have invited the best shatranj players in the land to his court to play him at the game, including one Ali ash-Shatranji of Tabriz.',
+            rightBoxTitle: 'Or maybe not...',
+            rightBoxDesc: 'Another legend regarding this type of chess is found in a Persian manuscript which may have been by ash-Shatranji himself. The legend states that this game was given to Alexander in India by Hermes.'
         }
     },
 };
@@ -261,15 +369,17 @@ export const VariantInfoModal = ({ variantId, onClose }: VariantInfoModalProps) 
     const data = variantDictionary[variantId] || fallbackVariant;
 
 // packed and filtered so only the ones with text are shown
-    const bullets = [
-        { title: data.rules.bullet1Title, desc: data.rules.bullet1Desc },
-        { title: data.rules.bullet2Title, desc: data.rules.bullet2Desc },
-        { title: data.rules.bullet3Title, desc: data.rules.bullet3Desc },
-        { title: data.rules.bullet4Title, desc: data.rules.bullet4Desc },
-        { title: data.rules.bullet5Title, desc: data.rules.bullet5Desc },
-        { title: data.rules.bullet6Title, desc: data.rules.bullet6Desc },
-        { title: data.rules.bullet7Title, desc: data.rules.bullet7Desc },
-    ].filter(b => b.title && b.desc); // this removes the empty or undefined
+    const bullets: { title: ReactNode; desc: ReactNode }[] = [];
+    for (let i = 1; i <= 20; i++) {
+        const titleKey = `bullet${i}Title` as keyof typeof data.rules;
+        const descKey = `bullet${i}Desc` as keyof typeof data.rules;
+        if (data.rules[titleKey] && data.rules[descKey]) {
+            bullets.push({
+                title: data.rules[titleKey] as ReactNode,
+                desc: data.rules[descKey] as ReactNode,
+            });
+        }
+    }
 
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-8">
