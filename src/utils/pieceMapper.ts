@@ -22,13 +22,13 @@ export const getPieceImage = (piece: Piece | null): string | null => {
 
     let pieceChar = '';
     switch (piece.name) {
-        case 'King': case 'Raja': pieceChar = 'k'; break;
-        case 'Queen': case 'Mantri': pieceChar = 'q'; break;
-        case 'Rook': case 'Ratha': pieceChar = 'r'; break;
+        case 'King': case 'Raja': case 'Shah': pieceChar = 'k'; break;
+        case 'Queen': case 'Mantri': case 'Ferz': pieceChar = 'q'; break;
+        case 'Rook': case 'Ratha': case 'Rukh': pieceChar = 'r'; break;
         case 'Bishop': pieceChar = 'b'; break;
-        case 'Knight': case 'Asva': pieceChar = 'n'; break;
-        case 'Pawn': case 'Padati': pieceChar = 'p'; break;
-        case 'Gaja': pieceChar = 'e'; break;
+        case 'Knight': case 'Asva': case 'Asb': pieceChar = 'n'; break;
+        case 'Pawn': case 'Padati': case 'Sarbaz': pieceChar = 'p'; break;
+        case 'Gaja': case 'Pil': pieceChar = 'e'; break;
         default: return null;
     }
 
@@ -41,7 +41,7 @@ export const getPieceImage = (piece: Piece | null): string | null => {
 
 export const getSquareBackground = (x: number, y: number, variantId: string): string | undefined => {
     const isLight = (x + y) % 2 === 0;
-    const colorChar = isLight ? 'l' : 'd';
+    let colorChar = isLight ? 'l' : 'd';
 
     let isMarked = false;
 
@@ -54,6 +54,11 @@ export const getSquareBackground = (x: number, y: number, variantId: string): st
             '0,7', '3,7', '4,7', '7,7'
         ];
         isMarked = markedSquares.includes(`${x},${y}`);
+        colorChar = 'l';
+    } else if (variantId === 'shatranj') {
+        // Shatranj used the same board as Chaturanga but without the X's
+        isMarked = false;
+        colorChar = 'l';
     }
 
     const prefix = isMarked ? 'xx' : '';

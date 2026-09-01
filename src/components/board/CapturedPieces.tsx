@@ -2,9 +2,9 @@ import { useGameStore } from '../../store/useGameStore';
 import { getPieceImage } from '../../utils/pieceMapper';
 
 const PIECE_VALUES: Record<string, number> = {
-    'Queen': 9, 'Rook': 5, 'Bishop': 3, 'Knight': 3, 'Pawn': 1,
-    'Mantri': 2, 'Ratha': 5, 'Gaja': 2, 'Asva': 3, 'Padati': 1,
-    'King': 0, 'Raja': 0
+    'Queen': 9, 'Rook': 5, 'Bishop': 3, 'Knight': 3, 'Pawn': 1, 'King': 0,
+    'Mantri': 2, 'Ratha': 5, 'Gaja': 2, 'Asva': 3, 'Padati': 1, 'Raja': 0,
+    'Ferz': 2, 'Rukh': 5, 'Pil': 2, 'Asb': 3, 'Sarbaz': 1, 'Shah': 2,
 };
 
 const SORT_ORDER: Record<string, number> = {

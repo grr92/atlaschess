@@ -1,4 +1,4 @@
-import { Rook } from '../classic/Rook';
+import { Rook } from '../piecesIndex';
 
 export class Ratha extends Rook {
     name = 'Ratha';

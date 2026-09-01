@@ -39,6 +39,7 @@ export const Board = () => {
                 {board.grid.map((row, y) =>
                     row.map((piece, x) => {
                         const isLight = (x + y) % 2 === 0;
+                        const isChaturangaBoard = currentVariantId === 'chaturanga' || 'shatranj'; // If uses chaturanga board use only light tiles
                         const bgImage = getSquareBackground(x, y, currentVariantId);
                         const pieceImage = getPieceImage(piece);
 
@@ -51,16 +52,16 @@ export const Board = () => {
                         const fileLetter = String.fromCharCode(97 + x); // 0 -> a, 1 -> b...
                         const rankNumber = board.rows - y; // 8, 7, 6...
 
-                        // If the square is light, the text must be dark (and vice versa)
-                        const textColor = isLight ? 'text-atlas-boardDark' : 'text-atlas-boardLight';
+                        // If uses chaturanga board use only light tiles and add a black separator
+                        const cssBgClass = (isLight || isChaturangaBoard) ? 'bg-atlas-boardLight' : 'bg-atlas-boardDark';
+                        const chaturangaBorder = isChaturangaBoard ? 'ring-1 ring-inset ring-black/20' : '';
+                        const textColor = (isLight || isChaturangaBoard) ? 'text-atlas-boardDark' : 'text-atlas-boardLight';                         // If the square is light, the text must be dark (and vice versa)
 
                         return (
                             <div
                                 key={`${x}-${y}`}
                                 onClick={() => selectSquare({ x, y })}
-                                className={`w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 flex justify-center items-center bg-cover bg-center cursor-pointer relative ${
-                                    isLight ? 'bg-atlas-boardLight' : 'bg-atlas-boardDark'
-                                }`}
+                                className={`w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 flex justify-center items-center bg-cover bg-center cursor-pointer relative ${cssBgClass} ${chaturangaBorder}`}
                                 style={{
                                     backgroundImage: bgImage ? `url("${bgImage}")` : undefined,
                                 }}

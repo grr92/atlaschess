@@ -37,7 +37,7 @@ const variantDictionary: Record<string, VariantInfo> = {
     classic: {
         name: 'Classic Chess',
         rules: {
-            intro: "The initial position is set on an 8x8 checkered board. White moves first. The objective is to outsmart the enemy and checkmate their king. A game can also end in a draw through stalemate, threefold repetition, the 50-move rule, or insufficient material.",
+            intro: "The game is set on an 8x8 checkered board. White moves first. The objective is to outsmart the enemy and checkmate their king. A game can also end in a draw through stalemate, threefold repetition, the 50-move rule, or insufficient material.",
 
             bullet1Title: (
                 <span className="inline-flex items-center gap-1.5">
@@ -108,7 +108,7 @@ const variantDictionary: Record<string, VariantInfo> = {
     chaturanga: {
         name: 'Chaturanga',
         rules: {
-            intro: 'The initial position is as shown. White moves first. The objective in chaturanga is for one side (say \'white\') to checkmate the opponent\'s raja (king) or to reduce the other side (say \'black\') to just the raja (\'bare king\'), although if on the following move the black side can also reduce the white side to \'bare king\', the game is drawn.',
+            intro: 'The game is set on an 8x8 uncheckered board with special marks. White moves first. The objective in chaturanga is for one side (say \'white\') to checkmate the opponent\'s raja (king) or to reduce the other side (say \'black\') to just the raja (\'bare king\'), although if on the following move the black side can also reduce the white side to \'bare king\', the game is drawn.',
             bullet1Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Raja', color: 'white' } as any)!} alt="Raja" className="w-5 h-5 object-contain -mt-1" />
@@ -168,7 +168,63 @@ const variantDictionary: Record<string, VariantInfo> = {
             rightBoxTitle: 'Evolution and Global Spread',
             rightBoxDesc: 'Thanks to merchants, diplomats, and pilgrims traveling along the Silk Road, Chaturanga spread far beyond India and adapted to various cultures. To the west, it entered Sassanid Persia and became Shatranj; this version was later carried through the Islamic world into Europe, where it evolved into modern classic chess by the 15th century. To the east, the game traveled into Asia, morphing into distinct and highly popular regional variants such as Xiangqi (Chinese chess), Shogi (Japanese chess), and Makruk (Thai chess).'
         }
-    }
+    },
+    shatranj: {
+        name: 'Shatranj',
+        rules: {
+            intro: 'The game is set on an 8x8 uncheckered board. White moves first. The objective in Shatranj is to checkmate the opponent\'s Shah (king) or to reduce their army to just the Shah ("bare king"). Unlike modern chess, stalemating your opponent is also a victory.',
+            bullet1Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Shah', color: 'white' } as any)!} alt="Shah" className="w-5 h-5 object-contain -mt-1" />
+                    The Shah (King):
+                </span>
+            ),
+            bullet1Desc: 'moves like a modern king, but there is no castling available to hide him.',
+            bullet2Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Pil', color: 'white' } as any)!} alt="Pïl" className="w-5 h-5 object-contain -mt-1" />
+                    The Pïl or Alfil (Elephant):
+                </span>
+            ),
+            bullet2Desc: 'leaps exactly two squares diagonally, jumping over any pieces in between.',
+            bullet3Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Ferz', color: 'white' } as any)!} alt="Ferz" className="w-5 h-5 object-contain -mt-1" />
+                    Ferz or Wazir (Counselor)
+                </span>
+            ),
+            bullet3Desc: 'moves exactly one step diagonally in any direction.',
+            bullet4Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Rukh', color: 'white' } as any)!} alt="Rukh" className="w-5 h-5 object-contain -mt-1" />
+                    Rukh (Chariot)
+                </span>
+            ),
+            bullet4Desc: 'moves the same as a rook in chess: horizontally or vertically, through any number of unoccupied squares.',
+            bullet5Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Asb', color: 'white' } as any)!} alt="Asb" className="w-5 h-5 object-contain -mt-1" />
+                    Asb or Faras (Horse)
+                </span>
+            ),
+            bullet5Desc: 'moves the same as a knight in chess.',
+            bullet6Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Sarbaz', color: 'white' } as any)!} alt="Sarbaz" className="w-5 h-5 object-contain -mt-1" />
+                    Sarbaz / Piyadeh or Baydaq (Pawn)
+                </span>
+            ),
+            bullet6Desc: 'moves and captures the same as a modern pawn, but without a double-step option on the first move. Upon reaching the last rank, it automatically promotes to a Ferz.',
+            proTip: 'Pro tip: Because the Ferz and Pïl are short-range pieces, Shatranj is a slower, highly strategic game. Focus on pawn structures and opening files for your Rukh (rooks), which are by far the most powerful pieces on the board.'
+        },
+        history: {
+            intro: 'Shatranj is the Persian and Arabic evolution of the Indian game Chaturanga. It was the standard form of chess played in the Middle East, North Africa, and Europe for nearly a millennium before the modern rules emerged.',
+            leftBoxTitle: 'The Islamic Golden Age',
+            leftBoxDesc: 'After Chaturanga arrived in Sasanian Persia, it was renamed Chatrang. Following the Islamic conquest of Persia in the 7th century, the game was adapted into Shatranj. Arab masters formalized the rules, recorded the first algebraic notations, and wrote extensively on chess strategy, creating complex puzzles known as "mansubat".',
+            rightBoxTitle: 'The Journey to Europe',
+            rightBoxDesc: 'Shatranj was introduced to Europe via the Islamic conquest of the Iberian Peninsula (Al-Andalus) and through Byzantine and Italian trade routes. It remained largely unchanged until the late 15th century in Spain, when the weak Ferz and Pïl were replaced by the modern Queen and Bishop, radically speeding up the game.'
+        }
+    },
 };
 
 // fallback data in case a variantId is passed that doesn't exist in the dictionary yet

@@ -16,3 +16,12 @@ export * from './chaturanga/Asva';
 export * from './chaturanga/Mantri';
 export * from './chaturanga/Gaja';
 export * from './chaturanga/Padati';
+
+// Shatranj
+export * from './shatranj/Asb';
+export * from './shatranj/Ferz';
+export * from './shatranj/Pil';
+export * from './shatranj/Rukh';
+export * from './shatranj/Sarbaz';
+export * from './shatranj/Shah';
+

@@ -76,6 +76,20 @@ export const VariantsCatalog = () => {
                                     <InfoButton onClick={() => setInfoVariantId('chaturanga')} />
                                 </div>
                             </div>
+                            <div className="relative flex w-full bg-atlas-surface rounded-xl shadow-sm mt-3">
+                                <button
+                                    onClick={() => handleSelectVariant('shatranj')}
+                                    className="flex-1 text-left p-4 hover:bg-atlas-hover transition-colors duration-200 group"
+                                >
+                                    <div className="font-bold text-lg text-atlas-titleText opacity-90 group-hover:opacity-100">Shatranj</div>
+                                    <div className="text-sm opacity-60 mt-1">
+                                        The Persian golden age variant. Pawns auto-promote to Fers and stalemate is a win!
+                                    </div>
+                                </button>
+                                <div className="flex items-center justify-center px-4 border-l border-atlas-hover/30">
+                                    <InfoButton onClick={() => setInfoVariantId('shatranj')} />
+                                </div>
+                            </div>
                         </div>
                     </div>
 
