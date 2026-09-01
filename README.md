@@ -2,7 +2,7 @@
 
 > Discover the history and regional variants of chess!
 
-Welcome to **Atlas Chess**, a web-based chess application built with modern web technologies.
+Welcome to **Atlas Chess**, a chess application built with modern web technologies.
 
 This is my very first software project outside my CS studies and it has been developed with the assistance of AI. My primary intention behind this project is deeply cultural: I wanted to create a platform that allows people to easily play lost historical chess variants that are otherwise nearly impossible to experience today. Furthermore, I aim to preserve and provide access to various regional chess variants from around the world, saving you a trip across the globe just to play a unique game.
 
@@ -48,40 +48,55 @@ src/
 
 - **[React](https://reactjs.org/)** - UI Components and rendering.
 - **[TypeScript](https://www.typescriptlang.org/)** - For robust typing and engine logic.
+- **[Electron](https://www.electronjs.org/)** - Cross-platform framework for secure, native desktop applications.
 - **[Zustand](https://zustand-demo.pmnd.rs/)** - Lightweight and lightning-fast state management.
 - **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first styling with custom theme extensions.
 - **[Vite](https://vitejs.dev/)** - Next-generation frontend tooling for instant server starts and fast HMR.
 - **[Lucide React](https://lucide.dev/)** - Clean SVG icons.
 
-## Getting Started
+## getting started
 
-To get a local copy up and running, follow these simple steps:
+### play the game
+the easiest way to play atlas chess is to download the ready-to-run executable. no installation required.
+1. go to the [releases](https://github.com/grr92/atlaschess/releases) page of this repository.
+2. download the latest `.exe` file.
+3. double-click the file and start playing!
 
-### Prerequisites
-Make sure you have Node.js installed on your machine.
+*(note: as a new and non-professional developer, windows might show a screen warning on the first run. click "more info" and "run anyway").*
 
-### Installation
+### development setup
+if you want to inspect the code, modify the game, or run it from the source, follow these steps:
 
-1. Clone the repository
+#### prerequisites
+make sure you have [node.js](https://nodejs.org/) installed on your machine.
+
+#### installation
+
+1. clone the repository
    ```bash
-   git clone https://github.com/your-username/atlas-chess.git
+   git clone [https://github.com/grr92/atlaschess.git](https://github.com/grr92/atlaschess.git)
    ```
 2. Navigate to the project directory
    ```bash
-   cd atlas-chess
+   cd atlaschess
    ```
 3. Install NPM packages
    ```bash
    npm install
    ```
-4. Start the development server
+4. Start the desktop app in development mode (with hot-reloading)
    ```bash
    npm run dev
    ```
 
+5. Compile and build the final executable for distribution
+   ```bash
+    npm run build:electron
+    ```
+
 ## Roadmap
 
-- [ ] Build desktop executables (Windows/Mac/Linux) using **Electron**.
+- [x] Build desktop executables (Windows/Mac/Linux) using **Electron**.
 - [x] Add variant explanation and how to play.
 - [ ] Add more historical and regional variants.
 - [ ] Better UI.
