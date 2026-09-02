@@ -13,14 +13,14 @@ export const InfoButton = ({ onClick }: InfoButtonProps) => {
                     e.stopPropagation();
                     onClick();
                 }}
-                className="bg-atlas-surface hover:bg-atlas-hover p-2.5 rounded-lg font-bold transition-colors shadow-md text-atlas-titleText flex items-center justify-center"
+                className="bg-atlas-surface/80 hover:bg-amber-500/20 text-slate-300 hover:text-amber-400 p-2.5 rounded-xl font-bold transition-all duration-200 border border-white/10 hover:border-amber-500/40 shadow-md hover:scale-105 active:scale-95 flex items-center justify-center backdrop-blur-md"
             >
                 <Info className="w-5 h-5"/>
             </button>
 
             {/* floating tooltip */}
-            <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-atlas-surface text-atlas-normalText text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg whitespace-nowrap">
-                Info and how to play
+            <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-slate-900 border border-white/10 text-slate-200 text-xs px-2.5 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl whitespace-nowrap">
+                Info & Rules
             </span>
         </div>
     );

@@ -6,7 +6,11 @@ export interface IVictoryStrategy {
 }
 
 export class StandardVictoryStrategy implements IVictoryStrategy {
-    constructor(private options: { stalemateIsWin: boolean } = { stalemateIsWin: false }) {}
+    private options: { stalemateIsWin: boolean };
+
+    constructor(options: { stalemateIsWin: boolean } = { stalemateIsWin: false }) {
+        this.options = options;
+    }
 
     evaluateGameState(engine: BaseEngine): GameState {
         let hasAnyLegalMove = false;
@@ -34,7 +38,11 @@ export class StandardVictoryStrategy implements IVictoryStrategy {
 }
 
 export class BareKingVictoryStrategy implements IVictoryStrategy {
-    constructor(private options: { stalemateIsWin: boolean }) {}
+    private options: { stalemateIsWin: boolean };
+
+    constructor(options: { stalemateIsWin: boolean }) {
+        this.options = options;
+    }
 
     evaluateGameState(engine: BaseEngine): GameState {
         let whitePiecesCount = 0;

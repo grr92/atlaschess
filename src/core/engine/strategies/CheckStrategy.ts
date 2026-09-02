@@ -8,7 +8,11 @@ export interface ICheckStrategy {
 }
 
 export class SingleRoyalCheckStrategy implements ICheckStrategy {
-    constructor(private royalPieceName: string) {}
+    private royalPieceName: string;
+
+    constructor(royalPieceName: string) {
+        this.royalPieceName = royalPieceName;
+    }
 
     isKingInCheck(color: PieceColor, board: Board): boolean {
         let kingPos: Position | null = null;

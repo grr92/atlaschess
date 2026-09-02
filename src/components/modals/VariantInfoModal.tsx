@@ -1,5 +1,5 @@
-import {type ReactNode, useState} from 'react';
-import { X } from 'lucide-react';
+import { type ReactNode, useState } from 'react';
+import { X, BookOpen, History, Sparkles, Scroll, Compass } from 'lucide-react';
 import { getPieceImage } from '../../utils/pieceMapper';
 
 // dictionary structure for the variant content
@@ -381,79 +381,112 @@ export const VariantInfoModal = ({ variantId, onClose }: VariantInfoModalProps) 
     }
 
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-md p-4 md:p-8">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/75 backdrop-blur-md p-4 md:p-8">
 
             {/* main modal container */}
-            <div className="bg-[#1e1c19] w-full max-w-5xl h-full max-h-[85vh] rounded-2xl shadow-2xl border border-atlas-hover flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="bg-slate-900/95 w-full max-w-5xl h-full max-h-[88vh] rounded-3xl shadow-2xl border border-amber-500/30 flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200 backdrop-blur-2xl">
 
                 {/* header */}
-                <div className="flex justify-between items-center p-6 border-b border-atlas-hover bg-[#1a1815]">
-                    <h2 className="text-3xl font-extrabold text-atlas-titleText capitalize tracking-tight">
-                        {data.name}
-                    </h2>
+                <div className="flex justify-between items-center px-8 py-6 border-b border-white/10 bg-slate-950/80">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2.5 bg-amber-500/10 border border-amber-500/30 rounded-xl">
+                            <Compass className="w-6 h-6 text-amber-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-2xl md:text-3xl font-black text-white capitalize tracking-tight">
+                                {data.name}
+                            </h2>
+                            <p className="text-xs font-semibold text-amber-400/80 uppercase tracking-widest mt-0.5">
+                                Codex & Rules Reference
+                            </p>
+                        </div>
+                    </div>
 
                     <div className="relative group">
                         <button
                             onClick={onClose}
-                            className="p-2 hover:bg-red-900/30 text-atlas-normalText hover:text-red-400 rounded-lg transition-colors"
+                            className="p-2.5 bg-white/5 hover:bg-red-500/20 text-slate-400 hover:text-red-400 rounded-xl transition-all border border-white/10 hover:border-red-500/30 shadow-md hover:scale-105 active:scale-95"
                         >
                             <X className="w-6 h-6" />
                         </button>
-                        <span className="absolute -bottom-9 left-1/2 -translate-x-1/2 bg-atlas-surface text-atlas-normalText text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg whitespace-nowrap">
+                        <span className="absolute -bottom-9 left-1/2 -translate-x-1/2 bg-slate-950 border border-white/10 text-slate-200 text-xs px-2.5 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl whitespace-nowrap">
                             Close
                         </span>
                     </div>
                 </div>
 
                 {/* tabs navigation */}
-                <div className="flex border-b border-atlas-hover bg-[#1a1815]">
+                <div className="flex border-b border-white/10 bg-slate-950/40 px-6 pt-2 gap-2">
                     <button
                         onClick={() => setActiveTab('howToPlay')}
-                        className={`flex-1 py-4 font-bold text-lg transition-colors ${
+                        className={`flex items-center justify-center gap-2.5 px-6 py-3.5 font-bold text-base rounded-t-2xl transition-all ${
                             activeTab === 'howToPlay'
-                                ? 'text-atlas-titleText border-b-2 border-emerald-500 bg-[#22201d]'
-                                : 'text-atlas-normalText hover:text-atlas-titleText hover:bg-atlas-hover'
+                                ? 'text-amber-400 bg-slate-900 border-t-2 border-x border-amber-500/40 -mb-[1px] shadow-lg'
+                                : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
                         }`}
                     >
-                        How to play
+                        <BookOpen className="w-4 h-4" />
+                        <span>How to Play</span>
                     </button>
                     <button
                         onClick={() => setActiveTab('history')}
-                        className={`flex-1 py-4 font-bold text-lg transition-colors ${
+                        className={`flex items-center justify-center gap-2.5 px-6 py-3.5 font-bold text-base rounded-t-2xl transition-all ${
                             activeTab === 'history'
-                                ? 'text-atlas-titleText border-b-2 border-amber-500 bg-[#22201d]'
-                                : 'text-atlas-normalText hover:text-atlas-titleText hover:bg-atlas-hover'
+                                ? 'text-amber-400 bg-slate-900 border-t-2 border-x border-amber-500/40 -mb-[1px] shadow-lg'
+                                : 'text-slate-400 hover:text-slate-200 hover:bg-white/5'
                         }`}
                     >
-                        Variant history
+                        <History className="w-4 h-4" />
+                        <span>Historical Origins</span>
                     </button>
                 </div>
 
                 {/* content area */}
-                <div className="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar text-atlas-titleText">
+                <div className="flex-1 overflow-y-auto p-6 md:p-10 custom-scrollbar text-slate-200">
 
                     {activeTab === 'howToPlay' ? (
 
                         <div className="space-y-6 max-w-4xl mx-auto">
-                            <h3 className="text-2xl font-bold text-emerald-400">Rules & mechanics</h3>
-                            <p className="text-lg leading-relaxed opacity-90">
-                                {data.rules.intro}
-                            </p>
+                            <div className="p-5 bg-white/5 border border-white/10 rounded-2xl shadow-sm backdrop-blur-md">
+                                <h3 className="text-xl font-black text-amber-400 mb-2 flex items-center gap-2">
+                                    <Scroll className="w-5 h-5 text-amber-400" />
+                                    Objective & Board Rules
+                                </h3>
+                                <p className="text-base md:text-lg leading-relaxed text-slate-300">
+                                    {data.rules.intro}
+                                </p>
+                            </div>
 
-                            <ul className="space-y-4 mt-6 opacity-80">
-                                {/* mapeamos el array dinámico para pintar solo los bullets que existan */}
+                            <div className="space-y-3 mt-6">
+                                <h4 className="text-xs uppercase font-extrabold tracking-widest text-amber-400/80 mb-3">
+                                    Pieces & Special Moves
+                                </h4>
                                 {bullets.map((bullet, index) => (
-                                    <li key={index} className="flex items-start gap-3">
-                                        <span className="text-emerald-500 font-bold text-xl">•</span>
-                                        <div>
-                                            <strong className="text-atlas-titleText">{bullet.title}</strong> {bullet.desc}
+                                    <div
+                                        key={index}
+                                        className="p-4 bg-atlas-surface/60 hover:bg-atlas-hover/60 rounded-2xl border border-white/5 hover:border-amber-500/30 transition-all duration-200 flex items-start gap-4 shadow-sm"
+                                    >
+                                        <div className="p-1 bg-amber-500/10 rounded-lg text-amber-400 font-bold text-xs mt-0.5 flex-shrink-0">
+                                            #{index + 1}
                                         </div>
-                                    </li>
+                                        <div className="flex-1 text-sm md:text-base leading-relaxed">
+                                            <strong className="text-white font-extrabold block sm:inline mr-2">
+                                                {bullet.title}
+                                            </strong>
+                                            <span className="text-slate-300">
+                                                {bullet.desc}
+                                            </span>
+                                        </div>
+                                    </div>
                                 ))}
-                            </ul>
+                            </div>
 
-                            <div className="p-5 bg-emerald-900/10 border border-emerald-500/20 rounded-xl mt-8">
-                                <p className="text-emerald-300 font-medium tracking-wide">
+                            <div className="p-6 bg-gradient-to-r from-amber-500/15 via-amber-500/5 to-transparent border-l-4 border-amber-400 rounded-2xl shadow-lg mt-8 backdrop-blur-md">
+                                <div className="flex items-center gap-2 text-amber-400 font-black text-sm uppercase tracking-wider mb-1">
+                                    <Sparkles className="w-4 h-4" />
+                                    Strategic Insight
+                                </div>
+                                <p className="text-amber-100/90 font-medium text-sm md:text-base leading-relaxed">
                                     {data.rules.proTip}
                                 </p>
                             </div>
@@ -462,21 +495,30 @@ export const VariantInfoModal = ({ variantId, onClose }: VariantInfoModalProps) 
                     ) : (
 
                         <div className="space-y-6 max-w-4xl mx-auto">
-                            <h3 className="text-2xl font-bold text-amber-500">Historical origins</h3>
-                            <p className="text-lg leading-relaxed opacity-90">
-                                {data.history.intro}
-                            </p>
+                            <div className="p-5 bg-white/5 border border-white/10 rounded-2xl shadow-sm backdrop-blur-md">
+                                <h3 className="text-xl font-black text-amber-400 mb-2 flex items-center gap-2">
+                                    <History className="w-5 h-5 text-amber-400" />
+                                    Origins & Heritage
+                                </h3>
+                                <p className="text-base md:text-lg leading-relaxed text-slate-300">
+                                    {data.history.intro}
+                                </p>
+                            </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                                <div className="p-6 bg-atlas-surface rounded-xl border border-atlas-hover">
-                                    <h4 className="text-xl font-bold text-rose-400 mb-3">{data.history.leftBoxTitle}</h4>
-                                    <p className="opacity-80 leading-relaxed">
+                                <div className="p-6 bg-atlas-surface/80 rounded-2xl border border-rose-500/20 shadow-lg backdrop-blur-md hover:border-rose-500/40 transition-colors">
+                                    <h4 className="text-xl font-black text-rose-400 mb-3 tracking-tight">
+                                        {data.history.leftBoxTitle}
+                                    </h4>
+                                    <p className="text-slate-300 text-sm md:text-base leading-relaxed">
                                         {data.history.leftBoxDesc}
                                     </p>
                                 </div>
-                                <div className="p-6 bg-atlas-surface rounded-xl border border-atlas-hover">
-                                    <h4 className="text-xl font-bold text-sky-400 mb-3">{data.history.rightBoxTitle}</h4>
-                                    <p className="opacity-80 leading-relaxed">
+                                <div className="p-6 bg-atlas-surface/80 rounded-2xl border border-sky-500/20 shadow-lg backdrop-blur-md hover:border-sky-500/40 transition-colors">
+                                    <h4 className="text-xl font-black text-sky-400 mb-3 tracking-tight">
+                                        {data.history.rightBoxTitle}
+                                    </h4>
+                                    <p className="text-slate-300 text-sm md:text-base leading-relaxed">
                                         {data.history.rightBoxDesc}
                                     </p>
                                 </div>

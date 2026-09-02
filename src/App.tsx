@@ -53,11 +53,11 @@ export const App = () => {
                                     <button
                                         onClick={saveGame}
                                         disabled={history.length === 0}
-                                        className="bg-atlas-surface hover:bg-atlas-hover disabled:opacity-40 disabled:hover:bg-atlas-surface p-2.5 rounded-lg font-bold transition-colors shadow-md"
+                                        className="bg-atlas-surface/80 hover:bg-atlas-hover disabled:opacity-30 disabled:hover:bg-atlas-surface/80 p-2.5 rounded-xl font-bold transition-all duration-200 border border-white/10 hover:border-amber-500/40 shadow-md text-atlas-titleText hover:scale-105 active:scale-95 flex items-center justify-center backdrop-blur-md"
                                     >
-                                        <Save className="w-5 h-5"/>
+                                        <Save className="w-5 h-5 text-amber-400"/>
                                     </button>
-                                    <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-atlas-surface text-atlas-normalText text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg whitespace-nowrap">
+                                    <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-slate-900 border border-white/10 text-slate-200 text-xs px-2.5 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl whitespace-nowrap">
                                         Save
                                     </span>
                                 </div>
@@ -66,11 +66,11 @@ export const App = () => {
                                     <button
                                         onClick={undoMove}
                                         disabled={history.length === 0}
-                                        className="bg-atlas-surface hover:bg-atlas-hover disabled:opacity-40 disabled:hover:bg-atlas-surface p-2.5 rounded-lg font-bold transition-colors shadow-md"
+                                        className="bg-atlas-surface/80 hover:bg-atlas-hover disabled:opacity-30 disabled:hover:bg-atlas-surface/80 p-2.5 rounded-xl font-bold transition-all duration-200 border border-white/10 hover:border-amber-500/40 shadow-md text-atlas-titleText hover:scale-105 active:scale-95 flex items-center justify-center backdrop-blur-md"
                                     >
-                                        <Undo2 className="w-5 h-5"/>
+                                        <Undo2 className="w-5 h-5 text-amber-400"/>
                                     </button>
-                                    <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-atlas-surface text-atlas-normalText text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg whitespace-nowrap">
+                                    <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-slate-900 border border-white/10 text-slate-200 text-xs px-2.5 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl whitespace-nowrap">
                                         Undo
                                     </span>
                                 </div>
@@ -78,11 +78,11 @@ export const App = () => {
                                 <div className="relative group">
                                     <button
                                         onClick={() => setConfirmAction('restart')}
-                                        className="bg-atlas-surface hover:bg-atlas-hover p-2.5 rounded-lg font-bold transition-colors shadow-md"
+                                        className="bg-atlas-surface/80 hover:bg-atlas-hover p-2.5 rounded-xl font-bold transition-all duration-200 border border-white/10 hover:border-amber-500/40 shadow-md text-atlas-titleText hover:scale-105 active:scale-95 flex items-center justify-center backdrop-blur-md"
                                     >
-                                        <RefreshCcw className="w-5 h-5"/>
+                                        <RefreshCcw className="w-5 h-5 text-amber-400"/>
                                     </button>
-                                    <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-atlas-surface text-atlas-normalText text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg whitespace-nowrap">
+                                    <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-slate-900 border border-white/10 text-slate-200 text-xs px-2.5 py-1 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl whitespace-nowrap">
                                         Restart
                                     </span>
                                 </div>
@@ -99,14 +99,31 @@ export const App = () => {
                         {/* 2. center column: board and texts */}
                         <div className="flex flex-col flex-shrink-0 items-center lg:items-stretch">
 
-                            <div className="flex justify-between items-end h-12 pb-2 px-4 w-full">
-                                <h2 className="text-atlas-titleText text-xl font-bold capitalize">
+                            <div className="flex justify-between items-center h-14 pb-2 px-2 w-full">
+                                <h2 className="text-atlas-titleText text-2xl font-black tracking-tight flex items-center gap-2 capitalize">
                                     {currentVariantId === 'classic' ? 'Classic Chess' :
-                                        currentVariantId === 'tamerlane' ? 'Tamerlane Chess' : currentVariantId}
+                                        currentVariantId === 'tamerlane' ? 'Tamerlane Chess' :
+                                        currentVariantId === 'chaturanga' ? 'Chaturanga' :
+                                        currentVariantId === 'shatranj' ? 'Shatranj' : currentVariantId}
                                 </h2>
-                                <p className="text-atlas-titleText text-sm capitalize opacity-80">
-                                    Turn: <span className="font-bold">{currentTurn}</span> | Status: <span className="font-bold">{gameState}</span>
-                                </p>
+                                <div className="flex items-center gap-3 bg-atlas-surface/80 px-4 py-1.5 rounded-full border border-white/10 shadow-md backdrop-blur-md">
+                                    <div className="flex items-center gap-2">
+                                        <div className={`w-3.5 h-3.5 rounded-full ring-2 ring-amber-400/50 ${
+                                            currentTurn === 'white' ? 'bg-white shadow-white/50' : 'bg-slate-900 border border-white/40 shadow-black'
+                                        } shadow-md`} />
+                                        <span className="text-xs uppercase font-bold tracking-wider text-atlas-titleText">
+                                            {currentTurn}
+                                        </span>
+                                    </div>
+                                    <span className="text-white/20">|</span>
+                                    <span className={`text-xs font-bold uppercase tracking-wider ${
+                                        gameState === 'check' ? 'text-amber-400 animate-pulse' :
+                                        gameState === 'checkmate' ? 'text-red-400' :
+                                        gameState === 'draw' ? 'text-sky-400' : 'text-emerald-400'
+                                    }`}>
+                                        {gameState}
+                                    </span>
+                                </div>
                             </div>
 
                             <Board />
@@ -136,26 +153,26 @@ export const App = () => {
                     </div>
 
                     {confirmAction && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                            <div className="bg-atlas-surface p-6 rounded-2xl shadow-2xl border border-atlas-hover text-center max-w-sm w-full animate-in fade-in zoom-in duration-200">
-                                <h3 className="text-2xl font-bold mb-3 text-atlas-titleText">
+                        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
+                            <div className="bg-atlas-surface p-7 rounded-3xl shadow-2xl border border-amber-500/40 text-center max-w-sm w-full animate-in fade-in zoom-in duration-200 backdrop-blur-xl">
+                                <h3 className="text-2xl font-black mb-3 text-atlas-titleText tracking-tight">
                                     {confirmAction === 'exit' ? 'Leave game?' : 'Restart game?'}
                                 </h3>
-                                <p className="opacity-80 mb-8">
+                                <p className="text-slate-300 text-sm mb-8 leading-relaxed">
                                     {confirmAction === 'exit'
                                         ? 'Are you sure you want to return to the menu? Your progress will be lost.'
                                         : 'Are you sure you want to restart? The current match will be lost.'}
                                 </p>
-                                <div className="flex gap-4 justify-center">
+                                <div className="flex gap-3 justify-center">
                                     <button
                                         onClick={() => setConfirmAction(null)}
-                                        className="flex-1 bg-atlas-secSurface hover:bg-atlas-secHover py-2.5 rounded-xl font-bold transition-colors shadow-sm"
+                                        className="flex-1 bg-atlas-secSurface hover:bg-atlas-secHover text-slate-200 py-3 rounded-xl font-bold transition-all border border-white/10 shadow-sm hover:scale-105 active:scale-95"
                                     >
                                         No
                                     </button>
                                     <button
                                         onClick={handleConfirm}
-                                        className="flex-1 bg-red-900/30 hover:bg-red-900/50 text-red-400 py-2.5 rounded-xl font-bold transition-colors shadow-sm"
+                                        className="flex-1 bg-red-900/40 hover:bg-red-900/60 text-red-300 border border-red-500/40 py-3 rounded-xl font-bold transition-all shadow-sm hover:scale-105 active:scale-95"
                                     >
                                         Yes
                                     </button>

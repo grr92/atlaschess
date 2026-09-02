@@ -101,7 +101,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
     },
 
     selectSquare: (pos: Position) => {
-        const { engine, selectedPosition, legalMoves, currentVariantId } = get();
+        const { engine, selectedPosition, legalMoves } = get();
         if (!engine || engine.state === 'checkmate' || engine.state === 'draw') return;
 
         // Deselect the current position if clicked again

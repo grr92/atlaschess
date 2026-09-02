@@ -4,6 +4,15 @@ import { useGameStore } from '../../store/useGameStore';
 import { BackButton } from './BackButton';
 import { InfoButton } from './InfoButton';
 import { VariantInfoModal } from '../modals/VariantInfoModal';
+import { Sparkles, Scroll, Compass } from 'lucide-react';
+
+interface VariantCardData {
+    id: string;
+    title: string;
+    origin: string;
+    desc: string;
+    tag: string;
+}
 
 export const VariantsCatalog = () => {
     const setScreen = useNavStore((state) => state.setScreen);
@@ -18,15 +27,85 @@ export const VariantsCatalog = () => {
         setScreen('GAME');
     };
 
+    const regionalVariants: VariantCardData[] = [
+        {
+            id: 'classic',
+            title: 'Classic Chess',
+            origin: '15th Century • Europe',
+            tag: 'Standard',
+            desc: 'The worldwide recognized modern rules with castling, en passant, and the queen.'
+        }
+    ];
+
+    const historicalVariants: VariantCardData[] = [
+        {
+            id: 'chaturanga',
+            title: 'Chaturanga',
+            origin: '6th Century • India',
+            tag: 'The Origin',
+            desc: 'The ancient four-division ancestor of chess played on an 8x8 uncheckered Ashtāpada.'
+        },
+        {
+            id: 'shatranj',
+            title: 'Shatranj',
+            origin: '7th Century • Persia',
+            tag: 'Golden Age',
+            desc: 'The strategic jewel of the Silk Road. Ferz moves 1 diagonal, Pil leaps 2, and bare king wins.'
+        },
+        {
+            id: 'tamerlane',
+            title: 'Tamerlane Chess',
+            origin: '14th Century • Timurid Empire',
+            tag: '112 Squares',
+            desc: 'Timur\'s grand chess with Giraffes, Camels, War Engines, 11 unique pawns, and royal Citadels.'
+        }
+    ];
+
+    const renderCard = (variant: VariantCardData) => (
+        <div
+            key={variant.id}
+            className="group relative flex w-full bg-atlas-surface/80 hover:bg-atlas-hover/90 rounded-2xl shadow-lg border border-white/10 hover:border-amber-500/50 transition-all duration-300 hover:shadow-amber-500/10 hover:shadow-2xl overflow-hidden backdrop-blur-md"
+        >
+            <button
+                onClick={() => handleSelectVariant(variant.id)}
+                className="flex-1 text-left p-5 transition-transform duration-200"
+            >
+                <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <h4 className="font-extrabold text-xl text-atlas-titleText group-hover:text-amber-400 transition-colors">
+                        {variant.title}
+                    </h4>
+                    <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300">
+                        {variant.tag}
+                    </span>
+                </div>
+                <div className="text-xs font-semibold text-amber-500/80 mb-2">
+                    {variant.origin}
+                </div>
+                <p className="text-sm text-atlas-normalText leading-relaxed line-clamp-2">
+                    {variant.desc}
+                </p>
+            </button>
+            <div className="flex items-center justify-center px-4 border-l border-white/5 bg-slate-950/20 group-hover:bg-slate-950/40 transition-colors">
+                <InfoButton onClick={() => setInfoVariantId(variant.id)} />
+            </div>
+        </div>
+    );
+
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen p-4">
-            <div className="max-w-4xl w-full bg-transparent rounded-2xl p-8">
+        <div className="flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
+            <div className="max-w-5xl w-full rounded-3xl p-6 md:p-10 border border-white/10 bg-atlas-surface/40 backdrop-blur-xl shadow-2xl">
 
                 {/* Header Section */}
-                <div className="flex justify-between items-center mb-8">
-                    <h2 className="text-3xl text-atlas-titleText md:text-4xl font-extrabold tracking-tight">
-                        Variant Catalog
-                    </h2>
+                <div className="flex justify-between items-center mb-10 pb-6 border-b border-white/10">
+                    <div>
+                        <h2 className="text-3xl md:text-4xl font-black text-atlas-titleText tracking-tight flex items-center gap-3">
+                            <Compass className="w-8 h-8 text-amber-400" />
+                            Variant Catalog
+                        </h2>
+                        <p className="text-sm text-atlas-normalText mt-1">
+                            Choose an era and embark on a historical chess journey.
+                        </p>
+                    </div>
                     <BackButton onClick={() => setScreen('MENU')} />
                 </div>
 
@@ -35,80 +114,29 @@ export const VariantsCatalog = () => {
 
                     {/* Column 1: Regional Variants Section */}
                     <div>
-                        <h3 className="text-xl text-atlas-titleText font-bold opacity-80 pb-2 mb-4 border-b border-atlas-hover">
+                        <h3 className="text-lg font-bold text-amber-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <Sparkles className="w-5 h-5 text-amber-400" />
                             Regional Variants
                         </h3>
-                        <div className="space-y-3">
-                            <div className="relative flex w-full bg-atlas-surface rounded-xl shadow-sm">
-                                <button
-                                    onClick={() => handleSelectVariant('classic')}
-                                    className="flex-1 text-left p-4 hover:bg-atlas-hover transition-colors duration-200 group"
-                                >
-                                    <div className="font-bold text-lg text-atlas-titleText opacity-90 group-hover:opacity-100">Classic Chess</div>
-                                    <div className="text-sm opacity-60 mt-1">
-                                        The modern standard version of the game.
-                                    </div>
-                                </button>
-                                <div className="flex items-center justify-center px-4 border-l border-atlas-hover/30">
-                                    <InfoButton onClick={() => setInfoVariantId('classic')} />
-                                </div>
-                            </div>
+                        <div className="space-y-4">
+                            {regionalVariants.map(renderCard)}
                         </div>
                     </div>
 
                     {/* Column 2: Historical Variants Section */}
                     <div>
-                        <h3 className="text-xl text-atlas-titleText font-bold opacity-80 pb-2 mb-4 border-b border-atlas-hover">
+                        <h3 className="text-lg font-bold text-amber-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <Scroll className="w-5 h-5 text-amber-400" />
                             Historical Variants
                         </h3>
-                        <div className="space-y-3">
-                            <div className="relative flex w-full bg-atlas-surface rounded-xl shadow-sm">
-                                <button
-                                    onClick={() => handleSelectVariant('chaturanga')}
-                                    className="flex-1 text-left p-4 hover:bg-atlas-hover transition-colors duration-200 group"
-                                >
-                                    <div className="font-bold text-lg text-atlas-titleText opacity-90 group-hover:opacity-100">Chaturanga</div>
-                                    <div className="text-sm opacity-60 mt-1">
-                                        The first known ancestor of chess.
-                                    </div>
-                                </button>
-                                <div className="flex items-center justify-center px-4 border-l border-atlas-hover/30">
-                                    <InfoButton onClick={() => setInfoVariantId('chaturanga')} />
-                                </div>
-                            </div>
-                            <div className="relative flex w-full bg-atlas-surface rounded-xl shadow-sm mt-3">
-                                <button
-                                    onClick={() => handleSelectVariant('shatranj')}
-                                    className="flex-1 text-left p-4 hover:bg-atlas-hover transition-colors duration-200 group"
-                                >
-                                    <div className="font-bold text-lg text-atlas-titleText opacity-90 group-hover:opacity-100">Shatranj</div>
-                                    <div className="text-sm opacity-60 mt-1">
-                                        The Persian golden age variant. Pawns auto-promote to Fers and stalemate is a win!
-                                    </div>
-                                </button>
-                                <div className="flex items-center justify-center px-4 border-l border-atlas-hover/30">
-                                    <InfoButton onClick={() => setInfoVariantId('shatranj')} />
-                                </div>
-                            </div>
-                            <div className="relative flex w-full bg-atlas-surface rounded-xl shadow-sm mt-3">
-                                <button
-                                    onClick={() => handleSelectVariant('tamerlane')}
-                                    className="flex-1 text-left p-4 hover:bg-atlas-hover transition-colors duration-200 group"
-                                >
-                                    <div className="font-bold text-lg text-atlas-titleText opacity-90 group-hover:opacity-100">Temarlane Chess</div>
-                                    <div className="text-sm opacity-60 mt-1">
-                                        Timur's epic 112-square variant. Command Camels, Giraffes, and siege the enemy Citadel!
-                                    </div>
-                                </button>
-                                <div className="flex items-center justify-center px-4 border-l border-atlas-hover/30">
-                                    <InfoButton onClick={() => setInfoVariantId('tamerlane')} />
-                                </div>
-                            </div>
+                        <div className="space-y-4">
+                            {historicalVariants.map(renderCard)}
                         </div>
                     </div>
 
                 </div>
             </div>
+
             {/* variant info modal rendering */}
             {infoVariantId && (
                 <VariantInfoModal

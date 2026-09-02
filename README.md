@@ -99,7 +99,7 @@ make sure you have [node.js](https://nodejs.org/) installed on your machine.
 - [x] Build desktop executables (Windows/Mac/Linux) using **Electron**.
 - [x] Add variant explanation and how to play.
 - [ ] Add more historical and regional variants.
-- [ ] Better UI.
+- [x] Better UI.
 - [ ] Implement move sound effects.
 - [ ] Implement settings (language and board change).
 

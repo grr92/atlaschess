@@ -55,20 +55,23 @@ export const MainMenu: React.FC = () => {
                 <div className="mb-8 flex flex-col items-center">
                     <div className="bg-transparent pt-6 px-6 pb-2 rounded-3xl mb-6 border border-transparent flex flex-col items-center justify-center relative overflow-hidden group">
 
+                        {/* Ambient Gold Glow Effect */}
+                        <div className="absolute w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none -z-10" />
+
                         {/* A. Main Subject Logo (z-10 ensures it stays in the foreground) */}
-                        <VerticalFusionLogo className="w-72 h-72 relative z-10" />
+                        <VerticalFusionLogo className="w-72 h-72 relative z-10 drop-shadow-2xl" />
 
                         {/* B. Wind Rose Base (z-0 pushes it to the background) */}
                         <img
                             src={windRoseLogo}
                             alt="Wind Rose Base"
-                            className="w-72 h-72 -mt-72 opacity-30 relative z-0 drop-shadow-md"
+                            className="w-72 h-72 -mt-72 opacity-25 relative z-0 drop-shadow-md group-hover:rotate-12 transition-transform duration-700"
                         />
                     </div>
-                    <h1 className="text-5xl text-atlas-titleText font-extrabold tracking-tight">
-                        Atlas Chess
+                    <h1 className="text-5xl md:text-6xl text-atlas-titleText font-black tracking-tight drop-shadow-md">
+                        Atlas <span className="text-amber-400">Chess</span>
                     </h1>
-                    <p className="opacity-70 text-xl text-atlas-titleText mt-2">
+                    <p className="text-slate-400 text-lg md:text-xl mt-3 font-medium max-w-md">
                         Discover the history and regional variants of chess!
                     </p>
                 </div>
@@ -114,7 +117,7 @@ export const MainMenu: React.FC = () => {
 
                 {/* Footer Metadata */}
                 <div className="mt-8 text-xs text-atlas-normalText opacity-40 tracking-wider">
-                    Version 0.4.4 • Built with React + TypeScript + Zustand + Tailwind CSS
+                    Version 0.4.5 • Built with React + TypeScript + Zustand + Tailwind CSS
                 </div>
             </div>
         </div>

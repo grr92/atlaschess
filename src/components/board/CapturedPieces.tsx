@@ -88,16 +88,16 @@ export const CapturedPieces = () => {
 
     return (
         // Reusing of identical structural footprint as MoveHistory for visual coherence
-        <div className="bg-atlas-surface rounded-xl p-4 w-full h-full flex flex-col shadow-sm text-atlas-titleText">
+        <div className="bg-atlas-surface/80 backdrop-blur-md rounded-2xl p-4 w-full h-full flex flex-col shadow-lg border border-white/10 text-atlas-titleText">
 
-            <h3 className="font-bold mb-3 pb-2 opacity-80 text-sm tracking-wide uppercase">
+            <h3 className="font-extrabold mb-3 pb-2 text-xs text-amber-400 tracking-widest uppercase border-b border-white/5">
                 Captured Pieces
             </h3>
 
             <div className="flex-1 flex flex-col justify-between">
                 {totalCaptures === 0 ? (
                     // Empty state fallback
-                    <div className="opacity-60 text-sm text-atlas-normalText italic text-center mt-8">
+                    <div className="opacity-40 text-sm text-slate-400 italic text-center mt-8">
                         No pieces captured yet!
                     </div>
                 ) : (
