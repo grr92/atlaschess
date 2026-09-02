@@ -7,30 +7,8 @@ interface VariantInfo {
     name: string;
     rules: {
         intro: string;
-        bullet1Title?: ReactNode;
-        bullet1Desc?: ReactNode;
-        bullet2Title?: ReactNode;
-        bullet2Desc?: ReactNode;
-        bullet3Title?: ReactNode;
-        bullet3Desc?: ReactNode;
-        bullet4Title?: ReactNode;
-        bullet4Desc?: ReactNode;
-        bullet5Title?: ReactNode;
-        bullet5Desc?: ReactNode;
-        bullet6Title?: ReactNode;
-        bullet6Desc?: ReactNode;
-        bullet7Title?: ReactNode;
-        bullet7Desc?: ReactNode;
-        bullet8Title?: ReactNode;
-        bullet8Desc?: ReactNode;
-        bullet9Title?: ReactNode;
-        bullet9Desc?: ReactNode;
-        bullet10Title?: ReactNode;
-        bullet10Desc?: ReactNode;
-        bullet11Title?: ReactNode;
-        bullet11Desc?: ReactNode;
-        bullet12Title?: ReactNode;
-        bullet12Desc?: ReactNode;
+        [key: `bullet${number}Title`]: ReactNode | undefined;
+        [key: `bullet${number}Desc`]: ReactNode | undefined;
         proTip: ReactNode;
     };
     history: {
@@ -128,25 +106,25 @@ const variantDictionary: Record<string, VariantInfo> = {
             bullet1Desc: 'moves like a modern king, but there is no castling available to hide him.',
             bullet2Title: (
                 <span className="inline-flex items-center gap-1.5">
-                    <img src={getPieceImage({ name: 'Gaja', color: 'white' } as any)!} alt="Gaja" className="w-5 h-5 object-contain -mt-1" />
-                    Gaja (Elephant):
-                </span>
-            ),
-            bullet2Desc: 'leaps exactly two squares diagonally, jumping over any pieces in between.',
-            bullet3Title: (
-                <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Queen', color: 'white' } as any)!} alt="Mantri" className="w-5 h-5 object-contain -mt-1" />
                     Mantri (minister):
                 </span>
             ),
-            bullet3Desc: 'moves one step diagonally in any direction',
-            bullet4Title: (
+            bullet2Desc: 'moves one step diagonally in any direction',
+            bullet3Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Rook', color: 'white' } as any)!} alt="Ratha" className="w-5 h-5 object-contain -mt-1" />
                     Ratha (chariot):
                 </span>
             ),
-            bullet4Desc: 'moves the same as a rook in chess: horizontally or vertically, through any number of unoccupied squares, with the only difference being the lack of castling.',
+            bullet3Desc: 'moves the same as a rook in chess: horizontally or vertically, through any number of unoccupied squares, with the only difference being the lack of castling.',
+            bullet4Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Gaja', color: 'white' } as any)!} alt="Gaja" className="w-5 h-5 object-contain -mt-1" />
+                    Gaja (Elephant):
+                </span>
+            ),
+            bullet4Desc: 'leaps exactly two squares diagonally, jumping over any pieces in between.',
             bullet5Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Knight', color: 'white' } as any)!} alt="Ashva" className="w-5 h-5 object-contain -mt-1" />
@@ -192,25 +170,25 @@ const variantDictionary: Record<string, VariantInfo> = {
             bullet1Desc: 'moves like a modern king, but there is no castling available to hide him.',
             bullet2Title: (
                 <span className="inline-flex items-center gap-1.5">
-                    <img src={getPieceImage({ name: 'Pil', color: 'white' } as any)!} alt="Pïl" className="w-5 h-5 object-contain -mt-1" />
-                    Pïl or Alfil (Elephant):
-                </span>
-            ),
-            bullet2Desc: 'leaps exactly two squares diagonally, jumping over any pieces in between.',
-            bullet3Title: (
-                <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Ferz', color: 'white' } as any)!} alt="Ferz" className="w-5 h-5 object-contain -mt-1" />
                     Ferz or Wazir (Counselor):
                 </span>
             ),
-            bullet3Desc: 'moves exactly one step diagonally in any direction.',
-            bullet4Title: (
+            bullet2Desc: 'moves exactly one step diagonally in any direction.',
+            bullet3Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Rukh', color: 'white' } as any)!} alt="Rukh" className="w-5 h-5 object-contain -mt-1" />
                     Rukh (Chariot):
                 </span>
             ),
-            bullet4Desc: 'moves the same as a rook in chess: horizontally or vertically, through any number of unoccupied squares.',
+            bullet3Desc: 'moves the same as a rook in chess: horizontally or vertically, through any number of unoccupied squares.',
+            bullet4Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Pil', color: 'white' } as any)!} alt="Pïl" className="w-5 h-5 object-contain -mt-1" />
+                    Pïl or Alfil (Elephant):
+                </span>
+            ),
+            bullet4Desc: 'leaps exactly two squares diagonally, jumping over any pieces in between.',
             bullet5Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Asb', color: 'white' } as any)!} alt="Asb" className="w-5 h-5 object-contain -mt-1" />
@@ -238,92 +216,113 @@ const variantDictionary: Record<string, VariantInfo> = {
     tamerlane: {
         name: 'Tamerlane Chess',
         rules: {
-            intro: 'Played on a massive 11x10 uncheckered board with two extra protruding squares called citadels (112 squares total). White moves first. The objective is to checkmate the opponent\'s Shah. If a Shah reaches the enemy citadel, the game is declared a draw.',
+            intro: 'Played on a massive 11x10 uncheckered board with two extra protruding squares called citadels (112 squares total). White moves first. The objective is to checkmate the opponent\'s Shah. If the Shah infiltrates the enemy citadel or all royals are exhausted, special victory and draw conditions apply.',
             bullet1Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Shah', color: 'white' } as any)!} alt="Shah" className="w-5 h-5 object-contain -mt-1" />
                     Shah (King):
                 </span>
             ),
-            bullet1Desc: 'moves like a modern king. It is the only piece allowed to enter the opponent\'s citadel to force a draw and once during the game it may switch places with any of its own pieces to evade check/checkmate or stalemate.',
+            bullet1Desc: 'moves like a modern king. Once per game when under check or threat, it can swap places with any allied piece to evade danger. If the Shah is captured while you have a Prince or Adventitious King, your heir is crowned as the new Shah.',
             bullet2Title: (
                 <span className="inline-flex items-center gap-1.5">
-                    <img src={getPieceImage({ name: 'Ferz', color: 'white' } as any)!} alt="Ferz" className="w-5 h-5 object-contain -mt-1" />
-                    Ferz (General or Counselor)
+                    <img src={getPieceImage({ name: 'Shah', color: 'white' } as any)!} alt="Shah" className="w-5 h-5 object-contain -mt-1" />
+                    Shahzada (Prince):
                 </span>
             ),
-            bullet2Desc: 'moves exactly one step diagonally in any direction.',
+            bullet2Desc: 'created when the Pawn of Kings is promoted. Moves like a king and is marked with a "P" badge. It serves as the primary royal heir. If the reigning Shah is eliminated, the Prince ascends to the throne as the new Shah.',
             bullet3Title: (
                 <span className="inline-flex items-center gap-1.5">
-                    <img src={getPieceImage({ name: 'Wazir', color: 'white' } as any)!} alt="Wazir" className="w-5 h-5 object-contain -mt-1 rotate-180" />
-                    Wazir (Vizier or Governor)
+                    <img src={getPieceImage({ name: 'Shah', color: 'white' } as any)!} alt="Shah" className="w-5 h-5 object-contain -mt-1" />
+                    Adventitious Shah (Adventitious King):
                 </span>
             ),
-            bullet3Desc: 'moves exactly one step orthogonally in any direction.',
+            bullet3Desc: 'created when the Pawn of Pawns completes its 3-stage journey. Marked with an "A" badge and moves like a king. It can enter its own allied citadel to become permanently immune and block enemy draws, or ascend to the throne if the Shah falls.',
             bullet4Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Ferz', color: 'white' } as any)!} alt="Ferz" className="w-5 h-5 object-contain -mt-1" />
+                    Ferz (Counselor):
+                </span>
+            ),
+            bullet4Desc: 'moves exactly one step diagonally in any direction.',
+            bullet5Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Wazir', color: 'white' } as any)!} alt="Wazir" className="w-5 h-5 object-contain -mt-1 rotate-180" />
+                    Wazir (Vizier or Governor):
+                </span>
+            ),
+            bullet5Desc: 'moves exactly one step orthogonally in any direction.',
+            bullet6Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Zurafa', color: 'white' } as any)!} alt="Zurafa" className="w-5 h-5 object-contain -mt-1" />
                     Zurafa (Giraffe):
                 </span>
             ),
-            bullet4Desc: 'moves one square diagonally, and then slides horizontally or vertically for a minimum of three squares.',
-            bullet5Title: (
+            bullet6Desc: 'moves one square diagonally, and then slides horizontally or vertically for a minimum of three squares. It cannot jump over intervening pieces.',
+            bullet7Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Talia', color: 'white' } as any)!} alt="Talia" className="w-5 h-5 object-contain -mt-1" />
                     Talia (Picket / Scout):
                 </span>
             ),
-            bullet5Desc: 'slides diagonally like a bishop, but must move a minimum of two squares.',
-            bullet6Title: (
+            bullet7Desc: 'slides diagonally like a bishop, but must move a minimum of two squares. It cannot jump over a piece on the adjacent diagonal square.',
+            bullet8Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Asb', color: 'white' } as any)!} alt="Faras" className="w-5 h-5 object-contain -mt-1" />
-                    Faras (Horse)
+                    Faras (Horse):
                 </span>
             ),
-            bullet6Desc: 'moves the same as a knight in chess.',
-            bullet7Title: (
+            bullet8Desc: 'moves the same as a knight in chess (leaping in an "L" shape).',
+            bullet9Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Rukh', color: 'white' } as any)!} alt="Rukh" className="w-5 h-5 object-contain -mt-1" />
-                    Rukh (Chariot)
+                    Rukh (Chariot):
                 </span>
             ),
-            bullet7Desc: 'moves the same as a rook in chess: horizontally or vertically, through any number of unoccupied squares.',
-            bullet8Title: (
+            bullet9Desc: 'moves the same as a rook in chess: horizontally or vertically through any number of unoccupied squares.',
+            bullet10Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Pil', color: 'white' } as any)!} alt="Pil" className="w-5 h-5 object-contain -mt-1" />
                     Pil (Elephant):
                 </span>
             ),
-            bullet8Desc: 'leaps exactly two squares diagonally, jumping over any pieces in between.',
-            bullet9Title: (
+            bullet10Desc: 'leaps exactly two squares diagonally, jumping over any piece in between.',
+            bullet11Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Jamal', color: 'white' } as any)!} alt="Jamal" className="w-5 h-5 object-contain -mt-1" />
                     Jamal (Camel):
                 </span>
             ),
-            bullet9Desc: 'leaps in an elongated "L" shape (one square diagonally and two straight, or 3x1), jumping over any pieces in between.',
-            bullet10Title: (
+            bullet11Desc: 'leaps in an elongated "L" shape (one square diagonally and two straight, or 3x1), jumping over any piece in between.',
+            bullet12Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Dabbaba', color: 'white' } as any)!} alt="Dabbaba" className="w-5 h-5 object-contain -mt-1" />
                     Dabbaba (War Engine):
                 </span>
             ),
-            bullet10Desc: 'leaps exactly two squares orthogonally, jumping over any pieces in between.',
-            bullet11Title: (
+            bullet12Desc: 'leaps exactly two squares orthogonally, jumping over any piece in between.',
+            bullet13Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <img src={getPieceImage({ name: 'Sarbaz', color: 'white' } as any)!} alt="Sarbaz" className="w-5 h-5 object-contain -mt-1" />
-                    Pawn:
+                    The 11 Pawns & Promotions:
                 </span>
             ),
-            bullet11Desc: 'moves and captures the same as a modern pawn, but without a double-step option on the first move. Every piece (including the pawn) has a corresponding pawn. Hence; there is: (1) a pawn of pawns, (2) a pawn of dabbabas, (3) a pawn of camels, (4) a pawn of elephants, (5) a pawn of giraffes, (6) a pawn of king, (7) a pawn of vizier, (8) a pawn of counselor, (9) a pawn of scouts, (10) a pawn of horses, and (11) a pawn of rooks. Upon reaching the last rank, it automatically promotes to a it\'s piece type.',
-            bullet12Title: (
+            bullet13Desc: 'move forward one square and capture diagonally without initial double moves. Every piece has its own dedicated pawn (pawn of rooks, pawn of horses, pawn of camels, etc.). Upon reaching the last rank, each pawn automatically promotes to its parent piece.',
+            bullet14Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Shah', color: 'white' } as any)!} alt="Shah" className="w-5 h-5 object-contain -mt-1" />
+                    Pawn of Pawns Lifecycle:
+                </span>
+            ),
+            bullet14Desc: 'has a unique 3-stage journey: (1) Upon reaching the last rank for the first time, it rests immune to capture. When an opportunity develops to fork two enemy pieces or attack a trapped piece with no legal moves, it can relocate directly to that attacking square, sacrificing whatever piece occupied it. (2) On its second promotion, it teleports to the starting square of the Pawn of King. (3) On its third promotion, it transforms into an Adventitious King.',
+            bullet15Title: (
                 <span className="inline-flex items-center gap-1.5">
                     <div className="w-4 h-4 bg-amber-700/40 ring-2 ring-inset ring-amber-500 rounded-sm -mt-0.5" />
-                    The Citadels:
+                    The Citadels & Royal Infiltration:
                 </span>
             ),
-            bullet12Desc: 'two extra squares extending from the board. You cannot enter your own citadel. If your Shah reaches the enemy\'s citadel, you force a heroic draw.',
-            proTip: 'Pro tip: Master the long-range exotic pieces. The Zurafa and Talia cover immense ground but have blind spots up close, while the Jamal can leap out of danger. Keep your Wazir and Ferz close to defend the Shah.'
+            bullet15Desc: 'two extra squares extending from the board. Only the highest-ranking royal on the board (Shah > Prince > Adventitious King) can enter the opponent\'s citadel. If the Shah enters, you may trade places with a Prince or Adventitious King (unless the Adventitious King is sheltering in your own citadel) to continue fighting, or declare an immediate draw.',
+            proTip: 'Pro tip: Protect your Pawn of Pawns and coordinate your exotic jumpers (Jamal and Dabbaba) with long-range sliders. If losing, aim to infiltrate the enemy citadel with your Shah to secure a draw or swap places with your Prince!'
         },
         history: {
             intro: 'Tamerlane chess is a strategic behemoth developed in the 14th century during the reign of Timur (Tamerlane), the Turco-Mongol conqueror. It is the most famous and complex variant of "Great Chess" (Shatranj Kamil).',
@@ -370,7 +369,7 @@ export const VariantInfoModal = ({ variantId, onClose }: VariantInfoModalProps) 
 
 // packed and filtered so only the ones with text are shown
     const bullets: { title: ReactNode; desc: ReactNode }[] = [];
-    for (let i = 1; i <= 20; i++) {
+    for (let i = 1; i <= 30; i++) {
         const titleKey = `bullet${i}Title` as keyof typeof data.rules;
         const descKey = `bullet${i}Desc` as keyof typeof data.rules;
         if (data.rules[titleKey] && data.rules[descKey]) {

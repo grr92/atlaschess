@@ -2,17 +2,41 @@ import { useGameStore } from '../../store/useGameStore';
 import { getPieceImage } from '../../utils/pieceMapper';
 
 const PIECE_VALUES: Record<string, number> = {
+    // classic chess pieces
     'Queen': 9, 'Rook': 5, 'Bishop': 3, 'Knight': 3, 'Pawn': 1, 'King': 0,
+
+    // chaturanga pieces
     'Mantri': 2, 'Ratha': 5, 'Gaja': 2, 'Asva': 3, 'Padati': 1, 'Raja': 0,
-    'Ferz': 2, 'Rukh': 5, 'Pil': 2, 'Asb': 3, 'Sarbaz': 1, 'Shah': 2,
+
+    // shatranj pieces
+    'Ferz': 2, 'Rukh': 5, 'Pil': 2, 'Asb': 3, 'Sarbaz': 1, 'Shah': 0,
+
+    // tamerlane exclusive pieces (normalized to rook = 5 with factor 5/16 - the 16 value is taken from internet sources-)
+    'Zurafa': 4.4, 'Talia': 3.8, 'Wazir': 2.5, 'Jamal': 1.6, 'Dabbaba': 1.3,
+    'Shahzada': 2, 'AdventitiousShah': 2,
+
+    // tamerlane individual pawn values
+    'Pawn of Rukh': 0.6, 'Pawn of Zurafa': 0.55, 'Pawn of Talia': 0.47, 'Pawn of Shah': 0.5,
+    'Pawn of Asb': 0.39, 'Pawn of Wazir': 0.31, 'Pawn of Ferz': 0.23, 'Pawn of Jamal': 0.2,
+    'Pawn of Pawns': 0.2, 'Pawn of Dabbaba': 0.16, 'Pawn of Pil': 0.15
 };
 
 const SORT_ORDER: Record<string, number> = {
     'Queen': 1, 'Mantri': 1,
-    'Rook': 2, 'Ratha': 2,
-    'Bishop': 3, 'Gaja': 3,
-    'Knight': 4, 'Asva': 4,
-    'Pawn': 5, 'Padati': 5
+    'Rook': 2, 'Ratha': 2, 'Rukh': 2,
+    'Zurafa': 3,
+    'Talia': 4, 'Bishop': 4,
+    'Knight': 5, 'Asva': 5, 'Asb': 5,
+    'Wazir': 6,
+    'Ferz': 7,
+    'Jamal': 8,
+    'Dabbaba': 9,
+    'Pil': 10, 'Gaja': 10,
+    'Pawn': 11, 'Padati': 11, 'Sarbaz': 11,
+    'Pawn of Rukh': 12, 'Pawn of Zurafa': 13, 'Pawn of Talia': 14,
+    'Pawn of Asb': 15, 'Pawn of Shah': 16, 'Pawn of Wazir': 17,
+    'Pawn of Ferz': 18, 'Pawn of Jamal': 19, 'Pawn of Dabbaba': 20,
+    'Pawn of Pil': 21, 'Pawn of Pawns': 22
 };
 
 export const CapturedPieces = () => {
@@ -56,7 +80,7 @@ export const CapturedPieces = () => {
             </div>
             {advantage > 0 && (
                 <span className="text-xs md:text-sm font-bold whitespace-nowrap flex-shrink-0 text-atlas-normalText">
-                    +{advantage}
+                    +{Math.round(advantage * 10) / 10}
                 </span>
             )}
         </div>

@@ -22,12 +22,18 @@ export const getPieceImage = (piece: Piece | null): string | null => {
 
     let pieceChar = '';
     switch (piece.name) {
-        case 'King': case 'Raja': case 'Shah': pieceChar = 'k'; break;
+        case 'King': case 'Raja': case 'Shah': case 'Shahzada': case 'AdventitiousShah': pieceChar = 'k'; break;
         case 'Queen': case 'Mantri': case 'Ferz': case 'Wazir': pieceChar = 'q'; break;
         case 'Rook': case 'Ratha': case 'Rukh': pieceChar = 'r'; break;
         case 'Bishop': case 'Talia': pieceChar = 'b'; break;
         case 'Knight': case 'Asva': case 'Asb': pieceChar = 'n'; break;
-        case 'Pawn': case 'Padati': case 'Sarbaz': pieceChar = 'p'; break;
+        case 'Pawn': case 'Padati': case 'Sarbaz':
+        case 'Pawn of Pawns': case 'Pawn of Dabbaba': case 'Pawn of Jamal':
+        case 'Pawn of Pil': case 'Pawn of Zurafa': case 'Pawn of Shah':
+        case 'Pawn of Wazir': case 'Pawn of Ferz': case 'Pawn of Talia':
+        case 'Pawn of Asb': case 'Pawn of Rukh':
+            pieceChar = 'p';
+            break;
         case 'Gaja': case 'Pil': pieceChar = 'e'; break;
         case 'Zurafa': pieceChar = 'g'; break;
         case 'Dabbaba': pieceChar = 'd'; break;
@@ -40,6 +46,29 @@ export const getPieceImage = (piece: Piece | null): string | null => {
     const key = `../assets/pieces/${fileName}`;
 
     // Retrieve the exact URL from the pre-loaded dictionary
+    return svgAssets[key] || null;
+};
+
+export const getPawnBadgeIcon = (pawnType: string, color: string): string | null => {
+    const colorChar = color === 'white' ? 'l' : 'd';
+    let targetChar = '';
+
+    switch (pawnType) {
+        case 'pawn_of_dabbabas': targetChar = 'd'; break;
+        case 'pawn_of_camels': targetChar = 'c'; break;
+        case 'pawn_of_elephants': targetChar = 'e'; break;
+        case 'pawn_of_giraffes': targetChar = 'g'; break;
+        case 'pawn_of_king': targetChar = 'k'; break;
+        case 'pawn_of_vizier': case 'pawn_of_counselor': targetChar = 'q'; break;
+        case 'pawn_of_scouts': targetChar = 'b'; break;
+        case 'pawn_of_horses': targetChar = 'n'; break;
+        case 'pawn_of_rooks': targetChar = 'r'; break;
+        case 'pawn_of_pawns': targetChar = 'p'; break;
+        default: return null;
+    }
+
+    const fileName = `Chess_${targetChar}${colorChar}t45.svg`;
+    const key = `../assets/pieces/${fileName}`;
     return svgAssets[key] || null;
 };
 

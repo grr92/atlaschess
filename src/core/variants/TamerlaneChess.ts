@@ -1,6 +1,6 @@
 import { TamerlaneBoard } from '../models/TamerlaneBoard';
 import type { GameVariant } from './GameVariant';
-import { Shah, Rukh, Asb, Ferz, Pil, Sarbaz, Wazir, Dabbaba, Jamal, Talia, Zurafa } from '../pieces/piecesIndex';
+import { Shah, Rukh, Asb, Ferz, Pil, Wazir, Dabbaba, Jamal, Talia, Zurafa, TamerlanePawn } from '../pieces/piecesIndex';
 
 export class TamerlaneChess implements GameVariant {
     name = 'Tamerlane';
@@ -31,10 +31,25 @@ export class TamerlaneChess implements GameVariant {
         board.setPiece(new Asb('n2_b', 'black', { x: 10, y: 1 }), 10, 1);
         board.setPiece(new Rukh('r2_b', 'black', { x: 11, y: 1 }), 11, 1);
 
-        // Rank 8: 11 pawns
-        for (let x = 1; x <= 11; x++) {
-            board.setPiece(new Sarbaz(`p_b_${x}`, 'black', { x, y: 2 }), x, 2);
-        }
+        // Rank 8: 11 distinct pawns
+        const pawnConfigs = [
+            { type: 'pawn_of_pawns', name: 'Pawn of Pawns' },
+            { type: 'pawn_of_dabbabas', name: 'Pawn of Dabbaba' },
+            { type: 'pawn_of_camels', name: 'Pawn of Jamal' },
+            { type: 'pawn_of_elephants', name: 'Pawn of Pil' },
+            { type: 'pawn_of_giraffes', name: 'Pawn of Zurafa' },
+            { type: 'pawn_of_king', name: 'Pawn of Shah' },
+            { type: 'pawn_of_vizier', name: 'Pawn of Wazir' },
+            { type: 'pawn_of_counselor', name: 'Pawn of Ferz' },
+            { type: 'pawn_of_scouts', name: 'Pawn of Talia' },
+            { type: 'pawn_of_horses', name: 'Pawn of Asb' },
+            { type: 'pawn_of_rooks', name: 'Pawn of Rukh' }
+        ] as const;
+
+        pawnConfigs.forEach((cfg, idx) => {
+            const x = idx + 1;
+            board.setPiece(new TamerlanePawn(`p_b_${x}`, 'black', { x, y: 2 }, cfg.type, cfg.name), x, 2);
+        });
 
         // White army
         // Rank 1
@@ -58,11 +73,12 @@ export class TamerlaneChess implements GameVariant {
         board.setPiece(new Asb('n2_w', 'white', { x: 10, y: 8 }), 10, 8);
         board.setPiece(new Rukh('r2_w', 'white', { x: 11, y: 8 }), 11, 8);
 
-        // Rank 3: 11 pawns
-        for (let x = 1; x <= 11; x++) {
-            board.setPiece(new Sarbaz(`p_w_${x}`, 'white', { x, y: 7 }), x, 7);
-        }
+        // Rank 3: 11 distinct pawns
+        pawnConfigs.forEach((cfg, idx) => {
+            const x = idx + 1;
+            board.setPiece(new TamerlanePawn(`p_w_${x}`, 'white', { x, y: 7 }, cfg.type, cfg.name), x, 7);
+        });
 
         return board;
     }
-}
+}

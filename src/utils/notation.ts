@@ -59,12 +59,15 @@ export const buildSAN = (
     // Piece Letter
     let pieceStr = '';
     switch (piece.name) {
-        case 'King': case 'Raja': pieceStr = 'K'; break;
-        case 'Queen': case 'Mantri': pieceStr = 'Q'; break;
-        case 'Rook': case 'Ratha': pieceStr = 'R'; break;
-        case 'Bishop': pieceStr = 'B'; break;
-        case 'Knight': case 'Asva': pieceStr = 'N'; break;
-        case 'Gaja': pieceStr = 'E'; break;
+        case 'King': case 'Raja': case 'Shah': case 'Shahzada': case 'AdventitiousShah': pieceStr = 'K'; break;
+        case 'Queen': case 'Mantri': case 'Ferz': case 'Wazir': pieceStr = 'Q'; break;
+        case 'Rook': case 'Ratha': case 'Rukh': pieceStr = 'R'; break;
+        case 'Bishop': case 'Talia': pieceStr = 'B'; break;
+        case 'Knight': case 'Asva': case 'Asb': pieceStr = 'N'; break;
+        case 'Gaja': case 'Pil': pieceStr = 'E'; break;
+        case 'Zurafa': pieceStr = 'G'; break;
+        case 'Dabbaba': pieceStr = 'D'; break;
+        case 'Jamal': pieceStr = 'C'; break;
     }
 
     // Captures (If it's a pawn, always include its file of origin)
@@ -72,7 +75,8 @@ export const buildSAN = (
     let captureStr = isCapture ? 'x' : '';
     let finalDis = disambiguator;
 
-    if (['Pawn', 'Padati'].includes(piece.name) && isCapture) {
+    const isPawnType = piece.name.startsWith('Pawn') || piece.name === 'Padati' || piece.name === 'Sarbaz';
+    if (isPawnType && isCapture) {
         finalDis = getFile(from.x); // Ex: exd5
     }
 

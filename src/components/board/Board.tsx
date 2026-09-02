@@ -1,6 +1,8 @@
 import { useGameStore } from '../../store/useGameStore';
-import { getPieceImage, getSquareBackground } from '../../utils/pieceMapper';
-import { useEffect } from 'react';
+import { getPieceImage, getSquareBackground, getPawnBadgeIcon } from '../../utils/pieceMapper';
+import { TamerlanePawn } from '../../core/pieces/piecesIndex';
+import { useEffect, useState } from 'react';
+import type { Position } from '../../types';
 
 export const Board = () => {
     const {
@@ -12,8 +14,16 @@ export const Board = () => {
         initGame,
         pendingPromotion,
         confirmPromotion,
-        cancelPromotion
+        cancelPromotion,
+        pendingCitadelChoice,
+        confirmCitadelSwap,
+        confirmCitadelDraw,
+        cancelCitadelChoice,
+        pendingSuccessionChoice,
+        confirmSuccession
     } = useGameStore();
+
+    const [hoveredEnemyMoves, setHoveredEnemyMoves] = useState<Position[]>([]);
 
     // Auto-initialize if the engine instance is null
     useEffect(() => {
@@ -57,6 +67,7 @@ export const Board = () => {
 
                         const isSelected = selectedPosition?.x === x && selectedPosition?.y === y;
                         const isLegalMove = legalMoves.some((m) => m.x === x && m.y === y);
+                        const isEnemyThreatened = hoveredEnemyMoves.some((m) => m.x === x && m.y === y);
 
                         // Coordinate logic and tamerlane variant case
                         const isTamerlane = currentVariantId === 'tamerlane';
@@ -78,6 +89,12 @@ export const Board = () => {
                             <div
                                 key={`${x}-${y}`}
                                 onClick={() => selectSquare({ x, y })}
+                                onMouseEnter={() => {
+                                    if (piece && piece.color !== engine.currentTurn) {
+                                        setHoveredEnemyMoves(engine.getLegalMoves(piece));
+                                    }
+                                }}
+                                onMouseLeave={() => setHoveredEnemyMoves([])}
                                 className={`w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 flex justify-center items-center bg-cover bg-center cursor-pointer relative ${cssBgClass} ${monochromeBorder}`}
                                 style={{
                                     backgroundImage: bgImage ? `url("${bgImage}")` : undefined,
@@ -102,6 +119,11 @@ export const Board = () => {
                                     <div className="absolute inset-0 bg-yellow-400/50 z-0" />
                                 )}
 
+                                {/* Enemy threatened square highlight on hover */}
+                                {isEnemyThreatened && !isSelected && (
+                                    <div className="absolute inset-0 bg-red-500/25 ring-2 ring-inset ring-red-500/60 z-15 pointer-events-none transition-opacity" />
+                                )}
+
                                 {/* Render piece */}
                                 {pieceImage && (
                                     <img
@@ -110,6 +132,51 @@ export const Board = () => {
                                         className={`w-full h-full object-contain relative z-10 select-none 
                                         transition-transform ${isSelected ? 'scale-110' : ''} ${isWazir ? 'rotate-180' : ''}`}
                                     />
+                                )}
+
+                                {/* Shahzada (Prince) badge indicator */}
+                                {piece?.name === 'Shahzada' && (
+                                    <div
+                                        className={`absolute bottom-0.5 right-0.5 z-20 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 rounded-full border shadow-md pointer-events-none flex items-center justify-center font-black text-[10px] md:text-xs lg:text-sm ${
+                                            piece.color === 'black'
+                                                ? 'bg-slate-100 text-black border-amber-600 shadow-black/40'
+                                                : 'bg-slate-900/90 text-white border-amber-400 shadow-black/60'
+                                        }`}
+                                    >
+                                        P
+                                    </div>
+                                )}
+
+                                {/* Adventitious King badge indicator */}
+                                {piece?.name === 'AdventitiousShah' && (
+                                    <div
+                                        className={`absolute bottom-0.5 right-0.5 z-20 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 rounded-full border shadow-md pointer-events-none flex items-center justify-center font-black text-[10px] md:text-xs lg:text-sm ${
+                                            piece.color === 'black'
+                                                ? 'bg-slate-100 text-black border-amber-600 shadow-black/40'
+                                                : 'bg-slate-900/90 text-white border-amber-400 shadow-black/60'
+                                        }`}
+                                    >
+                                        A
+                                    </div>
+                                )}
+
+                                {/* Tamerlane pawn sub-badge indicator */}
+                                {piece instanceof TamerlanePawn && getPawnBadgeIcon(piece.pawnType, piece.color) && (
+                                    <div
+                                        className={`absolute bottom-0.5 right-0.5 z-20 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 rounded-full p-0.5 border shadow-md pointer-events-none flex items-center justify-center ${
+                                            piece.color === 'black'
+                                                ? 'bg-slate-100 border-amber-600 shadow-black/40'
+                                                : 'bg-slate-900/90 border-amber-400 shadow-black/60'
+                                        }`}
+                                    >
+                                        <img
+                                            src={getPawnBadgeIcon(piece.pawnType, piece.color)!}
+                                            alt="Target piece"
+                                            className={`w-full h-full object-contain ${
+                                                piece.pawnType === 'pawn_of_vizier' ? 'rotate-180' : ''
+                                            }`}
+                                        />
+                                    </div>
                                 )}
 
                                 {/* Legal move dots/indicators */}
@@ -158,6 +225,64 @@ export const Board = () => {
                     </div>
                 </div>
             )}
+
+            {/* Citadel decision modal */}
+            {pendingCitadelChoice && (
+                <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-slate-800 p-6 rounded-2xl shadow-2xl border border-amber-500/50 text-center max-w-md w-full animate-in fade-in zoom-in duration-200">
+                        <h3 className="text-xl font-bold text-white mb-2">Citadel Infiltration!</h3>
+                        <p className="text-sm text-slate-300 mb-6">
+                            Your Shah has entered the enemy Citadel. Choose whether to trade places with a royal heir to continue fighting or declare an immediate draw:
+                        </p>
+                        <div className="flex flex-col gap-3">
+                            {pendingCitadelChoice.royals.map(royal => (
+                                <button
+                                    key={royal.id}
+                                    onClick={() => confirmCitadelSwap(royal.id)}
+                                    className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-4 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2"
+                                >
+                                    Trade places with {royal.name === 'Shahzada' ? 'Prince (Shahzada)' : 'Adventitious King'}
+                                </button>
+                            ))}
+                            <button
+                                onClick={confirmCitadelDraw}
+                                className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors shadow-md"
+                            >
+                                Declare Draw
+                            </button>
+                            <button
+                                onClick={cancelCitadelChoice}
+                                className="text-slate-400 hover:text-white underline text-xs mt-2"
+                            >
+                                Cancel Move
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Royal succession modal */}
+            {pendingSuccessionChoice && (
+                <div className="fixed inset-0 z-[160] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-slate-800 p-6 rounded-2xl shadow-2xl border border-amber-500/50 text-center max-w-md w-full animate-in fade-in zoom-in duration-200">
+                        <h3 className="text-xl font-bold text-white mb-2">The Shah has Fallen!</h3>
+                        <p className="text-sm text-slate-300 mb-6">
+                            Choose which royal heir will ascend to the throne as the new Shah:
+                        </p>
+                        <div className="flex flex-col gap-3">
+                            {pendingSuccessionChoice.royals.map(royal => (
+                                <button
+                                    key={royal.id}
+                                    onClick={() => confirmSuccession(royal.id)}
+                                    className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-4 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2"
+                                >
+                                    Crown {royal.name === 'Shahzada' ? 'Prince (Shahzada)' : 'Adventitious King'}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
-};
+};

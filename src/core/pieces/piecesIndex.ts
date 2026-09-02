@@ -31,3 +31,6 @@ export * from './tamerlane/Jamal';
 export * from './tamerlane/Talia';
 export * from './tamerlane/Wazir';
 export * from './tamerlane/Zurafa';
+export * from './tamerlane/TamerlanePawn';
+export * from './tamerlane/Shahzada';
+export * from './tamerlane/AdventitiousShah';

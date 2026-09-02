@@ -12,7 +12,9 @@ export interface Move {
     from: Position;
     to: Position;
     capturedPiece?: Piece | null;
-    san?: string // For saving the san notation.
+    san?: string; // For saving the san notation.
+    crownedSuccessorId?: string; // id of the royal crowned after king capture
+    citadelSwappedRoyalId?: string; // id of the royal swapped in citadel infiltration
 }
 
 export type GameState = 'playing' | 'check' | 'checkmate' | 'draw';
