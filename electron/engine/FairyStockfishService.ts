@@ -17,6 +17,7 @@ export class FairyStockfishService extends EventEmitter {
     private process: ChildProcessWithoutNullStreams | null = null;
     private readlineInterface: readline.Interface | null = null;
     private isInitialized = false;
+    private isTerminating = false;
     private moveResolver: ((bestMove: string) => void) | null = null;
     private readyResolver: (() => void) | null = null;
     private uciResolver: (() => void) | null = null;
@@ -79,11 +80,27 @@ export class FairyStockfishService extends EventEmitter {
             return true;
         }
 
+        this.isTerminating = false;
         const binaryPath = this.getBinaryPath();
 
         this.process = spawn(binaryPath, [], {
             stdio: ['pipe', 'pipe', 'pipe'],
             windowsHide: true,
+        });
+
+        // Prevent unhandled EPIPE crashes on broken pipes
+        this.process.stdin.on('error', (err: any) => {
+            if (err.code !== 'EPIPE' && err.code !== 'ERR_STREAM_DESTROYED') {
+                console.error('[Fairy-Stockfish STDIN error]:', err);
+            }
+        });
+
+        this.process.stdout.on('error', (err: any) => {
+            console.error('[Fairy-Stockfish STDOUT error]:', err);
+        });
+
+        this.process.on('error', (err: any) => {
+            console.error('[Fairy-Stockfish Process error]:', err);
         });
 
         this.readlineInterface = readline.createInterface({
@@ -99,8 +116,7 @@ export class FairyStockfishService extends EventEmitter {
             console.error('[Fairy-Stockfish STDERR]:', data.toString());
         });
 
-        this.process.on('close', (code: number | null) => {
-            console.log(`[Fairy-Stockfish] Process exited with code ${code}`);
+        this.process.on('close', (_code: number | null) => {
             this.isInitialized = false;
             this.process = null;
         });
@@ -223,11 +239,18 @@ export class FairyStockfishService extends EventEmitter {
      * Sends a raw command line to the engine.
      */
     public sendCommand(cmd: string): void {
-        if (!this.process || !this.process.stdin.writable) {
-            console.warn('[Fairy-Stockfish] Cannot send command: engine is not running');
+        if (!this.process || !this.process.stdin || !this.process.stdin.writable || this.isTerminating) {
             return;
         }
-        this.process.stdin.write(`${cmd}\n`);
+        try {
+            this.process.stdin.write(`${cmd}\n`, (err) => {
+                if (err && (err as any).code !== 'EPIPE' && (err as any).code !== 'ERR_STREAM_DESTROYED') {
+                    console.warn('[Fairy-Stockfish] sendCommand write error:', err);
+                }
+            });
+        } catch {
+            // Silence synchronous write errors during process destruction
+        }
     }
 
     /**
@@ -285,19 +308,36 @@ export class FairyStockfishService extends EventEmitter {
      * Terminates the engine process cleanly.
      */
     public terminate(): void {
-        if (this.process) {
-            try {
-                this.sendCommand('quit');
-            } catch (e) {
-                console.error('[Fairy-Stockfish] Error quitting engine:', e);
-            }
+        if (this.isTerminating) return;
+        this.isTerminating = true;
 
-            setTimeout(() => {
-                if (this.process) {
-                    this.process.kill();
-                    this.process = null;
+        if (this.readlineInterface) {
+            try {
+                this.readlineInterface.close();
+            } catch {}
+            this.readlineInterface = null;
+        }
+
+        if (this.process) {
+            const proc = this.process;
+            this.process = null;
+            this.isInitialized = false;
+
+            try {
+                if (proc.stdin && proc.stdin.writable) {
+                    proc.stdin.write('quit\n', () => {
+                        try {
+                            proc.kill();
+                        } catch {}
+                    });
+                } else {
+                    proc.kill();
                 }
-            }, 300);
+            } catch {
+                try {
+                    proc.kill();
+                } catch {}
+            }
         }
     }
 }
