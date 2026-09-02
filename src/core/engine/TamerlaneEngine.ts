@@ -1,5 +1,5 @@
-import { BaseEngine } from './BaseEngine';
-import type { Position, PieceColor } from '../../types';
+import { BaseEngine, type PreMoveInterception, type PostMoveInterception } from './BaseEngine';
+import type { Position, PieceColor, Move } from '../../types';
 import { Piece } from '../pieces/Piece.ts';
 import { Board } from '../models/Board';
 import type { GameVariant } from '../variants/GameVariant';
@@ -25,6 +25,53 @@ export class TamerlaneEngine extends BaseEngine {
 
     constructor(variant: GameVariant) {
         super(variant);
+    }
+
+    override getPreMoveInterception(from: Position, to: Position): PreMoveInterception | null {
+        const piece = this.board.getPieceAt(from.x, from.y);
+        const isTamerlaneShah = piece?.name === 'Shah';
+        const isOpponentCitadel = (piece?.color === 'white' && to.x === 0 && to.y === 1) ||
+                                  (piece?.color === 'black' && to.x === 12 && to.y === 8);
+
+        if (isTamerlaneShah && isOpponentCitadel) {
+            const exchangeUsed = piece?.color === 'white' ? this.whiteCitadelExchangeUsed : this.blackCitadelExchangeUsed;
+            const lowerRoyals = this.getRoyalPieces(piece?.color).filter(p => {
+                if (p.name !== 'Shahzada' && p.name !== 'AdventitiousShah') return false;
+
+                const isOwnCitadel = (piece?.color === 'white' && p.position.x === 12 && p.position.y === 8) ||
+                                     (piece?.color === 'black' && p.position.x === 0 && p.position.y === 1);
+                if (p.name === 'AdventitiousShah' && isOwnCitadel) return false;
+
+                return true;
+            });
+
+            if (!exchangeUsed && lowerRoyals.length > 0) {
+                return {
+                    type: 'CITADEL_CHOICE',
+                    from,
+                    to,
+                    royals: lowerRoyals.map(r => ({ id: r.id, name: r.name }))
+                };
+            }
+        }
+        return null;
+    }
+
+    override getPostMoveInterception(lastMove: Move): PostMoveInterception | null {
+        if (!lastMove || !lastMove.piece) return null;
+
+        const defenderColor = lastMove.piece.color === 'white' ? 'black' : 'white';
+        const defenderRoyals = this.getRoyalPieces(defenderColor);
+        const hasShah = defenderRoyals.some(p => p.name === 'Shah');
+
+        if (!hasShah && defenderRoyals.length > 1) {
+            return {
+                type: 'SUCCESSION_CHOICE',
+                color: defenderColor,
+                royals: defenderRoyals.map(r => ({ id: r.id, name: r.name }))
+            };
+        }
+        return null;
     }
 
     // returns all royal pieces of a given color currently on the board

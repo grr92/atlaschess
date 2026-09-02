@@ -117,69 +117,38 @@ export const useGameStore = create<GameStore>((set, get) => ({
             const isMoveValid = legalMoves.some(m => m.x === pos.x && m.y === pos.y);
 
             if (isMoveValid) {
-                const piece = engine.board.getPieceAt(selectedPosition.x, selectedPosition.y);
-
-                // Pawn promotion interceptor
-                const isPawn = piece?.name === 'Pawn';
-                const isPromotionRank = piece?.color === 'white' ? pos.y === 0 : pos.y === 7;
-
-                if (isPawn && isPromotionRank) {
-                    // Pause the game state and trigger the promotion modal
-                    set({ pendingPromotion: { from: selectedPosition, to: pos } });
-                    return;
-                }
-
-                // Citadel infiltration interceptor for Tamerlane Shah
-                const isTamerlaneShah = currentVariantId === 'tamerlane' && piece?.name === 'Shah';
-                const isOpponentCitadel = (piece?.color === 'white' && pos.x === 0 && pos.y === 1) ||
-                                          (piece?.color === 'black' && pos.x === 12 && pos.y === 8);
-
-                if (isTamerlaneShah && isOpponentCitadel) {
-                    const tEngine = engine as TamerlaneEngine;
-                    const exchangeUsed = piece?.color === 'white' ? tEngine.whiteCitadelExchangeUsed : tEngine.blackCitadelExchangeUsed;
-                    
-                    // exclude adventitious king if located in own citadel
-                    const lowerRoyals = tEngine.getRoyalPieces(piece?.color).filter((p: any) => {
-                        if (p.name !== 'Shahzada' && p.name !== 'AdventitiousShah') return false;
-
-                        const isOwnCitadel = (piece?.color === 'white' && p.position.x === 12 && p.position.y === 8) ||
-                                             (piece?.color === 'black' && p.position.x === 0 && p.position.y === 1);
-                        if (p.name === 'AdventitiousShah' && isOwnCitadel) return false;
-
-                        return true;
-                    });
-
-                    if (!exchangeUsed && lowerRoyals.length > 0) {
+                // Polymorphic pre-move interception (promotion, citadel infiltration, etc.)
+                const interception = engine.getPreMoveInterception(selectedPosition, pos);
+                if (interception) {
+                    if (interception.type === 'PROMOTION') {
+                        set({ pendingPromotion: { from: selectedPosition, to: pos } });
+                        return;
+                    }
+                    if (interception.type === 'CITADEL_CHOICE') {
                         set({
                             pendingCitadelChoice: {
                                 from: selectedPosition,
                                 to: pos,
-                                royals: lowerRoyals.map(r => ({ id: r.id, name: r.name }))
+                                royals: interception.royals
                             }
                         });
                         return;
                     }
                 }
 
-                // If not a promotion or citadel decision, execute the move normally
+                // If not an intercepted decision, execute the move normally
                 const success = engine.executeMove(selectedPosition, pos);
                 if (success) {
-                    // check if the Shah of the defending side was captured
-                    if (currentVariantId === 'tamerlane' && piece) {
-                        const tEngine = engine as TamerlaneEngine;
-                        const defenderColor = piece.color === 'white' ? 'black' : 'white';
-                        const defenderRoyals = tEngine.getRoyalPieces(defenderColor);
-                        const hasShah = defenderRoyals.some(p => p.name === 'Shah');
-
-                        if (!hasShah && defenderRoyals.length > 1) {
-                            // multiple heirs require player choice modal
-                            set({
-                                pendingSuccessionChoice: {
-                                    color: defenderColor,
-                                    royals: defenderRoyals.map(r => ({ id: r.id, name: r.name }))
-                                }
-                            });
-                        }
+                    // Polymorphic post-move interception (succession choice, etc.)
+                    const lastMove = engine.history[engine.history.length - 1];
+                    const postInterception = engine.getPostMoveInterception(lastMove);
+                    if (postInterception && postInterception.type === 'SUCCESSION_CHOICE') {
+                        set({
+                            pendingSuccessionChoice: {
+                                color: postInterception.color,
+                                royals: postInterception.royals
+                            }
+                        });
                     }
 
                     set({
@@ -242,14 +211,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
             else if (move.san?.includes('=B')) promotionPiece = 'Bishop';
             else if (move.san?.includes('=N')) promotionPiece = 'Knight';
 
-            if (currentVariantId === 'tamerlane' && move.citadelSwappedRoyalId) {
-                (engine as TamerlaneEngine).executeCitadelSwap(move.from, move.to, move.citadelSwappedRoyalId);
+            if (move.citadelSwappedRoyalId) {
+                engine.executeCitadelSwap(move.from, move.to, move.citadelSwappedRoyalId);
             } else {
                 engine.executeMove(move.from, move.to, promotionPiece);
             }
 
-            if (currentVariantId === 'tamerlane' && move.crownedSuccessorId) {
-                (engine as TamerlaneEngine).crownSuccessor(move.crownedSuccessorId);
+            if (move.crownedSuccessorId) {
+                engine.crownSuccessor(move.crownedSuccessorId);
             }
         }
 
@@ -295,8 +264,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         const { engine, pendingCitadelChoice } = get();
         if (!engine || !pendingCitadelChoice) return;
 
-        const tEngine = engine as TamerlaneEngine;
-        tEngine.executeCitadelSwap(pendingCitadelChoice.from, pendingCitadelChoice.to, chosenRoyalId);
+        engine.executeCitadelSwap(pendingCitadelChoice.from, pendingCitadelChoice.to, chosenRoyalId);
 
         set({
             pendingCitadelChoice: null,
@@ -333,8 +301,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         const { engine } = get();
         if (!engine) return;
 
-        const tEngine = engine as TamerlaneEngine;
-        tEngine.crownSuccessor(chosenRoyalId);
+        engine.crownSuccessor(chosenRoyalId);
         if (engine.history.length > 0) {
             engine.history[engine.history.length - 1].crownedSuccessorId = chosenRoyalId;
         }

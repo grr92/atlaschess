@@ -3,6 +3,15 @@ import type { GameVariant } from '../variants/GameVariant';
 import type { Move, PieceColor, Position, GameState } from '../../types';
 import { Piece } from '../pieces/piecesIndex';
 import { getDisambiguator, buildSAN } from "../../utils/notation";
+import type { ICheckStrategy } from './strategies/CheckStrategy';
+import type { IVictoryStrategy } from './strategies/VictoryStrategy';
+
+export type PreMoveInterception =
+    | { type: 'PROMOTION'; from: Position; to: Position }
+    | { type: 'CITADEL_CHOICE'; from: Position; to: Position; royals: { id: string; name: string }[] };
+
+export type PostMoveInterception =
+    | { type: 'SUCCESSION_CHOICE'; color: PieceColor; royals: { id: string; name: string }[] };
 
 export abstract class BaseEngine {
     board: Board;
@@ -10,13 +19,17 @@ export abstract class BaseEngine {
     history: Move[];
     variant: GameVariant;
     state: GameState;
+    protected checkStrategy?: ICheckStrategy;
+    protected victoryStrategy?: IVictoryStrategy;
 
-    constructor(variant: GameVariant) {
+    constructor(variant: GameVariant, checkStrategy?: ICheckStrategy, victoryStrategy?: IVictoryStrategy) {
         this.variant = variant;
         this.board = variant.setupBoard();
         this.currentTurn = 'white';
         this.history = [];
         this.state = 'playing';
+        this.checkStrategy = checkStrategy;
+        this.victoryStrategy = victoryStrategy;
     }
 
     executeMove(from: Position, to: Position, promotionPiece?: string): boolean {
@@ -73,8 +86,52 @@ export abstract class BaseEngine {
         return true;
     }
 
-    abstract getLegalMoves(piece: Piece): Position[];
-    abstract updateGameState(): void;
+    isKingInCheck(color: PieceColor, board: Board = this.board): boolean {
+        if (this.checkStrategy) {
+            return this.checkStrategy.isKingInCheck(color, board);
+        }
+        return false;
+    }
+
+    getLegalMoves(piece: Piece): Position[] {
+        const lastMove = this.history.length > 0 ? this.history[this.history.length - 1] : undefined;
+        const pseudoMoves = piece.getPossibleMoves(this.board, lastMove);
+
+        if (this.checkStrategy) {
+            return this.checkStrategy.filterLegalMoves(piece, this.board, pseudoMoves);
+        }
+        return pseudoMoves;
+    }
+
+    updateGameState(): void {
+        if (this.victoryStrategy) {
+            this.state = this.victoryStrategy.evaluateGameState(this);
+        }
+    }
+
+    // Interception hook before executing move (e.g. pawn promotion, citadel infiltration)
+    getPreMoveInterception(from: Position, to: Position): PreMoveInterception | null {
+        const piece = this.board.getPieceAt(from.x, from.y);
+        const isPawn = piece?.name === 'Pawn';
+        const isPromotionRank = piece?.color === 'white' ? to.y === 0 : to.y === 7;
+
+        if (isPawn && isPromotionRank) {
+            return { type: 'PROMOTION', from, to };
+        }
+        return null;
+    }
+
+    // Interception hook after executing move (e.g. royal succession)
+    getPostMoveInterception(_lastMove: Move): PostMoveInterception | null {
+        return null;
+    }
+
+    // Special moves support (overridden by variants such as Tamerlane)
+    executeCitadelSwap(_from: Position, _to: Position, _chosenRoyalId?: string): boolean {
+        return false;
+    }
+
+    crownSuccessor(_chosenRoyalId: string): void {}
 
     // Hook for actions before moving: Castling
     protected beforeMoveHook(_piece: Piece, _from: Position, _to: Position, capturedPiece: Piece | null): Piece | null {

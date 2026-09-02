@@ -1,15 +1,15 @@
 import { BaseEngine } from './BaseEngine';
-import type {Position, PieceColor} from '../../types';
-import { Piece, Queen, Rook, Bishop, Knight } from '../pieces/piecesIndex.ts';
-import { Board } from '../models/Board';
-import type {GameVariant} from '../variants/GameVariant';
+import type { Position } from '../../types';
+import { Piece, Queen, Rook, Bishop, Knight } from '../pieces/piecesIndex';
+import type { GameVariant } from '../variants/GameVariant';
+import { SingleRoyalCheckStrategy } from './strategies/CheckStrategy';
 
 export class ClassicChessEngine extends BaseEngine {
     private halfMoveClock: number = 0;
     private positionHistory: Map<string, number> = new Map();
 
     constructor(variant: GameVariant) {
-        super(variant);
+        super(variant, new SingleRoyalCheckStrategy('King'));
         this.updatePositionHistory();
     }
 
@@ -22,66 +22,6 @@ export class ClassicChessEngine extends BaseEngine {
     private updatePositionHistory() {
         const sig = this.getBoardSignature();
         this.positionHistory.set(sig, (this.positionHistory.get(sig) || 0) + 1);
-    }
-
-    // 1. find the king of the corresponding color
-    isKingInCheck(color: PieceColor, board: Board = this.board): boolean {
-        let kingPos: Position | null = null;
-        for (let y = 0; y < board.rows; y++) {
-            for (let x = 0; x < board.cols; x++) {
-                const p = board.getPieceAt(x, y);
-                if (p && p.name === 'King' && p.color === color) {
-                    kingPos = { x, y };
-                    break;
-                }
-            }
-            if (kingPos) break;
-        }
-
-        if (!kingPos) return false;
-
-        // 2. check if any enemy piece attacks the king's position
-        for (let y = 0; y < board.rows; y++) {
-            for (let x = 0; x < board.cols; x++) {
-                const p = board.getPieceAt(x, y);
-                if (p && p.color !== color) {
-                    const attacks = p.getPossibleMoves(board);
-                    if (attacks.some(m => m.x === kingPos!.x && m.y === kingPos!.y)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    getLegalMoves(piece: Piece): Position[] {
-        const lastMove = this.history.length > 0 ? this.history[this.history.length - 1] : undefined;
-        const pseudoMoves = piece.getPossibleMoves(this.board, lastMove);
-        const legalMoves: Position[] = [];
-
-        // filter out moves that would leave the own king in check
-        for (const move of pseudoMoves) {
-            const targetPiece = this.board.getPieceAt(move.x, move.y);
-            const originalPos = { x: piece.position.x, y: piece.position.y };
-
-            // simulate the move
-            this.board.grid[originalPos.y][originalPos.x] = null;
-            this.board.grid[move.y][move.x] = piece;
-            piece.position = { x: move.x, y: move.y };
-
-            const inCheck = this.isKingInCheck(piece.color, this.board);
-
-            // undo the simulation
-            this.board.grid[originalPos.y][originalPos.x] = piece;
-            piece.position = originalPos;
-            this.board.grid[move.y][move.x] = targetPiece;
-
-            if (!inCheck) {
-                legalMoves.push(move);
-            }
-        }
-        return legalMoves;
     }
 
     updateGameState() {
@@ -112,7 +52,6 @@ export class ClassicChessEngine extends BaseEngine {
             this.state = inCheck ? 'check' : 'playing';
         }
     }
-
 
     // template method hooks
 
