@@ -60,6 +60,7 @@
       "icon": "build/icon.ico"
     },
     "mac": {
+      "target": ["dmg", "zip"],
       "category": "public.app-category.board-games",
       "icon": "build/icon.icns"
     },
