@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavStore } from '../../store/useNavStore';
-import { useGameStore } from '../../store/useGameStore';
+import { useGameStore, type GameMode, type AiDifficulty } from '../../store/useGameStore';
 import { BackButton } from './BackButton';
 import { InfoButton } from './InfoButton';
 import { VariantInfoModal } from '../modals/VariantInfoModal';
+import { GameSetupModal } from '../modals/GameSetupModal';
+import type { PieceColor } from '../../types';
 import { Sparkles, Scroll, Compass } from 'lucide-react';
 
 interface VariantCardData {
@@ -20,10 +22,17 @@ export const VariantsCatalog = () => {
 
     // state to control which variant info is being displayed in the modal
     const [infoVariantId, setInfoVariantId] = useState<string | null>(null);
+    // state to control game setup modal
+    const [setupVariant, setSetupVariant] = useState<{ id: string; title: string } | null>(null);
 
-    // Initialize the selected engine variant and route directly to the game screen
-    const handleSelectVariant = (variantId: string) => {
-        initGame(variantId);
+    // Open setup modal for the chosen variant
+    const handleSelectVariant = (variant: VariantCardData) => {
+        setSetupVariant({ id: variant.id, title: variant.title });
+    };
+
+    const handleStartVariantGame = (mode: GameMode, playerColor: PieceColor, difficulty: AiDifficulty) => {
+        if (!setupVariant) return;
+        initGame(setupVariant.id, mode, playerColor, difficulty);
         setScreen('GAME');
     };
 
@@ -67,7 +76,7 @@ export const VariantsCatalog = () => {
             className="group relative flex w-full bg-atlas-surface/80 hover:bg-atlas-hover/90 rounded-2xl shadow-lg border border-white/10 hover:border-amber-500/50 transition-all duration-300 hover:shadow-amber-500/10 hover:shadow-2xl overflow-hidden backdrop-blur-md"
         >
             <button
-                onClick={() => handleSelectVariant(variant.id)}
+                onClick={() => handleSelectVariant(variant)}
                 className="flex-1 text-left p-5 transition-transform duration-200"
             >
                 <div className="flex items-center justify-between gap-2 mb-1.5">
@@ -142,6 +151,17 @@ export const VariantsCatalog = () => {
                 <VariantInfoModal
                     variantId={infoVariantId}
                     onClose={() => setInfoVariantId(null)}
+                />
+            )}
+
+            {/* game setup modal */}
+            {setupVariant && (
+                <GameSetupModal
+                    variantId={setupVariant.id}
+                    variantTitle={setupVariant.title}
+                    isOpen={!!setupVariant}
+                    onClose={() => setSetupVariant(null)}
+                    onStartGame={handleStartVariantGame}
                 />
             )}
         </div>

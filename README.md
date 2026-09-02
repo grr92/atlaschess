@@ -8,37 +8,41 @@ This is my very first software project outside my CS studies and it has been dev
 
 ## Features
 
-- **Multiple Variants:** Play Classic Chess, travel back in time with historical variants or ancestors of chess or travel around the world playing the regional variants of chess. The underlying engine is built to support infinite custom variants.
-- **Undo:** *Undo* button to seamlessly rewind the game state using rapid event replay, ensuring perfect state consistency.
+- **Multiple Variants:** Play Classic Chess, travel back in time with historical variants or ancestors of chess (Chaturanga, Shatranj, Tamerlane Chess) or travel around the world playing regional variants. The underlying engine is built to support custom variants.
+- **AI Opponent (PvE):** Challenge the machine powered by a dual-engine architecture:
+    - **Fairy-Stockfish 14:** High-performance native UCI engine for classical chess and standard historical variants.
+    - **Native Minimax Heuristic Engine:** Custom TypeScript game-theory engine with Alpha-Beta pruning built specifically for complex non-standard variants (such as Tamerlane's 112 squares, 11 pawn stages, and citadel mechanics).
+    - **Adjustable Difficulty:** Play in Easy, Medium, or Master levels with color selection (White, Black, Random).
+- **Undo:** *Undo* button to seamlessly rewind the game state using rapid event replay, ensuring perfect state consistency (automatically steps back 2 moves in PvE mode).
 - **Save & Load (.atlas):** Save your game progress at any point into a custom `.atlas` JSON file and load it back later to continue right where you left off.
 - **Smart HUD:**
     - Dynamic Captured Pieces tracker with automatic score advantage calculation.
-    - Game Timer.
-    - Contextual Modals for pawn promotion and game reset/exit confirmations.
+    - Game Timer and turn status indicators (Player vs. AI).
+    - Contextual Modals for pawn promotion, citadel choices, succession choices, and game reset/exit confirmations.
 
 ## Project Structure
 
 ```text
 src/
-├── assets/             # Piece images (SVG/PNG), sounds, etc.
+├── assets/             # Piece images (SVG/PNG), logos, etc.
 │   ├── logos/          # Logos used in the game
-│   ├── pieces/         # Piece images (SVG)
+│   └── pieces/         # Piece images (SVG)
 ├── components/         # React UI Components
-│   ├── board/          # Board, squares, and piece rendering
+│   ├── board/          # Board, squares, piece rendering, and modals
 │   ├── logos/          # Game logo versions in .tsx
 │   ├── menu/           # Main menu, variant selector, loading screen
-│   ├── modals/         # Modals (How to play, Exit confirmation, Save)
+│   ├── modals/         # Modals (How to play, Game Setup, Exit confirmation)
 │   └── ui/             # Generic buttons, side panels, badges
-├── core/               # Game logic (engine, board, pieces, etc..)
-│   ├── engine/         # GameEngine.ts (turn control, check, general rules)
-│   ├── models/         # Board.ts, Move.ts, Position.ts
-│   ├── pieces/         # Piece.ts (abstract) and concrete pieces separated by variant
-│   └── variants/       # GameVariant.ts (interface) and variants (ClassicChess.ts, etc.)
-├── store/              # Zustand (Global React State)
-│   ├── useGameStore.ts # Connects React with the GameEngine
-│   └── useNavStore.ts  # Screen control (Menu vs. Game)
-├── types/              # Global TypeScript types/interfaces definitions
-├── utils/              # Auxiliary functions (save/load JSON, helpers)
+├── core/               # Game logic & Domain layer (zero React/Electron dependencies)
+│   ├── ai/             # HeuristicAiEngine.ts (Minimax Alpha-Beta native search)
+│   ├── engine/         # BaseEngine.ts, TamerlaneEngine.ts, strategies
+│   ├── models/         # Board.ts, TamerlaneBoard.ts, Position.ts
+│   ├── pieces/         # Piece.ts (abstract) and concrete pieces per variant
+│   └── variants/       # GameVariant.ts (interface) and variant definitions
+├── electron/           # Electron main process, IPC bridge, and Fairy-Stockfish service
+├── store/              # Zustand slices (gameSlice, aiSlice, saveLoadSlice)
+├── types/              # Global TypeScript types and electron definitions
+├── utils/              # Notation, UCI translation, asset mappings
 ├── App.tsx             # Root component
 ├── index.css           # Global styles (Tailwind)
 └── main.tsx            # Vite entry point
@@ -49,7 +53,8 @@ src/
 - **[React](https://reactjs.org/)** - UI Components and rendering.
 - **[TypeScript](https://www.typescriptlang.org/)** - For robust typing and engine logic.
 - **[Electron](https://www.electronjs.org/)** - Cross-platform framework for secure, native desktop applications.
-- **[Zustand](https://zustand-demo.pmnd.rs/)** - Lightweight and lightning-fast state management.
+- **[Fairy-Stockfish](https://github.com/fairy-stockfish/Fairy-Stockfish)** - World-class chess variant engine by Fabian Fichter (GPLv3).
+- **[Zustand](https://zustand-demo.pmnd.rs/)** - Lightweight and lightning-fast sliced state management.
 - **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first styling with custom theme extensions.
 - **[Vite](https://vitejs.dev/)** - Next-generation frontend tooling for instant server starts and fast HMR.
 - **[Lucide React](https://lucide.dev/)** - Clean SVG icons.
@@ -98,14 +103,61 @@ make sure you have [node.js](https://nodejs.org/) installed on your machine.
 
 - [x] Build desktop executables (Windows/Mac/Linux) using **Electron**.
 - [x] Add variant explanation and how to play.
+- [x] AI Opponent integration (Fairy-Stockfish & Native Minimax Engine with difficulty levels).
 - [ ] Add more historical and regional variants.
-- [x] Better UI.
+- [x] Better UI & Sliced Architecture.
 - [ ] Implement move sound effects.
 - [ ] Implement settings (language and board change).
 
 ## Feedback & Suggestions
 
 I highly value your feedback! Feel free to open an issue to suggest new features, report bugs, or request the addition of specific historical or regional variants.
+
+## Credits and Attribution
+
+### Chess Pieces & Graphical Artwork
+
+- **Standard Chess Pieces (King, Queen, Rook, Bishop, Knight, Pawn):**
+  - Designed by [Colin M.L. Burnett](https://en.wikipedia.org/wiki/User:Cburnett) via Wikimedia Commons.
+  - License: [Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)](https://creativecommons.org/licenses/by-sa/3.0/) / [GFDL](https://www.gnu.org/licenses/fdl-1.3.html).
+
+- **Camel (Jamal):**
+  - Sources: [White Chess Camel](https://commons.wikimedia.org/wiki/File:White_chess_camel.svg) and [Black Chess Camel](https://commons.wikimedia.org/wiki/File:Black_chess_camel.svg) via Wikimedia Commons.
+  - Modifications: Modified and adapted for the Atlas Chess visual style by Gerard Romero.
+  - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+
+- **Dabbaba (War Engine):**
+  - Sources: [White Dabbaba](https://commons.wikimedia.org/wiki/File:White_dabbaba.svg) and [Black Dabbaba](https://commons.wikimedia.org/wiki/File:Black_dabbaba.svg) via Wikimedia Commons.
+  - Unmodified.
+  - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+
+- **Giraffe (Zurafa):**
+  - Sources: [White Chess Giraffe (Chess_Glt45.svg)](https://commons.wikimedia.org/wiki/File:Chess_Glt45.svg) and [Black Chess Giraffe (Chess_Gdt45.svg)](https://commons.wikimedia.org/wiki/File:Chess_Gdt45.svg) via Wikimedia Commons.
+  - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+
+- **Elephant (Pil / Gaja):**
+  - Sources: [White Chess Elephant (Chess_elt45.svg)](https://commons.wikimedia.org/wiki/File:Chess_elt45.svg) and [Black Chess Elephant (Chess_edt45.svg)](https://commons.wikimedia.org/wiki/File:Chess_edt45.svg) via Wikimedia Commons.
+  - *Note: `Chess_elt45.svg` was also used as the foundational piece to design the Atlas Chess main logo.*
+  - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+
+- **Knight from the Atlas Chess Fusion Logo:**
+  - Source: [Alfaerie SVG Chess Graphics](https://www.chessvariants.com/graphics.dir/alfaerieSVG/index.html).
+  - Authors: [Gregory Strong](https://www.chessvariants.com/who/GregoryStrong) and [H.G. Muller](https://www.chessvariants.com/who/HGMuller).
+
+- **Wind Rose Background Logo:**
+  - Source: Jorge de Aguiar Nautical Chart (1492), vector reproduction by [Alvesgaspar](https://commons.wikimedia.org/wiki/File:WInd_Rose_Aguiar.svg) via Wikimedia Commons.
+  - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+
+### Chess Engines & Open Source Software
+
+- **[Fairy-Stockfish 14](https://github.com/fairy-stockfish/Fairy-Stockfish):**
+  - World-class chess variant engine developed by [Fabian Fichter](https://github.com/fairy-stockfish) and the Stockfish community.
+  - License: [GNU General Public License v3.0 (GPLv3)](https://www.gnu.org/licenses/gpl-3.0.html). Source code available at [github.com/fairy-stockfish/Fairy-Stockfish](https://github.com/fairy-stockfish/Fairy-Stockfish).
+- **Native Heuristic AI Engine:**
+  - Custom TypeScript Minimax engine with Alpha-Beta pruning built specifically for non-standard board geometries and rules (Tamerlane Chess).
+- **Icons & Libraries:**
+  - [Lucide Icons](https://lucide.dev/) (ISC License).
+  - React, Zustand, Tailwind CSS, Electron, Vite (MIT License).
 
 ## License
 
@@ -115,14 +167,19 @@ You are free to share and adapt the material for non-commercial purposes, as lon
 ## Planned variants
 
 - Historical:
-  - Chaturanga
-  - Shatranj
-  - Tamerlane chess (Shatranj variant)
-  - Chaturagi (4 players)
   - Grant Acedrex
   - Courier chess
-  - Semedo
+  - Senterej
   - Short assize
-  - Chess from other centuries?
+  - Chaturagi (4 players)
+  - 4 seasons chess (4 players)
 
-- Regional: under research
+- Regional:
+  - Xiangqi (China)
+  - Shogi (Japan)
+  - Makruk (Thailand)
+  - Janggi (Korea)
+  - Ouk Chatrang (Cambodia)
+  - Sittuyin (Myanmar)
+  - Shatar (Mongolia)
+  - Hiashatar (Mongolia)

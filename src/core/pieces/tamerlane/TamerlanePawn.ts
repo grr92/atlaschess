@@ -101,4 +101,12 @@ export class TamerlanePawn extends Piece {
 
         return moves;
     }
+
+    override clone(): TamerlanePawn {
+        const cloned = new TamerlanePawn(this.id, this.color, { ...this.position }, this.pawnType, this.name);
+        cloned.hasMoved = this.hasMoved;
+        cloned.promotionStage = this.promotionStage;
+        cloned.isRestingOnLastRank = this.isRestingOnLastRank;
+        return cloned;
+    }
 }

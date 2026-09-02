@@ -6,7 +6,7 @@ import { Board } from './components/board/Board';
 import { VariantsCatalog } from "./components/ui/VariantCatalog";
 import { MoveHistory } from './components/board/MoveHistory';
 import { CapturedPieces } from './components/board/CapturedPieces';
-import { Undo2, RefreshCcw, Save } from 'lucide-react';
+import { Undo2, RefreshCcw, Save, Bot } from 'lucide-react';
 import { BackButton } from "./components/ui/BackButton";
 import { GameTimer } from "./components/board/GameTimer.tsx";
 import { InfoButton } from "./components/ui/InfoButton";
@@ -16,7 +16,18 @@ export const App = () => {
     const currentScreen = useNavStore((state) => state.currentScreen);
     const setScreen = useNavStore((state) => state.setScreen);
 
-    const { currentTurn, gameState, currentVariantId, resetGame, undoMove, history, saveGame } = useGameStore();
+    const {
+        currentTurn,
+        gameState,
+        currentVariantId,
+        resetGame,
+        undoMove,
+        history,
+        saveGame,
+        gameMode,
+        playerColor,
+        isAiThinking
+    } = useGameStore();
 
     // state to control the confirmation pop-ups
     const [confirmAction, setConfirmAction] = useState<'exit' | 'restart' | null>(null);
@@ -107,14 +118,26 @@ export const App = () => {
                                         currentVariantId === 'shatranj' ? 'Shatranj' : currentVariantId}
                                 </h2>
                                 <div className="flex items-center gap-3 bg-atlas-surface/80 px-4 py-1.5 rounded-full border border-white/10 shadow-md backdrop-blur-md">
-                                    <div className="flex items-center gap-2">
-                                        <div className={`w-3.5 h-3.5 rounded-full ring-2 ring-amber-400/50 ${
-                                            currentTurn === 'white' ? 'bg-white shadow-white/50' : 'bg-slate-900 border border-white/40 shadow-black'
-                                        } shadow-md`} />
-                                        <span className="text-xs uppercase font-bold tracking-wider text-atlas-titleText">
-                                            {currentTurn}
-                                        </span>
-                                    </div>
+                                    {isAiThinking ? (
+                                        <div className="flex items-center gap-2 text-amber-400 font-bold text-xs animate-pulse">
+                                            <Bot className="w-4 h-4 animate-spin text-amber-400" />
+                                            <span>AI Thinking...</span>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2">
+                                            <div className={`w-3.5 h-3.5 rounded-full ring-2 ring-amber-400/50 ${
+                                                currentTurn === 'white' ? 'bg-white shadow-white/50' : 'bg-slate-900 border border-white/40 shadow-black'
+                                            } shadow-md`} />
+                                            <span className="text-xs uppercase font-bold tracking-wider text-atlas-titleText">
+                                                {currentTurn}
+                                            </span>
+                                            {gameMode === 'vs_ai' && (
+                                                <span className="text-[10px] px-1.5 py-0.2 bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold rounded">
+                                                    {currentTurn === playerColor ? 'YOU' : 'AI'}
+                                                </span>
+                                            )}
+                                        </div>
+                                    )}
                                     <span className="text-white/20">|</span>
                                     <span className={`text-xs font-bold uppercase tracking-wider ${
                                         gameState === 'check' ? 'text-amber-400 animate-pulse' :

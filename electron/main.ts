@@ -1,6 +1,7 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { FairyStockfishService, type CalculateMoveOptions } from './engine/FairyStockfishService';
 
 // robust directory resolution for esm environments
 const __filename = fileURLToPath(import.meta.url);
@@ -9,7 +10,60 @@ const __dirname = path.dirname(__filename);
 process.env.DIST = path.join(__dirname, '../dist');
 process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.env.DIST, '../public');
 
-let win: BrowserWindow | null;
+let win: BrowserWindow | null = null;
+const engineService = new FairyStockfishService();
+
+function setupEngineIPC() {
+    ipcMain.handle('engine:init', async () => {
+        try {
+            return await engineService.initEngine();
+        } catch (error) {
+            console.error('[Main] Failed to initialize engine:', error);
+            return false;
+        }
+    });
+
+    ipcMain.handle('engine:setVariant', async (_event, variant: string) => {
+        try {
+            return await engineService.setVariant(variant);
+        } catch (error) {
+            console.error('[Main] Failed to set variant:', error);
+            return false;
+        }
+    });
+
+    ipcMain.handle('engine:calculateMove', async (_event, options: CalculateMoveOptions) => {
+        try {
+            return await engineService.calculateBestMove(options);
+        } catch (error) {
+            console.error('[Main] Failed to calculate move:', error);
+            return '(none)';
+        }
+    });
+
+    ipcMain.handle('engine:stop', async () => {
+        engineService.stop();
+        return true;
+    });
+
+    ipcMain.handle('engine:sendCommand', async (_event, cmd: string) => {
+        engineService.sendCommand(cmd);
+        return true;
+    });
+
+    // Forward engine events to renderer
+    engineService.on('info', (info: string) => {
+        if (win && !win.isDestroyed()) {
+            win.webContents.send('engine:info', info);
+        }
+    });
+
+    engineService.on('bestmove', (bestMove: string) => {
+        if (win && !win.isDestroyed()) {
+            win.webContents.send('engine:bestMove', bestMove);
+        }
+    });
+}
 
 function createWindow() {
     win = new BrowserWindow({
@@ -20,10 +74,10 @@ function createWindow() {
         title: "Atlas Chess",
         icon: path.join(process.env.VITE_PUBLIC!, 'icon.png'), // links the window icon
         webPreferences: {
-            preload: path.join(__dirname, 'preload.mjs'),
+            preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,    // security: restricts direct node.js access from the renderer
             contextIsolation: true,    // security: isolates the execution context (prevents prototype pollution)
-            sandbox: true              // security: enables standard chromium sandbox
+            sandbox: false             // allows preload to access electron ipcRenderer
         },
     });
 
@@ -36,10 +90,18 @@ function createWindow() {
 }
 
 app.on('window-all-closed', () => {
+    engineService.terminate();
     if (process.platform !== 'darwin') {
         app.quit();
         win = null;
     }
 });
 
-app.whenReady().then(createWindow);
+app.on('before-quit', () => {
+    engineService.terminate();
+});
+
+app.whenReady().then(() => {
+    setupEngineIPC();
+    createWindow();
+});

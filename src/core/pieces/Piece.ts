@@ -25,4 +25,12 @@ export abstract class Piece {
         this.position = newPosition;
         this.hasMoved = true;
     }
+
+    // creates a polymorphic deep clone of the piece
+    clone(): Piece {
+        const ctor = this.constructor as new (id: string, color: PieceColor, position: Position, ...args: any[]) => Piece;
+        const cloned = new ctor(this.id, this.color, { ...this.position }, this.name);
+        cloned.hasMoved = this.hasMoved;
+        return cloned;
+    }
 }

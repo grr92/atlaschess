@@ -20,7 +20,8 @@ export const Board = () => {
         confirmCitadelDraw,
         cancelCitadelChoice,
         pendingSuccessionChoice,
-        confirmSuccession
+        confirmSuccession,
+        isAiThinking
     } = useGameStore();
 
     const [hoveredEnemyMoves, setHoveredEnemyMoves] = useState<Position[]>([]);
@@ -88,14 +89,14 @@ export const Board = () => {
                         return (
                             <div
                                 key={`${x}-${y}`}
-                                onClick={() => selectSquare({ x, y })}
+                                onClick={() => !isAiThinking && selectSquare({ x, y })}
                                 onMouseEnter={() => {
-                                    if (piece && piece.color !== engine.currentTurn) {
+                                    if (!isAiThinking && piece && piece.color !== engine.currentTurn) {
                                         setHoveredEnemyMoves(engine.getLegalMoves(piece));
                                     }
                                 }}
                                 onMouseLeave={() => setHoveredEnemyMoves([])}
-                                className={`w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 flex justify-center items-center bg-cover bg-center cursor-pointer relative ${cssBgClass} ${monochromeBorder}`}
+                                className={`w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 flex justify-center items-center bg-cover bg-center ${isAiThinking ? 'cursor-wait' : 'cursor-pointer'} relative ${cssBgClass} ${monochromeBorder}`}
                                 style={{
                                     backgroundImage: bgImage ? `url("${bgImage}")` : undefined,
                                 }}

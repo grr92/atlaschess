@@ -1,18 +1,21 @@
-import React, {useRef} from 'react';
+import React, { useRef, useState } from 'react';
 import { ChessKnight, Globe, Save } from 'lucide-react';
 import { useNavStore } from '../../store/useNavStore';
-import { useGameStore } from '../../store/useGameStore';
+import { useGameStore, type GameMode, type AiDifficulty } from '../../store/useGameStore';
 import { VerticalFusionLogo } from "../logos/VerticalFusionLogo";
 import { MenuButton } from "../ui/MenuButton.tsx";
+import { GameSetupModal } from "../modals/GameSetupModal";
+import type { PieceColor } from '../../types';
 import windRoseLogo from '../../assets/logos/WInd_Rose_Aguiar.svg';
 
 export const MainMenu: React.FC = () => {
     const setScreen = useNavStore((state) => state.setScreen);
-    const { initGame, loadGame} = useGameStore();
+    const { initGame, loadGame } = useGameStore();
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const [isSetupOpen, setIsSetupOpen] = useState(false);
 
-    const handleStartClassicGame = () => {
-        initGame('classic');
+    const handleStartClassicGame = (mode: GameMode, playerColor: PieceColor, difficulty: AiDifficulty) => {
+        initGame('classic', mode, playerColor, difficulty);
         setScreen('GAME');
     };
 
@@ -79,7 +82,7 @@ export const MainMenu: React.FC = () => {
                 {/* Navigation Buttons */}
                 <div className="space-y-4">
                     <MenuButton
-                        onClick={handleStartClassicGame}
+                        onClick={() => setIsSetupOpen(true)}
                         icon={<ChessKnight className="w-6 h-6" />}
                         label="Classic game"
                         isPrimary={true}
@@ -116,10 +119,20 @@ export const MainMenu: React.FC = () => {
                 </div>
 
                 {/* Footer Metadata */}
-                <div className="mt-8 text-xs text-atlas-normalText opacity-40 tracking-wider">
-                    Version 0.4.5 • Built with React + TypeScript + Zustand + Tailwind CSS
+                <div className="mt-8 text-xs text-atlas-normalText opacity-50 tracking-wider flex flex-col items-center gap-1">
+                    <div>Version 0.5.0 • Powered by Fairy-Stockfish & Heuristic AI</div>
+                    <div className="opacity-75 text-[11px]">Built with React + TypeScript + Zustand + Tailwind CSS</div>
                 </div>
             </div>
+
+            {/* Game Setup Modal */}
+            <GameSetupModal
+                variantId="classic"
+                variantTitle="Classic Chess"
+                isOpen={isSetupOpen}
+                onClose={() => setIsSetupOpen(false)}
+                onStartGame={handleStartClassicGame}
+            />
         </div>
     );
 };
