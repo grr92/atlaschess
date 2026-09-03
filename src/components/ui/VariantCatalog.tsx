@@ -8,69 +8,35 @@ import { GameSetupModal } from '../modals/GameSetupModal';
 import type { PieceColor } from '../../types';
 import { Sparkles, Scroll, Compass } from 'lucide-react';
 
-interface VariantCardData {
-    id: string;
-    title: string;
-    origin: string;
-    desc: string;
-    tag: string;
-}
+import { VariantRegistry, type VariantDefinition } from '../../core/variants/variantRegistry';
 
 export const VariantsCatalog = () => {
     const setScreen = useNavStore((state) => state.setScreen);
     const initGame = useGameStore((state) => state.initGame);
 
-    // state to control which variant info is being displayed in the modal
+    // State to control which variant info is being displayed in the modal
     const [infoVariantId, setInfoVariantId] = useState<string | null>(null);
-    // state to control game setup modal
+    // State to control game setup modal
     const [setupVariant, setSetupVariant] = useState<{ id: string; title: string } | null>(null);
 
     // Open setup modal for the chosen variant
-    const handleSelectVariant = (variant: VariantCardData) => {
+    const handleSelectVariant = (variant: VariantDefinition) => {
         setSetupVariant({ id: variant.id, title: variant.title });
     };
 
-    const handleStartVariantGame = (mode: GameMode, playerColor: PieceColor, difficulty: AiDifficulty) => {
+    const handleStartVariantGame = (mode: GameMode, playerColor: PieceColor, difficulty: AiDifficulty, useDiceRule?: boolean) => {
         if (!setupVariant) return;
-        initGame(setupVariant.id, mode, playerColor, difficulty);
+        initGame(setupVariant.id, mode, playerColor, difficulty, useDiceRule);
         setScreen('GAME');
     };
 
-    const regionalVariants: VariantCardData[] = [
-        {
-            id: 'classic',
-            title: 'Classic Chess',
-            origin: '15th Century • Europe',
-            tag: 'Standard',
-            desc: 'The worldwide recognized modern rules with castling, en passant, and the queen.'
-        }
+    const historicalVariants = VariantRegistry.getByCategory('historical');
+    const regionalVariants = [
+        ...VariantRegistry.getByCategory('regional'),
+        ...VariantRegistry.getByCategory('standard')
     ];
 
-    const historicalVariants: VariantCardData[] = [
-        {
-            id: 'chaturanga',
-            title: 'Chaturanga',
-            origin: '6th Century • India',
-            tag: 'The Origin',
-            desc: 'The ancient four-division ancestor of chess played on an 8x8 uncheckered Ashtāpada.'
-        },
-        {
-            id: 'shatranj',
-            title: 'Shatranj',
-            origin: '7th Century • Persia',
-            tag: 'Golden Age',
-            desc: 'The strategic jewel of the Silk Road. Ferz moves 1 diagonal, Pil leaps 2, and bare king wins.'
-        },
-        {
-            id: 'tamerlane',
-            title: 'Tamerlane Chess',
-            origin: '14th Century • Timurid Empire',
-            tag: '112 Squares',
-            desc: 'Timur\'s grand chess with Giraffes, Camels, War Engines, 11 unique pawns, and royal Citadels.'
-        }
-    ];
-
-    const renderCard = (variant: VariantCardData) => (
+    const renderCard = (variant: VariantDefinition) => (
         <div
             key={variant.id}
             className="group relative flex w-full bg-atlas-surface/80 hover:bg-atlas-hover/90 rounded-2xl shadow-lg border border-white/10 hover:border-amber-500/50 transition-all duration-300 hover:shadow-amber-500/10 hover:shadow-2xl overflow-hidden backdrop-blur-md"

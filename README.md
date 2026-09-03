@@ -8,15 +8,17 @@ This is my very first software project outside my CS studies and it has been dev
 
 ## Features
 
-- **Multiple Variants:** Play Classic Chess, travel back in time with historical variants or ancestors of chess (Chaturanga, Shatranj, Tamerlane Chess) or travel around the world playing regional variants. The underlying engine is built to support custom variants.
+- **Multiple Variants:** Play Classic Chess, travel back in time with historical variants or ancestors of chess (Chaturanga, Shatranj, Tamerlane Chess, Grant Acedrex) or travel around the world playing regional variants. The underlying engine is built to support custom board sizes and piece mechanics.
+- **Alfonso X 8-Sided Die (d8) Mode:** Play Grant Acedrex using the historical 13th-century 8-sided die rule commissioned by King Alfonso X, where the rolled die determines which piece hierarchy must move on that turn (fully playable in PvP and against the AI).
 - **AI Opponent (PvE):** Challenge the machine powered by a dual-engine architecture:
     - **Fairy-Stockfish 14:** High-performance native UCI engine for classical chess and standard historical variants.
-    - **Native Minimax Heuristic Engine:** Custom TypeScript game-theory engine with Alpha-Beta pruning built specifically for complex non-standard variants (such as Tamerlane's 112 squares, 11 pawn stages, and citadel mechanics).
-    - **Adjustable Difficulty:** Play in Easy, Medium, or Master levels with color selection (White, Black, Random).
+    - **Native Minimax Heuristic Engine:** Custom TypeScript game-theory engine with Alpha-Beta pruning built specifically for complex non-standard variants (such as Tamerlane's 112 squares, 11 pawn stages, citadel mechanics, and Grant Acedrex's d8 dice rule).
+    - **Adjustable Difficulty:** Play in Easy, Medium, or Master levels with color selection (White, Black, Random) and automatic board orientation.
 - **Undo:** *Undo* button to seamlessly rewind the game state using rapid event replay, ensuring perfect state consistency (automatically steps back 2 moves in PvE mode).
 - **Save & Load (.atlas):** Save your game progress at any point into a custom `.atlas` JSON file and load it back later to continue right where you left off.
 - **Smart HUD:**
     - Dynamic Captured Pieces tracker with automatic score advantage calculation.
+    - Animated 8-sided die widget showing active piece rolls and turn indications.
     - Game Timer and turn status indicators (Player vs. AI).
     - Contextual Modals for pawn promotion, citadel choices, succession choices, and game reset/exit confirmations.
 
@@ -35,14 +37,14 @@ src/
 │   └── ui/             # Generic buttons, side panels, badges
 ├── core/               # Game logic & Domain layer (zero React/Electron dependencies)
 │   ├── ai/             # HeuristicAiEngine.ts (Minimax Alpha-Beta native search)
-│   ├── engine/         # BaseEngine.ts, TamerlaneEngine.ts, strategies
+│   ├── engine/         # BaseEngine.ts, TamerlaneEngine.ts, GrantAcedrexEngine.ts
 │   ├── models/         # Board.ts, TamerlaneBoard.ts, Position.ts
 │   ├── pieces/         # Piece.ts (abstract) and concrete pieces per variant
 │   └── variants/       # GameVariant.ts (interface) and variant definitions
 ├── electron/           # Electron main process, IPC bridge, and Fairy-Stockfish service
 ├── store/              # Zustand slices (gameSlice, aiSlice, saveLoadSlice)
 ├── types/              # Global TypeScript types and electron definitions
-├── utils/              # Notation, UCI translation, asset mappings
+├── utils/              # Notation, UCI translation, asset mappings, dice mappings
 ├── App.tsx             # Root component
 ├── index.css           # Global styles (Tailwind)
 └── main.tsx            # Vite entry point
@@ -59,27 +61,27 @@ src/
 - **[Vite](https://vitejs.dev/)** - Next-generation frontend tooling for instant server starts and fast HMR.
 - **[Lucide React](https://lucide.dev/)** - Clean SVG icons.
 
-## getting started
+## Getting Started
 
-### play the game
-the easiest way to play atlas chess is to download the ready-to-run executable. no installation required.
-1. go to the [releases](https://github.com/grr92/atlaschess/releases) page of this repository.
-2. download the latest `.exe` file.
-3. double-click the file and start playing!
+### Play the Game
+The easiest way to play Atlas Chess is to download the ready-to-run executable. No installation required.
+1. Go to the [Releases](https://github.com/grr92/atlaschess/releases) page of this repository.
+2. Download the latest `.exe` file.
+3. Double-click the file and start playing!
 
-*(note: as a new and non-professional developer, windows might show a screen warning on the first run. click "more info" and "run anyway").*
+*(Note: As a new and non-professional developer, Windows might show a screen warning on the first run. Click "More info" and "Run anyway").*
 
-### development setup
-if you want to inspect the code, modify the game, or run it from the source, follow these steps:
+### Development Setup
+If you want to inspect the code, modify the game, or run it from the source, follow these steps:
 
-#### prerequisites
-make sure you have [node.js](https://nodejs.org/) installed on your machine.
+#### Prerequisites
+Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
 
-#### installation
+#### Installation
 
-1. clone the repository
+1. Clone the repository
    ```bash
-   git clone [https://github.com/grr92/atlaschess.git](https://github.com/grr92/atlaschess.git)
+   git clone https://github.com/grr92/atlaschess.git
    ```
 2. Navigate to the project directory
    ```bash
@@ -93,11 +95,10 @@ make sure you have [node.js](https://nodejs.org/) installed on your machine.
    ```bash
    npm run dev
    ```
-
 5. Compile and build the final executable for distribution
    ```bash
-    npm run build:electron
-    ```
+   npm run build:electron
+   ```
 
 ## Roadmap
 
@@ -105,9 +106,8 @@ make sure you have [node.js](https://nodejs.org/) installed on your machine.
 - [x] Add variant explanation and how to play.
 - [x] AI Opponent integration (Fairy-Stockfish & Native Minimax Engine with difficulty levels).
 - [ ] Add more historical and regional variants.
-- [x] Better UI & Sliced Architecture.
 - [ ] Implement move sound effects.
-- [ ] Implement settings (language and board change).
+- [ ] Implement settings (language and board custom themes).
 
 ## Feedback & Suggestions
 
@@ -123,22 +123,29 @@ I highly value your feedback! Feel free to open an issue to suggest new features
 
 - **Camel (Jamal):**
   - Sources: [White Chess Camel](https://commons.wikimedia.org/wiki/File:White_chess_camel.svg) and [Black Chess Camel](https://commons.wikimedia.org/wiki/File:Black_chess_camel.svg) via Wikimedia Commons.
-  - Modifications: Modified and adapted for the Atlas Chess visual style by Gerard Romero.
+  - Author: [Kwamikagami](https://commons.wikimedia.org/wiki/User:Kwamikagami) Modified and adapted for the Atlas Chess visual style by Gerard Romero.
   - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 
 - **Dabbaba (War Engine):**
   - Sources: [White Dabbaba](https://commons.wikimedia.org/wiki/File:White_dabbaba.svg) and [Black Dabbaba](https://commons.wikimedia.org/wiki/File:Black_dabbaba.svg) via Wikimedia Commons.
-  - Unmodified.
+  - Author: [Kwamikagami](https://commons.wikimedia.org/wiki/User:Kwamikagami)
   - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 
-- **Giraffe (Zurafa):**
+- **Giraffe (Zurafa / Giraffe):**
   - Sources: [White Chess Giraffe (Chess_Glt45.svg)](https://commons.wikimedia.org/wiki/File:Chess_Glt45.svg) and [Black Chess Giraffe (Chess_Gdt45.svg)](https://commons.wikimedia.org/wiki/File:Chess_Gdt45.svg) via Wikimedia Commons.
+  - Author: [Francois Pier](https://commons.wikimedia.org/wiki/User:Francois-Pier)
   - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 
 - **Elephant (Pil / Gaja):**
   - Sources: [White Chess Elephant (Chess_elt45.svg)](https://commons.wikimedia.org/wiki/File:Chess_elt45.svg) and [Black Chess Elephant (Chess_edt45.svg)](https://commons.wikimedia.org/wiki/File:Chess_edt45.svg) via Wikimedia Commons.
   - *Note: `Chess_elt45.svg` was also used as the foundational piece to design the Atlas Chess main logo.*
+  - Author: [NikNaks93](https://commons.wikimedia.org/wiki/User:NikNaks)
   - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+
+- **Unicorn (Unicorn / Rhinoceros):**
+  - Sources: [White Chess Unicorn (Chess_Ult45.svg)](https://commons.wikimedia.org/wiki/File:Chess_Ult45.svg) and [Black Chess Unicorn (Chess_Udt45.svg)](https://commons.wikimedia.org/wiki/File:Chess_Udt45.svg) via Wikimedia Commons.
+  - Author: [Francois Pier](https://commons.wikimedia.org/wiki/User:Francois-Pier)
+  - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) / [GFDL](https://www.gnu.org/licenses/fdl-1.3.html) / [GPL](https://www.gnu.org/licenses/gpl.html).
 
 - **Knight from the Atlas Chess Fusion Logo:**
   - Source: [Alfaerie SVG Chess Graphics](https://www.chessvariants.com/graphics.dir/alfaerieSVG/index.html).
@@ -146,6 +153,7 @@ I highly value your feedback! Feel free to open an issue to suggest new features
 
 - **Wind Rose Background Logo:**
   - Source: Jorge de Aguiar Nautical Chart (1492), vector reproduction by [Alvesgaspar](https://commons.wikimedia.org/wiki/File:WInd_Rose_Aguiar.svg) via Wikimedia Commons.
+  - Author: [Alvesgaspar](https://commons.wikimedia.org/wiki/User:Alvesgaspar)
   - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
 
 ### Chess Engines & Open Source Software
@@ -154,7 +162,7 @@ I highly value your feedback! Feel free to open an issue to suggest new features
   - World-class chess variant engine developed by [Fabian Fichter](https://github.com/fairy-stockfish) and the Stockfish community.
   - License: [GNU General Public License v3.0 (GPLv3)](https://www.gnu.org/licenses/gpl-3.0.html). Source code available at [github.com/fairy-stockfish/Fairy-Stockfish](https://github.com/fairy-stockfish/Fairy-Stockfish).
 - **Native Heuristic AI Engine:**
-  - Custom TypeScript Minimax engine with Alpha-Beta pruning built specifically for non-standard board geometries and rules (Tamerlane Chess).
+  - Custom TypeScript Minimax engine with Alpha-Beta pruning built specifically for non-standard board geometries and rules (Tamerlane Chess and Grant Acedrex).
 - **Icons & Libraries:**
   - [Lucide Icons](https://lucide.dev/) (ISC License).
   - React, Zustand, Tailwind CSS, Electron, Vite (MIT License).
@@ -164,14 +172,13 @@ I highly value your feedback! Feel free to open an issue to suggest new features
 This project is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
 You are free to share and adapt the material for non-commercial purposes, as long as you give appropriate credit. See the [LICENSE](https://creativecommons.org/licenses/by-nc/4.0/) details for more information.
 
-## Planned variants
+## Planned Variants
 
 - Historical:
-  - Grant Acedrex
   - Courier chess
   - Senterej
   - Short assize
-  - Chaturagi (4 players)
+  - Chaturaji (4 players)
   - 4 seasons chess (4 players)
 
 - Regional:

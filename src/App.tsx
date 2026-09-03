@@ -8,9 +8,11 @@ import { MoveHistory } from './components/board/MoveHistory';
 import { CapturedPieces } from './components/board/CapturedPieces';
 import { Undo2, RefreshCcw, Save, Bot } from 'lucide-react';
 import { BackButton } from "./components/ui/BackButton";
-import { GameTimer } from "./components/board/GameTimer.tsx";
+import { GameTimer } from "./components/board/GameTimer";
 import { InfoButton } from "./components/ui/InfoButton";
 import { VariantInfoModal } from "./components/modals/VariantInfoModal";
+import { D8DiceWidget } from "./components/board/D8DiceWidget";
+import { VariantRegistry } from "./core/variants/variantRegistry";
 
 export const App = () => {
     const currentScreen = useNavStore((state) => state.currentScreen);
@@ -112,12 +114,11 @@ export const App = () => {
 
                             <div className="flex justify-between items-center h-14 pb-2 px-2 w-full">
                                 <h2 className="text-atlas-titleText text-2xl font-black tracking-tight flex items-center gap-2 capitalize">
-                                    {currentVariantId === 'classic' ? 'Classic Chess' :
-                                        currentVariantId === 'tamerlane' ? 'Tamerlane Chess' :
-                                        currentVariantId === 'chaturanga' ? 'Chaturanga' :
-                                        currentVariantId === 'shatranj' ? 'Shatranj' : currentVariantId}
+                                    {VariantRegistry.getTitle(currentVariantId)}
                                 </h2>
-                                <div className="flex items-center gap-3 bg-atlas-surface/80 px-4 py-1.5 rounded-full border border-white/10 shadow-md backdrop-blur-md">
+                                <div className="flex items-center gap-3">
+                                    <D8DiceWidget />
+                                    <div className="flex items-center gap-3 bg-atlas-surface/80 px-4 py-1.5 rounded-full border border-white/10 shadow-md backdrop-blur-md">
                                     {isAiThinking ? (
                                         <div className="flex items-center gap-2 text-amber-400 font-bold text-xs animate-pulse">
                                             <Bot className="w-4 h-4 animate-spin text-amber-400" />
@@ -148,8 +149,9 @@ export const App = () => {
                                     </span>
                                 </div>
                             </div>
+                        </div>
 
-                            <Board />
+                        <Board />
 
                         </div>
 

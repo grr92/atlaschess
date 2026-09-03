@@ -1,5 +1,5 @@
 import { type ReactNode, useState } from 'react';
-import { X, BookOpen, History, Sparkles, Scroll, Compass } from 'lucide-react';
+import { X, BookOpen, History, Sparkles, Scroll, Compass, Dices } from 'lucide-react';
 import { getPieceImage } from '../../utils/pieceMapper';
 
 // dictionary structure for the variant content
@@ -330,6 +330,90 @@ const variantDictionary: Record<string, VariantInfo> = {
             leftBoxDesc: 'Timur himself loved to play chess, and he preferred the large board variants over the smaller 8×8 shatranj. As such, the invention of this game has also been attributed to Timur himself. He is known to have invited the best shatranj players in the land to his court to play him at the game, including one Ali ash-Shatranji of Tabriz.',
             rightBoxTitle: 'Or maybe not...',
             rightBoxDesc: 'Another legend regarding this type of chess is found in a Persian manuscript which may have been by ash-Shatranji himself. The legend states that this game was given to Alexander in India by Hermes.'
+        }
+    },
+    grant_acedrex: {
+        name: 'Grant Acedrex',
+        rules: {
+            intro: 'Grant Acedrex (Great Chess) is an epic 13th-century Spanish chess variant played on a 12x12 board (144 squares). Documented by King Alfonso X of Castile in the Libro de los Juegos (1283), it features majestic mythical and exotic beasts, advanced pawn starting ranks, and unique bent-rider moves.',
+            bullet1Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'King', color: 'white' } as any)!} alt="King" className="w-5 h-5 object-contain -mt-1" />
+                    The King:
+                </span>
+            ),
+            bullet1Desc: 'moves one square in any direction. On his first move, he can leap 2 squares in any direction, jumping over intermediate pieces even if the intervening square is occupied.',
+            bullet2Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Aanca', color: 'white' } as any)!} alt="Aanca" className="w-5 h-5 object-contain -mt-1" />
+                    The Aanca (Giant bird):
+                </span>
+            ),
+            bullet2Desc: 'a legendary mythical bird and the most fearsome piece on the board. It steps one square diagonally and, if unobstructed, can continue sliding orthogonally as a Rook for any number of squares away from that diagonal step.',
+            bullet3Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Unicorn', color: 'white' } as any)!} alt="Unicorn" className="w-5 h-5 object-contain -mt-1" />
+                    The Unicorn (Rhinoceros):
+                </span>
+            ),
+            bullet3Desc: 'leaps as a Knight on its first step; if that landing square is vacant, it can continue sliding diagonally as a Bishop in the outward direction of the leap.',
+            bullet4Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Rook', color: 'white' } as any)!} alt="Rook" className="w-5 h-5 object-contain -mt-1" />
+                    The Rook:
+                </span>
+            ),
+            bullet4Desc: 'slides any number of vacant squares orthogonally (horizontal or vertical), identical to modern chess.',
+            bullet5Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Crocodile', color: 'white' } as any)!} alt="Crocodile" className="w-5 h-5 object-contain -mt-1" />
+                    The Crocodile:
+                </span>
+            ),
+            bullet5Desc: 'slides any number of vacant squares diagonally, moving exactly like a modern Bishop.',
+            bullet6Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Lion', color: 'white' } as any)!} alt="Lion" className="w-5 h-5 object-contain -mt-1" />
+                    The Lion:
+                </span>
+            ),
+            bullet6Desc: 'moves 3 steps orthogonally or jumps to the opposed square of a 2x4 rectangle (2 orthogonal + 1 diagonal step), leaping over any occupied squares.',
+            bullet7Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Giraffe', color: 'white' } as any)!} alt="Giraffe" className="w-5 h-5 object-contain -mt-1" />
+                    The Giraffe:
+                </span>
+            ),
+            bullet7Desc: 'jumps to the opposed square of a 3x4 rectangle (1 orthogonal + 2 diagonal steps), leaping over any occupied squares in between.',
+            bullet8Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Grantpawn', color: 'white' } as any)!} alt="Grantpawn" className="w-5 h-5 object-contain -mt-1" />
+                    The Pawns & Initial Double-Step:
+                </span>
+            ),
+            bullet8Desc: 'White pawns start on the 4th rank and Black pawns on the 9th rank. Pawns move 1 square forward and capture 1 diagonally. An initial 2-square move is allowed for all pawns, but only until the first pawn capture of the game occurs.',
+            bullet9Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <img src={getPieceImage({ name: 'Aanca', color: 'white' } as any)!} alt="Aanca" className="w-5 h-5 object-contain -mt-1" />
+                    Promotion & Victory Conditions:
+                </span>
+            ),
+            bullet9Desc: 'Pawns promote on the 12th rank to their file\'s origin piece (King/Aanca files promote to Aanca). Victory is achieved by Checkmate, Stalemate (stalemated side loses), or Bare King (reducing the opponent to just their King).',
+            bullet10Title: (
+                <span className="inline-flex items-center gap-1.5">
+                    <Dices className="w-5 h-5 text-amber-400 -mt-0.5" />
+                    The 8-Sided Die Variant (Alfonso X Rule):
+                </span>
+            ),
+            bullet10Desc: 'Because Great Chess is very extensive and slow to play, King Alfonso X ordered custom 8-sided dice (d8) to be crafted to accelerate games, where the pips reflect the hierarchy of pieces: 8 = King, 7 = Aanca, 6 = Unicorn (Rhinoceros), 5 = Rook, 4 = Lion, 3 = Crocodile, 2 = Giraffe, and 1 = Pawn. In this traditional mode, players roll the die and must move a piece corresponding to the rolled number.',
+            proTip: 'Pro tip: Leverage your King\'s 2-square opening leap for rapid activation, and note that the initial pawn double-step disappears as soon as any pawn capture takes place!'
+        },
+        history: {
+            intro: 'Grant Acedrex was commissioned in 1283 by King Alfonso X "The Wise" (El Sabio) of Castile and León as part of the famous Libro de los Juegos (Book of Games), preserved at El Escorial Monastery.',
+            leftBoxTitle: 'The Wisdom of Alfonso X',
+            leftBoxDesc: 'Alfonso was likely influenced by his contact with scholars in the Arab world. Unlike many contemporary texts on the topic, he does not engage the games in the text with moralistic arguments; instead, he portrays them in an astrological context. He conceives of gaming as a dichotomy between the intellect and chance. The Libro de los Juegos is considered the most comprehensive and beautifully illustrated medieval gaming manuscript in European history.',
+            rightBoxTitle: 'The Grand Evolution',
+            rightBoxDesc: 'Grant Acedrex expanded standard shatranj onto a massive 12x12 board. Pieces like the Crocodile introduced modern diagonal bishop moves two centuries before queen and bishop changes took root in Western Europe.'
         }
     },
 };

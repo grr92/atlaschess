@@ -51,17 +51,16 @@ export class SingleRoyalCheckStrategy implements ICheckStrategy {
             const targetPiece = board.getPieceAt(move.x, move.y);
             const originalPos = { x: piece.position.x, y: piece.position.y };
 
-            // simulate the move
-            board.grid[originalPos.y][originalPos.x] = null;
-            board.grid[move.y][move.x] = piece;
-            piece.position = { x: move.x, y: move.y };
+            // Simulate the move
+            board.movePiece(originalPos, move);
 
             const inCheck = this.isKingInCheck(piece.color, board);
 
-            // undo the simulation
-            board.grid[originalPos.y][originalPos.x] = piece;
-            piece.position = originalPos;
-            board.grid[move.y][move.x] = targetPiece;
+            // Undo the simulation
+            board.movePiece(move, originalPos);
+            if (targetPiece) {
+                board.setPiece(targetPiece, move.x, move.y);
+            }
 
             if (!inCheck) {
                 legalMoves.push(move);

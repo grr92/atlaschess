@@ -5,6 +5,8 @@ import { Piece } from '../pieces/piecesIndex';
 import { getDisambiguator, buildSAN } from "../../utils/notation";
 import type { ICheckStrategy } from './strategies/CheckStrategy';
 import type { IVictoryStrategy } from './strategies/VictoryStrategy';
+import type { IEvaluationStrategy } from '../ai/strategies/EvaluationStrategy';
+import { DefaultEvaluationStrategy } from '../ai/strategies/EvaluationStrategy';
 
 export type PreMoveInterception =
     | { type: 'PROMOTION'; from: Position; to: Position }
@@ -21,8 +23,14 @@ export abstract class BaseEngine {
     state: GameState;
     protected checkStrategy?: ICheckStrategy;
     protected victoryStrategy?: IVictoryStrategy;
+    protected evaluationStrategy?: IEvaluationStrategy;
 
-    constructor(variant: GameVariant, checkStrategy?: ICheckStrategy, victoryStrategy?: IVictoryStrategy) {
+    constructor(
+        variant: GameVariant,
+        checkStrategy?: ICheckStrategy,
+        victoryStrategy?: IVictoryStrategy,
+        evaluationStrategy?: IEvaluationStrategy
+    ) {
         this.variant = variant;
         this.board = variant.setupBoard();
         this.currentTurn = 'white';
@@ -30,6 +38,11 @@ export abstract class BaseEngine {
         this.state = 'playing';
         this.checkStrategy = checkStrategy;
         this.victoryStrategy = victoryStrategy;
+        this.evaluationStrategy = evaluationStrategy;
+    }
+
+    getEvaluationStrategy(): IEvaluationStrategy {
+        return this.evaluationStrategy || new DefaultEvaluationStrategy();
     }
 
     executeMove(from: Position, to: Position, promotionPiece?: string): boolean {
@@ -44,10 +57,7 @@ export abstract class BaseEngine {
 
         const targetPiece = this.board.getPieceAt(to.x, to.y);
         const capturedPiece = this.beforeMoveHook(piece, from, to, targetPiece);
-
-        this.board.grid[from.y][from.x] = null;
-        this.board.grid[to.y][to.x] = piece;
-        piece.position = { x: to.x, y: to.y };
+        this.board.movePiece(from, to);
         piece.hasMoved = true;
 
         this.afterMoveHook(piece, from, to, capturedPiece, promotionPiece);

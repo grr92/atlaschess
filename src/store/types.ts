@@ -16,6 +16,10 @@ export interface GameSliceState {
     pendingPromotion: { from: Position; to: Position } | null;
     pendingCitadelChoice: { from: Position; to: Position; royals: { id: string; name: string }[] } | null;
     pendingSuccessionChoice: { color: PieceColor; royals: { id: string; name: string }[] } | null;
+    useDiceRule: boolean;
+    currentDiceRoll: number | null;
+    isRollingDice: boolean;
+    availableDiceValues: number[];
 }
 
 export interface GameSliceActions {
@@ -23,7 +27,8 @@ export interface GameSliceActions {
         variantId?: string,
         gameMode?: GameMode,
         playerColor?: PieceColor,
-        aiDifficulty?: AiDifficulty
+        aiDifficulty?: AiDifficulty,
+        useDiceRule?: boolean
     ) => void;
     selectSquare: (pos: Position) => void;
     resetGame: () => void;
@@ -34,6 +39,7 @@ export interface GameSliceActions {
     confirmCitadelDraw: () => void;
     cancelCitadelChoice: () => void;
     confirmSuccession: (chosenRoyalId: string) => void;
+    rollDiceForCurrentTurn: (engineOverride?: BaseEngine, turnOverride?: PieceColor) => void;
 }
 
 export interface AiSliceState {

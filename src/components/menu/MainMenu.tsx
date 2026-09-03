@@ -14,8 +14,8 @@ export const MainMenu: React.FC = () => {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isSetupOpen, setIsSetupOpen] = useState(false);
 
-    const handleStartClassicGame = (mode: GameMode, playerColor: PieceColor, difficulty: AiDifficulty) => {
-        initGame('classic', mode, playerColor, difficulty);
+    const handleStartClassicGame = (mode: GameMode, playerColor: PieceColor, difficulty: AiDifficulty, useDiceRule?: boolean) => {
+        initGame('classic', mode, playerColor, difficulty, useDiceRule);
         setScreen('GAME');
     };
 
@@ -120,7 +120,7 @@ export const MainMenu: React.FC = () => {
 
                 {/* Footer Metadata */}
                 <div className="mt-8 text-xs text-atlas-normalText opacity-50 tracking-wider flex flex-col items-center gap-1">
-                    <div>Version 0.5.0 • Powered by Fairy-Stockfish & Heuristic AI</div>
+                    <div>Version 0.6.0 • Powered by Fairy-Stockfish & Heuristic AI</div>
                     <div className="opacity-75 text-[11px]">Built with React + TypeScript + Zustand + Tailwind CSS</div>
                 </div>
             </div>

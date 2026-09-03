@@ -1,14 +1,9 @@
 import type { StoreSlice, GameSliceState, GameSliceActions } from '../types';
-import type { Position } from '../../types';
+import type { Position, PieceColor } from '../../types';
 import type { BaseEngine } from '../../core/engine/BaseEngine';
-import { ClassicChessEngine } from '../../core/engine/ClassicChessEngine';
-import { ChaturangaEngine } from '../../core/engine/ChaturangaEngine';
-import { ShatranjEngine } from '../../core/engine/ShatranjEngine';
 import { TamerlaneEngine } from '../../core/engine/TamerlaneEngine';
-import { ClassicChess } from '../../core/variants/ClassicChess';
-import { Chaturanga } from '../../core/variants/Chaturanga';
-import { Shatranj } from '../../core/variants/Shatranj';
-import { TamerlaneChess } from '../../core/variants/TamerlaneChess';
+import { VariantRegistry } from '../../core/variants/variantRegistry';
+import { getAvailableDiceNumbers, DICE_PIECE_MAP } from '../../utils/diceMapper';
 
 export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (set, get) => ({
     engine: null,
@@ -21,31 +16,19 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
     pendingPromotion: null,
     pendingCitadelChoice: null,
     pendingSuccessionChoice: null,
+    useDiceRule: false,
+    currentDiceRoll: null,
+    isRollingDice: false,
+    availableDiceValues: [],
 
-    initGame: (variantId = 'classic', mode, playerColor, difficulty) => {
-        let engine: BaseEngine;
-
-        switch (variantId) {
-            case 'classic':
-                engine = new ClassicChessEngine(new ClassicChess());
-                break;
-            case 'chaturanga':
-                engine = new ChaturangaEngine(new Chaturanga());
-                break;
-            case 'shatranj':
-                engine = new ShatranjEngine(new Shatranj());
-                break;
-            case 'tamerlane':
-                engine = new TamerlaneEngine(new TamerlaneChess());
-                break;
-            default:
-                console.warn(`'${variantId}' variant unknown. Loading classic chess variant.`);
-                engine = new ClassicChessEngine(new ClassicChess());
-        }
+    initGame: (variantId = 'classic', mode, playerColor, difficulty, useDiceRule = false) => {
+        const engine = VariantRegistry.createEngine(variantId);
+        const variantDef = VariantRegistry.get(variantId);
 
         const activeMode = mode !== undefined ? mode : get().gameMode;
         const activePlayerColor = playerColor !== undefined ? playerColor : get().playerColor;
         const activeDifficulty = difficulty !== undefined ? difficulty : get().aiDifficulty;
+        const activeDiceRule = variantDef?.supportsDiceRule ? !!useDiceRule : false;
 
         set({
             engine,
@@ -63,18 +46,51 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             playerColor: activePlayerColor,
             aiDifficulty: activeDifficulty,
             isAiThinking: false,
+            useDiceRule: activeDiceRule,
+            currentDiceRoll: null,
+            isRollingDice: false,
+            availableDiceValues: [],
         });
+
+        // If dice rules are active, roll the opening die
+        if (activeDiceRule) {
+            get().rollDiceForCurrentTurn(engine, engine.currentTurn);
+        }
 
         // If playing vs AI as Black, White (AI) makes the opening move
         if (activeMode === 'vs_ai' && activePlayerColor === 'black') {
             setTimeout(() => {
                 get().triggerAiMove();
-            }, 300);
+            }, activeDiceRule ? 900 : 300);
         }
     },
 
+    rollDiceForCurrentTurn: (engineOverride?: BaseEngine, turnOverride?: PieceColor) => {
+        const engine = engineOverride || get().engine;
+        const currentTurn = turnOverride || (engine ? engine.currentTurn : get().currentTurn);
+        if (!engine) return;
+
+        const availableNumbers = getAvailableDiceNumbers(engine, currentTurn);
+        if (availableNumbers.length === 0) {
+            set({ currentDiceRoll: null, isRollingDice: false, availableDiceValues: [] });
+            return;
+        }
+
+        // Pick a random number among valid pieces with legal moves
+        const chosenRoll = availableNumbers[Math.floor(Math.random() * availableNumbers.length)];
+
+        set({ isRollingDice: true, availableDiceValues: availableNumbers });
+
+        setTimeout(() => {
+            set({
+                currentDiceRoll: chosenRoll,
+                isRollingDice: false
+            });
+        }, 700);
+    },
+
     selectSquare: (pos: Position) => {
-        const { engine, selectedPosition, legalMoves, gameMode, playerColor, isAiThinking } = get();
+        const { engine, selectedPosition, legalMoves, gameMode, playerColor, isAiThinking, useDiceRule, currentDiceRoll, isRollingDice } = get();
         if (!engine || engine.state === 'checkmate' || engine.state === 'draw') return;
 
         // Disallow moves while AI is thinking or if it's not the player's turn in PvE mode
@@ -136,11 +152,16 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
                         history: [...engine.history],
                     });
 
+                    // If dice rule is active, roll the die for the next turn
+                    if (useDiceRule) {
+                        get().rollDiceForCurrentTurn();
+                    }
+
                     // If playing vs AI, trigger the machine's turn
                     if (gameMode === 'vs_ai') {
                         setTimeout(() => {
                             get().triggerAiMove();
-                        }, 200);
+                        }, useDiceRule ? 850 : 200);
                     }
                     return;
                 }
@@ -150,6 +171,15 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
         const piece = engine.board.getPieceAt(pos.x, pos.y);
 
         if (piece && piece.color === engine.currentTurn) {
+            // Check dice restriction if dice rule is active
+            if (useDiceRule) {
+                if (!currentDiceRoll || isRollingDice) return;
+                const allowedPieceName = DICE_PIECE_MAP[currentDiceRoll];
+                if (piece.name !== allowedPieceName) {
+                    return;
+                }
+            }
+
             const moves = engine.getLegalMoves(piece);
             set({
                 selectedPosition: pos,
@@ -164,12 +194,12 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
     },
 
     resetGame: () => {
-        const { currentVariantId, gameMode, playerColor, aiDifficulty } = get();
-        get().initGame(currentVariantId, gameMode, playerColor, aiDifficulty);
+        const { currentVariantId, gameMode, playerColor, aiDifficulty, useDiceRule } = get();
+        get().initGame(currentVariantId, gameMode, playerColor, aiDifficulty, useDiceRule);
     },
 
     undoMove: () => {
-        const { history, currentVariantId, gameMode, playerColor, initGame, isAiThinking } = get();
+        const { history, currentVariantId, gameMode, playerColor, initGame, isAiThinking, useDiceRule } = get();
 
         // If history is empty or AI is currently calculating, do not undo
         if (history.length === 0 || isAiThinking) return;
@@ -187,7 +217,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
         const originalTime = get().gameTime;
 
         // Reset the board from scratch
-        initGame(currentVariantId, gameMode, playerColor, get().aiDifficulty);
+        initGame(currentVariantId, gameMode, playerColor, get().aiDifficulty, useDiceRule);
         const engine = get().engine;
 
         if (!engine) return;
@@ -230,7 +260,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
     },
 
     confirmPromotion: (pieceName: string) => {
-        const { engine, pendingPromotion, gameMode } = get();
+        const { engine, pendingPromotion, gameMode, useDiceRule } = get();
         if (!engine || !pendingPromotion) return;
 
         const success = engine.executeMove(pendingPromotion.from, pendingPromotion.to, pieceName);
@@ -245,10 +275,14 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
                 history: [...engine.history],
             });
 
+            if (useDiceRule) {
+                get().rollDiceForCurrentTurn();
+            }
+
             if (gameMode === 'vs_ai') {
                 setTimeout(() => {
                     get().triggerAiMove();
-                }, 200);
+                }, useDiceRule ? 850 : 200);
             }
         }
     },
@@ -258,7 +292,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
     },
 
     confirmCitadelSwap: (chosenRoyalId?: string) => {
-        const { engine, pendingCitadelChoice, gameMode } = get();
+        const { engine, pendingCitadelChoice, gameMode, useDiceRule } = get();
         if (!engine || !pendingCitadelChoice) return;
 
         if (engine instanceof TamerlaneEngine) {
@@ -274,10 +308,14 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             history: [...engine.history],
         });
 
+        if (useDiceRule) {
+            get().rollDiceForCurrentTurn();
+        }
+
         if (gameMode === 'vs_ai') {
             setTimeout(() => {
                 get().triggerAiMove();
-            }, 200);
+            }, useDiceRule ? 850 : 200);
         }
     },
 

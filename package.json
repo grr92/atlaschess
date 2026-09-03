@@ -1,7 +1,7 @@
 {
   "name": "atlaschess",
   "private": true,
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "A chess application to play historical variants or ancestors of chess or travel around the world playing the regional variants of chess",
   "author": "Gerard Romero",
   "type": "module",

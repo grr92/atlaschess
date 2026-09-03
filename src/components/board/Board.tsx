@@ -21,7 +21,9 @@ export const Board = () => {
         cancelCitadelChoice,
         pendingSuccessionChoice,
         confirmSuccession,
-        isAiThinking
+        isAiThinking,
+        gameMode,
+        playerColor
     } = useGameStore();
 
     const [hoveredEnemyMoves, setHoveredEnemyMoves] = useState<Position[]>([]);
@@ -44,6 +46,10 @@ export const Board = () => {
     const board = engine.board;
     const promotionPieces = ['Queen', 'Knight', 'Rook', 'Bishop'];
 
+    const isFlipped = gameMode === 'vs_ai' && playerColor === 'black';
+    const yIndices = Array.from({ length: board.rows }, (_, i) => isFlipped ? board.rows - 1 - i : i);
+    const xIndices = Array.from({ length: board.cols }, (_, i) => isFlipped ? board.cols - 1 - i : i);
+
     return (
         <div className="flex justify-center items-center p-4">
             <div
@@ -53,12 +59,20 @@ export const Board = () => {
                     gridTemplateRows: `repeat(${board.rows}, minmax(0, 1fr))`
                 }}
             >
-                {board.grid.map((row, y) =>
-                    row.map((piece, x) => {
+                {yIndices.map((y, visualRowIdx) =>
+                    xIndices.map((x) => {
+                        const piece = board.getPieceAt(x, y);
                         const isPlayable = !board.isOutOfBounds(x, y);
+                        let squareSizeClass = 'w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20';
+                        if (currentVariantId === 'tamerlane') {
+                            squareSizeClass = 'w-8 h-8 md:w-11 md:h-11 lg:w-[3.8rem] lg:h-[3.8rem]';
+                        } else if (currentVariantId === 'grant_acedrex') {
+                            squareSizeClass = 'w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-[3.1rem] lg:h-[3.1rem] xl:w-[3.4rem] xl:h-[3.4rem]';
+                        }
+
                         // If the square is "out of bounds", a transparent square is drawn
                         if (!isPlayable) {
-                            return <div key={`${x}-${y}`} className="w-8 h-8 md:w-11 md:h-11 lg:w-[3.8rem] lg:h-[3.8rem] bg-transparent" />;
+                            return <div key={`${x}-${y}`} className={`${squareSizeClass} bg-transparent`} />;
                         }
 
                         const isLight = (x + y) % 2 === 0;
@@ -73,10 +87,13 @@ export const Board = () => {
                         // Coordinate logic and tamerlane variant case
                         const isTamerlane = currentVariantId === 'tamerlane';
                         const fileIndex = isTamerlane ? x - 1 : x;
-                        const fileLetter = fileIndex >= 0 && fileIndex <= 10 ? String.fromCharCode(97 + fileIndex) : '';
+                        const maxFiles = isTamerlane ? 11 : board.cols;
+                        const fileLetter = fileIndex >= 0 && fileIndex < maxFiles ? String.fromCharCode(97 + fileIndex) : '';
                         const rankNumber = board.rows - y;
-                        const isBottomRow = y === board.rows - 1 && fileIndex >= 0;
-                        const isRightCol = isTamerlane ? x === 11 : x === board.cols - 1;
+                        const isBottomRow = visualRowIdx === board.rows - 1 && fileIndex >= 0 && fileIndex < maxFiles;
+                        const isRightCol = isFlipped
+                            ? (isTamerlane ? x === 1 : x === 0)
+                            : (isTamerlane ? x === 11 : x === board.cols - 1);
 
                         // If uses monocrome board use only light tiles and add a black separator
                         const cssBgClass = (isLight || isMonochrome) ? 'bg-atlas-boardLight' : 'bg-atlas-boardDark';
@@ -96,7 +113,7 @@ export const Board = () => {
                                     }
                                 }}
                                 onMouseLeave={() => setHoveredEnemyMoves([])}
-                                className={`w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 flex justify-center items-center bg-cover bg-center ${isAiThinking ? 'cursor-wait' : 'cursor-pointer'} relative ${cssBgClass} ${monochromeBorder}`}
+                                className={`${squareSizeClass} flex justify-center items-center bg-cover bg-center ${isAiThinking ? 'cursor-wait' : 'cursor-pointer'} relative ${cssBgClass} ${monochromeBorder}`}
                                 style={{
                                     backgroundImage: bgImage ? `url("${bgImage}")` : undefined,
                                 }}

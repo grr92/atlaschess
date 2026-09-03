@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bot, Users, Play, X, Sparkles, Shield, Swords, Zap } from 'lucide-react';
+import { Bot, Users, Play, X, Sparkles, Shield, Swords, Zap, Dices } from 'lucide-react';
 import type { PieceColor } from '../../types';
 import type { GameMode, AiDifficulty } from '../../store/useGameStore';
 
@@ -8,10 +8,11 @@ interface GameSetupModalProps {
     variantTitle?: string;
     isOpen: boolean;
     onClose: () => void;
-    onStartGame: (mode: GameMode, playerColor: PieceColor, difficulty: AiDifficulty) => void;
+    onStartGame: (mode: GameMode, playerColor: PieceColor, difficulty: AiDifficulty, useDiceRule?: boolean) => void;
 }
 
 export const GameSetupModal: React.FC<GameSetupModalProps> = ({
+    variantId,
     variantTitle = 'Chess',
     isOpen,
     onClose,
@@ -20,6 +21,7 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
     const [mode, setMode] = useState<GameMode>('vs_ai');
     const [colorOption, setColorOption] = useState<'white' | 'black' | 'random'>('white');
     const [difficulty, setDifficulty] = useState<AiDifficulty>('medium');
+    const [useDiceRule, setUseDiceRule] = useState<boolean>(false);
 
     if (!isOpen) return null;
 
@@ -31,7 +33,7 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
             chosenColor = colorOption;
         }
 
-        onStartGame(mode, chosenColor, difficulty);
+        onStartGame(mode, chosenColor, difficulty, variantId === 'grant_acedrex' ? useDiceRule : false);
         onClose();
     };
 
@@ -98,6 +100,48 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                         </button>
                     </div>
                 </div>
+
+                {/* Grant Acedrex Ruleset Selector (Standard vs 8-Sided Die) */}
+                {variantId === 'grant_acedrex' && (
+                    <div className="mb-6">
+                        <label className="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-2.5">
+                            Ruleset Variant
+                        </label>
+                        <div className="grid grid-cols-2 gap-3">
+                            <button
+                                type="button"
+                                onClick={() => setUseDiceRule(false)}
+                                className={`p-3 rounded-2xl border flex items-center gap-3 font-bold text-sm transition-all ${
+                                    !useDiceRule
+                                        ? 'bg-amber-500/20 border-amber-500 text-amber-300 shadow-md shadow-amber-500/10'
+                                        : 'bg-slate-900/40 border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-200'
+                                }`}
+                            >
+                                <Sparkles className="w-5 h-5 text-amber-400 flex-shrink-0" />
+                                <div className="text-left">
+                                    <div className="font-extrabold text-xs">Standard Rules</div>
+                                    <div className="text-[10px] text-slate-400 font-normal">Pure strategy, no dice</div>
+                                </div>
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={() => setUseDiceRule(true)}
+                                className={`p-3 rounded-2xl border flex items-center gap-3 font-bold text-sm transition-all ${
+                                    useDiceRule
+                                        ? 'bg-amber-500/20 border-amber-500 text-amber-300 shadow-md shadow-amber-500/10'
+                                        : 'bg-slate-900/40 border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-200'
+                                }`}
+                            >
+                                <Dices className="w-5 h-5 text-amber-400 flex-shrink-0" />
+                                <div className="text-left">
+                                    <div className="font-extrabold text-xs">8-Sided Die (d8)</div>
+                                    <div className="text-[10px] text-slate-400 font-normal">Alfonso X medieval rule</div>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* AI Configuration Section */}
                 {mode === 'vs_ai' && (

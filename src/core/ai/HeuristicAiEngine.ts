@@ -2,7 +2,7 @@ import type { Position, PieceColor } from '../../types';
 import type { BaseEngine } from '../engine/BaseEngine';
 import type { Piece } from '../pieces/Piece';
 import { TamerlaneEngine } from '../engine/TamerlaneEngine';
-import { TamerlanePawn } from '../pieces/tamerlane/TamerlanePawn';
+import { GrantAcedrexEngine } from '../engine/GrantAcedrexEngine';
 
 export interface AiMoveResult {
     from: Position;
@@ -11,48 +11,7 @@ export interface AiMoveResult {
     score: number;
 }
 
-const PIECE_VALUES: Record<string, number> = {
-    // Classic
-    Pawn: 100,
-    Knight: 320,
-    Bishop: 330,
-    Rook: 500,
-    Queen: 900,
-    King: 20000,
-
-    // Chaturanga & Shatranj
-    Padati: 100,
-    Sarbaz: 100,
-    Gaja: 220,
-    Pil: 220,
-    Mantri: 250,
-    Ferz: 250,
-    Asva: 320,
-    Asb: 320,
-    Ratha: 500,
-    Rukh: 500,
-    Raja: 20000,
-    Shah: 20000,
-
-    // Tamerlane
-    TamerlanePawn: 120,
-    Wazir: 220,
-    Dabbaba: 280,
-    Jamal: 350,
-    Talia: 400,
-    Zurafa: 600,
-    Shahzada: 900,
-    AdventitiousShah: 900
-};
-
 export class HeuristicAiEngine {
-    /**
-     * Evaluates a piece's base value.
-     */
-    private static getPieceValue(piece: Piece): number {
-        return PIECE_VALUES[piece.name] || 100;
-    }
-
     /**
      * Accurately clones an engine instance and its current board configuration.
      */
@@ -60,20 +19,11 @@ export class HeuristicAiEngine {
         const freshEngine = new (engine.constructor as new (v: typeof engine.variant) => BaseEngine)(engine.variant);
 
         // Clear default grid
-        for (let y = 0; y < freshEngine.board.rows; y++) {
-            for (let x = 0; x < freshEngine.board.cols; x++) {
-                freshEngine.board.grid[y][x] = null;
-            }
-        }
+        freshEngine.board.clear();
 
         // Copy current pieces using polymorphic cloning
-        for (let y = 0; y < engine.board.rows; y++) {
-            for (let x = 0; x < engine.board.cols; x++) {
-                const p = engine.board.getPieceAt(x, y);
-                if (p) {
-                    freshEngine.board.setPiece(p.clone(), x, y);
-                }
-            }
+        for (const p of engine.board.getAllPieces()) {
+            freshEngine.board.setPiece(p.clone(), p.position.x, p.position.y);
         }
 
         freshEngine.currentTurn = engine.currentTurn;
@@ -84,150 +34,28 @@ export class HeuristicAiEngine {
             freshEngine.blackCitadelExchangeUsed = engine.blackCitadelExchangeUsed;
         }
 
+        if (engine instanceof GrantAcedrexEngine && freshEngine instanceof GrantAcedrexEngine) {
+            freshEngine.hasPawnCapturedYet = engine.hasPawnCapturedYet;
+        }
+
         return freshEngine;
     }
 
     /**
-     * Evaluates the full board position from the perspective of the given color.
+     * Evaluates the full board position from the perspective of the given color using the engine's evaluation strategy.
      */
     public static evaluateBoard(engine: BaseEngine, perspectiveColor: PieceColor): number {
-        let whiteScore = 0;
-        let blackScore = 0;
-
-        let whiteBaseMaterial = 0;
-        let blackBaseMaterial = 0;
-
-        const board = engine.board;
-
-        for (let y = 0; y < board.rows; y++) {
-            for (let x = 0; x < board.cols; x++) {
-                const piece = board.getPieceAt(x, y);
-                if (!piece) continue;
-
-                let value = this.getPieceValue(piece);
-
-                if (piece.color === 'white') whiteBaseMaterial += value;
-                else blackBaseMaterial += value;
-
-                // --- Tamerlane Pawn Specific Evaluation ---
-                if (piece instanceof TamerlanePawn) {
-                    const promoRank = piece.color === 'white' ? 0 : (board.rows - 1);
-                    const distToPromo = Math.abs(promoRank - y);
-
-                    if (piece.pawnType === 'pawn_of_pawns') {
-                        if (piece.promotionStage === 0) {
-                            // Stage 0: Advancing towards first promotion
-                            value = 160 + (board.rows - 1 - distToPromo) * 45;
-                            if (distToPromo === 0) value += 300;
-                        } else if (piece.isRestingOnLastRank) {
-                            // Stage 1: Resting on last rank waiting to fork or relocate
-                            value = 450;
-                        } else if (piece.promotionStage === 2) {
-                            // Stage 2: Second journey towards Adventitious King!
-                            value = 550 + (board.rows - 1 - distToPromo) * 85;
-                            if (distToPromo === 0) value += 1500; // Crowned Adventitious Shah!
-                        }
-                    } else if (piece.pawnType === 'pawn_of_king') {
-                        // Pawn of King -> Promotes to Shahzada (Prince)
-                        value = 260 + (board.rows - 1 - distToPromo) * 55;
-                        if (distToPromo === 0) value += 900; // Crowned Shahzada!
-                    } else {
-                        // Other standard tamerlane pawns
-                        value = 120 + (board.rows - 1 - distToPromo) * 20;
-                    }
-                } else if (piece.name.includes('Pawn') || piece.name === 'Padati' || piece.name === 'Sarbaz') {
-                    // Standard pawns
-                    const advance = piece.color === 'white' ? (board.rows - 1 - y) : y;
-                    value += advance * 15;
-                }
-
-                // --- Adventitious Shah in Citadel (Invulnerability) ---
-                if (piece.name === 'AdventitiousShah') {
-                    const isWhiteCitadel = piece.color === 'white' && x === 12 && y === 8;
-                    const isBlackCitadel = piece.color === 'black' && x === 0 && y === 1;
-                    if (isWhiteCitadel || isBlackCitadel) {
-                        // Completely invincible in own citadel
-                        value += 2500;
-                    } else {
-                        // Distance to own citadel (guide it towards own citadel for safety)
-                        const ownCitadelX = piece.color === 'white' ? 12 : 0;
-                        const ownCitadelY = piece.color === 'white' ? 8 : 1;
-                        const distToOwnCitadel = Math.abs(x - ownCitadelX) + Math.abs(y - ownCitadelY);
-                        value += Math.max(0, 400 - distToOwnCitadel * 35);
-                    }
-                }
-
-                // --- Shah positioning & Citadel Infiltration ---
-                if (piece.name === 'Shah') {
-                    const oppCitadelX = piece.color === 'white' ? 0 : 12;
-                    const oppCitadelY = piece.color === 'white' ? 1 : 8;
-                    const distToOppCitadel = Math.abs(x - oppCitadelX) + Math.abs(y - oppCitadelY);
-
-                    // If losing badly in material, heading into opponent citadel forces a draw
-                    const isLosing = piece.color === 'white'
-                        ? (whiteBaseMaterial < blackBaseMaterial - 300)
-                        : (blackBaseMaterial < whiteBaseMaterial - 300);
-
-                    if (isLosing) {
-                        value += Math.max(0, 600 - distToOppCitadel * 60);
-                    }
-                }
-
-                // Center proximity bonus
-                if (!piece.name.includes('Pawn')) {
-                    const centerX = board.cols / 2;
-                    const centerY = board.rows / 2;
-                    const distFromCenter = Math.abs(x - centerX) + Math.abs(y - centerY);
-                    value += Math.max(0, 15 - distFromCenter * 2);
-                }
-
-                if (piece.color === 'white') {
-                    whiteScore += value;
-                } else {
-                    blackScore += value;
-                }
-            }
-        }
-
-        // Mobility bonus
-        const currentTurn = engine.currentTurn;
-        let legalMovesCount = 0;
-        for (let y = 0; y < board.rows; y++) {
-            for (let x = 0; x < board.cols; x++) {
-                const piece = board.getPieceAt(x, y);
-                if (piece && piece.color === currentTurn) {
-                    legalMovesCount += engine.getLegalMoves(piece).length;
-                }
-            }
-        }
-
-        if (currentTurn === 'white') whiteScore += legalMovesCount * 2;
-        else blackScore += legalMovesCount * 2;
-
-        // Check & Checkmate bonuses
-        if (engine.state === 'checkmate') {
-            if (currentTurn === 'white') whiteScore -= 100000;
-            else blackScore -= 100000;
-        } else if (engine.state === 'check') {
-            if (currentTurn === 'white') whiteScore -= 60;
-            else blackScore -= 60;
-        } else if (engine.state === 'draw') {
-            // If the side was losing, a draw is evaluated as equal (0 deficit)
-            if (whiteScore < blackScore) {
-                whiteScore = blackScore;
-            } else {
-                blackScore = whiteScore;
-            }
-        }
-
-        const score = perspectiveColor === 'white' ? (whiteScore - blackScore) : (blackScore - whiteScore);
-        return score;
+        return engine.getEvaluationStrategy().evaluate(engine, perspectiveColor);
     }
 
     /**
-     * Collects all legal moves for a given color.
+     * Collects all legal moves for a given color, optionally filtered by piece type name.
      */
-    public static getAllLegalMoves(engine: BaseEngine, color: PieceColor): { piece: Piece; from: Position; to: Position; isCapture: boolean }[] {
+    public static getAllLegalMoves(
+        engine: BaseEngine,
+        color: PieceColor,
+        allowedPieceName?: string
+    ): { piece: Piece; from: Position; to: Position; isCapture: boolean }[] {
         const movesList: { piece: Piece; from: Position; to: Position; isCapture: boolean }[] = [];
         const board = engine.board;
 
@@ -235,6 +63,9 @@ export class HeuristicAiEngine {
             for (let x = 0; x < board.cols; x++) {
                 const piece = board.getPieceAt(x, y);
                 if (piece && piece.color === color) {
+                    if (allowedPieceName && piece.name !== allowedPieceName) {
+                        continue;
+                    }
                     const legal = engine.getLegalMoves(piece);
                     for (const to of legal) {
                         const target = board.getPieceAt(to.x, to.y);
@@ -261,14 +92,15 @@ export class HeuristicAiEngine {
     }
 
     /**
-     * Finds the best move using Minimax with Alpha-Beta pruning.
+     * Finds the best move using Minimax with Alpha-Beta pruning, optionally constrained to a piece type.
      */
     public static findBestMove(
         engine: BaseEngine,
-        difficulty: 'easy' | 'medium' | 'hard' = 'medium'
+        difficulty: 'easy' | 'medium' | 'hard' = 'medium',
+        allowedPieceName?: string
     ): AiMoveResult | null {
         const color = engine.currentTurn;
-        const allMoves = this.getAllLegalMoves(engine, color);
+        const allMoves = this.getAllLegalMoves(engine, color, allowedPieceName);
 
         if (allMoves.length === 0) return null;
 

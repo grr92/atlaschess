@@ -2,6 +2,7 @@ import type { StoreSlice, AiSliceState, AiSliceActions } from '../types';
 import { historyToUciMoves, uciToMove } from '../../utils/uciNotation';
 import { HeuristicAiEngine } from '../../core/ai/HeuristicAiEngine';
 import { TamerlaneEngine } from '../../core/engine/TamerlaneEngine';
+import { DICE_PIECE_MAP } from '../../utils/diceMapper';
 
 export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, get) => ({
     gameMode: 'pvp',
@@ -13,24 +14,39 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
     setAiDifficulty: (aiDifficulty) => set({ aiDifficulty }),
 
     triggerAiMove: async () => {
-        const { engine, gameState, currentTurn, gameMode, playerColor, aiDifficulty, currentVariantId, isAiThinking } = get();
+        const { engine, gameState, currentTurn, gameMode, playerColor, aiDifficulty, currentVariantId, isAiThinking, useDiceRule, currentDiceRoll, isRollingDice } = get();
         if (!engine || gameState === 'checkmate' || gameState === 'draw') return;
         if (gameMode !== 'vs_ai' || currentTurn === playerColor) return;
         if (isAiThinking) return;
+
+        // If the dice is currently rolling, wait for it to settle before calculating AI move
+        if (useDiceRule && isRollingDice) {
+            setTimeout(() => {
+                get().triggerAiMove();
+            }, 300);
+            return;
+        }
 
         set({ isAiThinking: true });
 
         try {
             let executed = false;
 
-            // 1. If playing Tamerlane, use the specialized Native Heuristic AI Engine
-            if (currentVariantId === 'tamerlane') {
+            // 1. If playing with 8-sided dice rule, use Native Heuristic AI restricted to the rolled piece
+            if (useDiceRule && currentDiceRoll) {
+                const allowedPieceName = DICE_PIECE_MAP[currentDiceRoll];
+                const aiMove = HeuristicAiEngine.findBestMove(engine, aiDifficulty, allowedPieceName);
+                if (aiMove) {
+                    executed = engine.executeMove(aiMove.from, aiMove.to, aiMove.promotionPiece);
+                }
+            } else if (currentVariantId === 'tamerlane') {
+                // 2. If playing Tamerlane, use the specialized Native Heuristic AI Engine
                 const aiMove = HeuristicAiEngine.findBestMove(engine, aiDifficulty);
                 if (aiMove) {
                     executed = engine.executeMove(aiMove.from, aiMove.to, aiMove.promotionPiece);
                 }
             } else if (window.electronAPI?.engine) {
-                // 2. Otherwise, attempt Fairy-Stockfish calculation
+                // 3. Otherwise, attempt Fairy-Stockfish calculation
                 try {
                     await window.electronAPI.engine.setVariant(currentVariantId);
 
@@ -82,9 +98,10 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                 }
             }
 
-            // 3. Robust Fallback: If Fairy-Stockfish failed or was unable to execute the move, use Heuristic Engine
+            // 4. Robust Fallback: If Fairy-Stockfish failed or was unable to execute the move, use Heuristic Engine
             if (!executed) {
-                const fallbackMove = HeuristicAiEngine.findBestMove(engine, aiDifficulty);
+                const allowedPieceName = (useDiceRule && currentDiceRoll) ? DICE_PIECE_MAP[currentDiceRoll] : undefined;
+                const fallbackMove = HeuristicAiEngine.findBestMove(engine, aiDifficulty, allowedPieceName);
                 if (fallbackMove) {
                     executed = engine.executeMove(fallbackMove.from, fallbackMove.to, fallbackMove.promotionPiece);
                 }
@@ -112,6 +129,11 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                     history: [...engine.history],
                     isAiThinking: false,
                 });
+
+                // Roll dice for the next turn if dice rule is active
+                if (useDiceRule) {
+                    get().rollDiceForCurrentTurn();
+                }
             } else {
                 console.warn("No legal moves were executed for the AI.");
                 set({

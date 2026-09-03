@@ -1,5 +1,6 @@
 // Barrel archive to easily import pieces
 export * from './Piece';
+export * from './pieceRegistry';
 
 // Classic chess
 export * from './classic/King';
@@ -34,3 +35,12 @@ export * from './tamerlane/Zurafa';
 export * from './tamerlane/TamerlanePawn';
 export * from './tamerlane/Shahzada';
 export * from './tamerlane/AdventitiousShah';
+
+// Grant Acedrex
+export * from './grantacedrex/GrantKing';
+export * from './grantacedrex/Aanca';
+export * from './grantacedrex/Unicorn';
+export * from './grantacedrex/Lion';
+export * from './grantacedrex/Giraffe';
+export * from './grantacedrex/Crocodile';
+export * from './grantacedrex/GrantPawn';

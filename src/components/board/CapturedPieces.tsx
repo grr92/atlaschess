@@ -1,46 +1,13 @@
 import { useGameStore } from '../../store/useGameStore';
 import { getPieceImage } from '../../utils/pieceMapper';
-
-const PIECE_VALUES: Record<string, number> = {
-    // classic chess pieces
-    'Queen': 9, 'Rook': 5, 'Bishop': 3, 'Knight': 3, 'Pawn': 1, 'King': 0,
-
-    // chaturanga pieces
-    'Mantri': 2, 'Ratha': 5, 'Gaja': 2, 'Asva': 3, 'Padati': 1, 'Raja': 0,
-
-    // shatranj pieces
-    'Ferz': 2, 'Rukh': 5, 'Pil': 2, 'Asb': 3, 'Sarbaz': 1, 'Shah': 0,
-
-    // tamerlane exclusive pieces (normalized to rook = 5 with factor 5/16 - the 16 value is taken from internet sources-)
-    'Zurafa': 4.4, 'Talia': 3.8, 'Wazir': 2.5, 'Jamal': 1.6, 'Dabbaba': 1.3,
-    'Shahzada': 2, 'AdventitiousShah': 2,
-
-    // tamerlane individual pawn values
-    'Pawn of Rukh': 0.6, 'Pawn of Zurafa': 0.55, 'Pawn of Talia': 0.47, 'Pawn of Shah': 0.5,
-    'Pawn of Asb': 0.39, 'Pawn of Wazir': 0.31, 'Pawn of Ferz': 0.23, 'Pawn of Jamal': 0.2,
-    'Pawn of Pawns': 0.2, 'Pawn of Dabbaba': 0.16, 'Pawn of Pil': 0.15
-};
-
-const SORT_ORDER: Record<string, number> = {
-    'Queen': 1, 'Mantri': 1,
-    'Rook': 2, 'Ratha': 2, 'Rukh': 2,
-    'Zurafa': 3,
-    'Talia': 4, 'Bishop': 4,
-    'Knight': 5, 'Asva': 5, 'Asb': 5,
-    'Wazir': 6,
-    'Ferz': 7,
-    'Jamal': 8,
-    'Dabbaba': 9,
-    'Pil': 10, 'Gaja': 10,
-    'Pawn': 11, 'Padati': 11, 'Sarbaz': 11,
-    'Pawn of Rukh': 12, 'Pawn of Zurafa': 13, 'Pawn of Talia': 14,
-    'Pawn of Asb': 15, 'Pawn of Shah': 16, 'Pawn of Wazir': 17,
-    'Pawn of Ferz': 18, 'Pawn of Jamal': 19, 'Pawn of Dabbaba': 20,
-    'Pawn of Pil': 21, 'Pawn of Pawns': 22
-};
+import { getPieceValue, getPieceSortOrder } from '../../core/pieces/pieceRegistry';
 
 export const CapturedPieces = () => {
     const history = useGameStore(state => state.history);
+    const gameMode = useGameStore(state => state.gameMode);
+    const playerColor = useGameStore(state => state.playerColor);
+
+    const isFlipped = gameMode === 'vs_ai' && playerColor === 'black';
 
     // Pieces captured by white
     const whiteCaptures = history
@@ -52,18 +19,24 @@ export const CapturedPieces = () => {
         .filter(m => m.piece.color === 'black' && m.capturedPiece)
         .map(m => m.capturedPiece!);
 
-    // Score calculations
-    const whiteScore = whiteCaptures.reduce((acc, p) => acc + (PIECE_VALUES[p.name] || 0), 0);
-    const blackScore = blackCaptures.reduce((acc, p) => acc + (PIECE_VALUES[p.name] || 0), 0);
+    // Score calculations using centralized piece registry (normalized to 1 pawn = 1.0)
+    const whiteScore = whiteCaptures.reduce((acc, p) => acc + (getPieceValue(p.name) / 100), 0);
+    const blackScore = blackCaptures.reduce((acc, p) => acc + (getPieceValue(p.name) / 100), 0);
 
     const whiteAdvantage = whiteScore - blackScore;
     const blackAdvantage = blackScore - whiteScore;
 
-    // Sorting of captured pieces by their predefined values
-    const sortedWhiteCaptures = [...whiteCaptures].sort((a, b) => (SORT_ORDER[a.name] || 99) - (SORT_ORDER[b.name] || 99));
-    const sortedBlackCaptures = [...blackCaptures].sort((a, b) => (SORT_ORDER[a.name] || 99) - (SORT_ORDER[b.name] || 99));
+    // Sorting of captured pieces by their predefined registry sort order
+    const sortedWhiteCaptures = [...whiteCaptures].sort((a, b) => getPieceSortOrder(a.name) - getPieceSortOrder(b.name));
+    const sortedBlackCaptures = [...blackCaptures].sort((a, b) => getPieceSortOrder(a.name) - getPieceSortOrder(b.name));
 
     const totalCaptures = sortedWhiteCaptures.length + sortedBlackCaptures.length;
+
+    // Determine top and bottom rows based on board orientation
+    const topCaptures = isFlipped ? sortedWhiteCaptures : sortedBlackCaptures;
+    const topAdvantage = isFlipped ? whiteAdvantage : blackAdvantage;
+    const bottomCaptures = isFlipped ? sortedBlackCaptures : sortedWhiteCaptures;
+    const bottomAdvantage = isFlipped ? blackAdvantage : whiteAdvantage;
 
     // Helper function to render a player's capture row
     const renderRow = (pieces: any[], advantage: number) => (
@@ -87,7 +60,7 @@ export const CapturedPieces = () => {
     );
 
     return (
-        // Reusing of identical structural footprint as MoveHistory for visual coherence
+        // Reusing identical structural footprint as MoveHistory for visual coherence
         <div className="bg-atlas-surface/80 backdrop-blur-md rounded-2xl p-4 w-full h-full flex flex-col shadow-lg border border-white/10 text-atlas-titleText">
 
             <h3 className="font-extrabold mb-3 pb-2 text-xs text-amber-400 tracking-widest uppercase border-b border-white/5">
@@ -102,14 +75,14 @@ export const CapturedPieces = () => {
                     </div>
                 ) : (
                     <>
-                        {/* Top Section: Pieces captured by Black */}
+                        {/* Top Section: captures for the player on top */}
                         <div>
-                            {renderRow(sortedBlackCaptures, blackAdvantage)}
+                            {renderRow(topCaptures, topAdvantage)}
                         </div>
 
-                        {/* Bottom Section: Pieces captured by White */}
+                        {/* Bottom Section: captures for the player on bottom */}
                         <div className="mt-auto">
-                            {renderRow(sortedWhiteCaptures, whiteAdvantage)}
+                            {renderRow(bottomCaptures, bottomAdvantage)}
                         </div>
                     </>
                 )}

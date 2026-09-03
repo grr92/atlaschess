@@ -107,7 +107,7 @@ export class ClassicChessEngine extends BaseEngine {
                 }
 
                 newPiece.hasMoved = true;
-                this.board.grid[to.y][to.x] = newPiece;
+                this.board.setPiece(newPiece, to.x, to.y);
             }
         }
     }

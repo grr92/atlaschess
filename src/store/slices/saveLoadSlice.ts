@@ -63,11 +63,7 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
             // Support direct custom board setup
             if (Array.isArray(parsed.customPieces)) {
                 // Clear the default board grid
-                for (let y = 0; y < engine.board.rows; y++) {
-                    for (let x = 0; x < engine.board.cols; x++) {
-                        engine.board.grid[y][x] = null;
-                    }
-                }
+                engine.board.clear();
 
                 for (const p of parsed.customPieces) {
                     let pieceInstance: Piece | null = null;

@@ -19,12 +19,14 @@ import {
     TamerlanePawn
 } from '../pieces/piecesIndex';
 
+import { TamerlaneEvaluationStrategy } from '../ai/strategies/EvaluationStrategy';
+
 export class TamerlaneEngine extends BaseEngine {
     whiteCitadelExchangeUsed: boolean = false;
     blackCitadelExchangeUsed: boolean = false;
 
     constructor(variant: GameVariant) {
-        super(variant);
+        super(variant, undefined, undefined, new TamerlaneEvaluationStrategy());
     }
 
     override getPreMoveInterception(from: Position, to: Position): PreMoveInterception | null {
@@ -193,30 +195,23 @@ export class TamerlaneEngine extends BaseEngine {
             const originalPos = { x: piece.position.x, y: piece.position.y };
             const isAllySwap = piece.name === 'Shah' && targetPiece && targetPiece.color === piece.color;
 
-            // simulate move or swap
+            // Simulate move or swap
             if (isAllySwap) {
-                this.board.grid[originalPos.y][originalPos.x] = targetPiece;
-                this.board.grid[move.y][move.x] = piece;
-                piece.position = { x: move.x, y: move.y };
-                targetPiece.position = originalPos;
+                this.board.swapPieces(originalPos, move);
             } else {
-                this.board.grid[originalPos.y][originalPos.x] = null;
-                this.board.grid[move.y][move.x] = piece;
-                piece.position = { x: move.x, y: move.y };
+                this.board.movePiece(originalPos, move);
             }
 
             const inCheck = this.isKingInCheck(piece.color, this.board);
 
-            // undo simulation
+            // Undo simulation
             if (isAllySwap) {
-                this.board.grid[originalPos.y][originalPos.x] = piece;
-                this.board.grid[move.y][move.x] = targetPiece;
-                piece.position = originalPos;
-                targetPiece.position = { x: move.x, y: move.y };
+                this.board.swapPieces(move, originalPos);
             } else {
-                this.board.grid[originalPos.y][originalPos.x] = piece;
-                piece.position = originalPos;
-                this.board.grid[move.y][move.x] = targetPiece;
+                this.board.movePiece(move, originalPos);
+                if (targetPiece) {
+                    this.board.setPiece(targetPiece, move.x, move.y);
+                }
             }
 
             if (!inCheck) {
@@ -238,11 +233,8 @@ export class TamerlaneEngine extends BaseEngine {
         const isAllySwap = piece.name === 'Shah' && targetPiece && targetPiece.color === piece.color;
 
         if (isAllySwap) {
-            // swap positions cleanly without setting from to null
-            this.board.grid[from.y][from.x] = targetPiece;
-            this.board.grid[to.y][to.x] = piece;
-            targetPiece.position = { x: from.x, y: from.y };
-            piece.position = { x: to.x, y: to.y };
+            // Swap positions cleanly via board encapsulation
+            this.board.swapPieces(from, to);
             targetPiece.hasMoved = true;
             piece.hasMoved = true;
             (piece as Shah).hasSwappedPiece = true;
@@ -294,11 +286,7 @@ export class TamerlaneEngine extends BaseEngine {
             const lowerRoyal = (chosenRoyalId ? lowerRoyals.find(r => r.id === chosenRoyalId) : null) || lowerRoyals[0];
             const lowerPos = { ...lowerRoyal.position };
 
-            this.board.grid[to.y][to.x] = lowerRoyal;
-            this.board.grid[lowerPos.y][lowerPos.x] = shah;
-
-            lowerRoyal.position = { x: to.x, y: to.y };
-            shah.position = lowerPos;
+            this.board.swapPieces(to, lowerPos);
 
             if (shah.color === 'white') this.whiteCitadelExchangeUsed = true;
             else this.blackCitadelExchangeUsed = true;

@@ -168,6 +168,8 @@ export class FairyStockfishService extends EventEmitter {
                 return 'chaturanga';
             case 'courier':
                 return 'courier';
+            case 'grant_acedrex':
+                return 'grantacedrex';
             case 'tamerlane':
                 return 'tamerlane';
             default:

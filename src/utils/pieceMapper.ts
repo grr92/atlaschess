@@ -1,13 +1,14 @@
 import { Piece } from '../core/pieces/piecesIndex';
+import { getPieceSvgChar } from '../core/pieces/pieceRegistry';
 
 // Vite creates a dictionary mapping all processed paths:
-    // Keys are formatted like: '../assets/pieces/Chess_elt45.svg'
+// Keys are formatted like: '../assets/pieces/Chess_elt45.svg'
 const svgAssets = import.meta.glob<string>('../assets/pieces/*.svg', {
     eager: true,
     import: 'default',
 });
 
-    // Force the browser to pre-load these exact URLs into the cache in order to prevent possible slow loads of the pieces
+// Force the browser to pre-load these exact URLs into the cache in order to prevent possible slow loads of the pieces
 if (typeof window !== 'undefined') {
     Object.values(svgAssets).forEach((src) => {
         const img = new Image();
@@ -19,28 +20,8 @@ export const getPieceImage = (piece: Piece | null): string | null => {
     if (!piece) return null;
 
     const colorChar = piece.color === 'white' ? 'l' : 'd';
-
-    let pieceChar = '';
-    switch (piece.name) {
-        case 'King': case 'Raja': case 'Shah': case 'Shahzada': case 'AdventitiousShah': pieceChar = 'k'; break;
-        case 'Queen': case 'Mantri': case 'Ferz': case 'Wazir': pieceChar = 'q'; break;
-        case 'Rook': case 'Ratha': case 'Rukh': pieceChar = 'r'; break;
-        case 'Bishop': case 'Talia': pieceChar = 'b'; break;
-        case 'Knight': case 'Asva': case 'Asb': pieceChar = 'n'; break;
-        case 'Pawn': case 'Padati': case 'Sarbaz':
-        case 'Pawn of Pawns': case 'Pawn of Dabbaba': case 'Pawn of Jamal':
-        case 'Pawn of Pil': case 'Pawn of Zurafa': case 'Pawn of Shah':
-        case 'Pawn of Wazir': case 'Pawn of Ferz': case 'Pawn of Talia':
-        case 'Pawn of Asb': case 'Pawn of Rukh':
-            pieceChar = 'p';
-            break;
-        case 'Gaja': case 'Pil': pieceChar = 'e'; break;
-        case 'Zurafa': pieceChar = 'g'; break;
-        case 'Dabbaba': pieceChar = 'd'; break;
-        case 'Jamal': pieceChar = 'c'; break;
-
-        default: return null;
-    }
+    const pieceChar = getPieceSvgChar(piece.name);
+    if (!pieceChar) return null;
 
     const fileName = `Chess_${pieceChar}${colorChar}t45.svg`;
     const key = `../assets/pieces/${fileName}`;

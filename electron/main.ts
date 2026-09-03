@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FairyStockfishService, type CalculateMoveOptions } from './engine/FairyStockfishService';
 
-// robust directory resolution for esm environments
+// Robust directory resolution for ESM environments
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -12,6 +12,30 @@ process.env.VITE_PUBLIC = app.isPackaged ? process.env.DIST : path.join(process.
 
 let win: BrowserWindow | null = null;
 const engineService = new FairyStockfishService();
+
+// Whitelist patterns for valid UCI engine commands to prevent arbitrary input execution
+const ALLOWED_UCI_COMMAND_PATTERNS = [
+    /^uci$/,
+    /^isready$/,
+    /^ucinewgame$/,
+    /^stop$/,
+    /^quit$/,
+    /^position\s+(startpos|fen\s+[a-zA-Z0-9/+\- ]+)(\s+moves(\s+[a-zA-Z0-9+=#]+)*)?$/,
+    /^go(\s+(movetime\s+\d+|depth\s+\d+|nodes\s+\d+|infinite|wtime\s+\d+|btime\s+\d+|winc\s+\d+|binc\s+\d+))*$/,
+    /^setoption\s+name\s+[a-zA-Z0-9_ -]+(\s+value\s+[a-zA-Z0-9_ .\-/:\\]+)?$/i
+];
+
+function isValidUciCommand(cmd: string): boolean {
+    if (typeof cmd !== 'string' || cmd.trim().length === 0 || cmd.length > 500) {
+        return false;
+    }
+    const trimmed = cmd.trim();
+    // Prevent command injection via newline characters
+    if (trimmed.includes('\n') || trimmed.includes('\r')) {
+        return false;
+    }
+    return ALLOWED_UCI_COMMAND_PATTERNS.some(pattern => pattern.test(trimmed));
+}
 
 function setupEngineIPC() {
     ipcMain.handle('engine:init', async () => {
@@ -47,7 +71,11 @@ function setupEngineIPC() {
     });
 
     ipcMain.handle('engine:sendCommand', async (_event, cmd: string) => {
-        engineService.sendCommand(cmd);
+        if (!isValidUciCommand(cmd)) {
+            console.warn('[Main IPC Security] Blocked invalid UCI command:', cmd);
+            return false;
+        }
+        engineService.sendCommand(cmd.trim());
         return true;
     });
 
@@ -72,12 +100,12 @@ function createWindow() {
         minWidth: 900,
         minHeight: 700,
         title: "Atlas Chess",
-        icon: path.join(process.env.VITE_PUBLIC!, 'icon.png'), // links the window icon
+        icon: path.join(process.env.VITE_PUBLIC!, 'icon.png'),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
-            nodeIntegration: false,    // security: restricts direct node.js access from the renderer
-            contextIsolation: true,    // security: isolates the execution context (prevents prototype pollution)
-            sandbox: false             // allows preload to access electron ipcRenderer
+            nodeIntegration: false,
+            contextIsolation: true,
+            sandbox: false
         },
     });
 
@@ -104,4 +132,4 @@ app.on('before-quit', () => {
 app.whenReady().then(() => {
     setupEngineIPC();
     createWindow();
-});
+});
