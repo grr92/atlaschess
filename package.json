@@ -1,7 +1,7 @@
 {
   "name": "atlaschess",
   "private": true,
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "A chess application to play historical variants or ancestors of chess or travel around the world playing the regional variants of chess",
   "author": "Gerard Romero",
   "type": "module",
@@ -9,6 +9,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "lint": "oxlint",
     "preview": "vite preview",
     "build:electron": "npm run build && electron-builder"
@@ -33,7 +35,8 @@
     "tailwindcss": "^3.4.19",
     "typescript": "~6.0.2",
     "vite": "^8.2.0",
-    "vite-plugin-electron": "^1.1.2"
+    "vite-plugin-electron": "^1.1.2",
+    "vitest": "^5.0.0"
   },
   "allowScripts": {
     "electron-winstaller@5.4.0": true
@@ -60,7 +63,10 @@
       "icon": "build/icon.ico"
     },
     "mac": {
-      "target": ["dmg", "zip"],
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "category": "public.app-category.board-games",
       "icon": "build/icon.icns"
     },

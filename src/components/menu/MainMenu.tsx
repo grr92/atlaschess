@@ -120,7 +120,7 @@ export const MainMenu: React.FC = () => {
 
                 {/* Footer Metadata */}
                 <div className="mt-8 text-xs text-atlas-normalText opacity-50 tracking-wider flex flex-col items-center gap-1">
-                    <div>Version 0.6.0 • Powered by Fairy-Stockfish & Heuristic AI</div>
+                    <div>Version 0.6.1 • Powered by Fairy-Stockfish & Heuristic AI</div>
                     <div className="opacity-75 text-[11px]">Built with React + TypeScript + Zustand + Tailwind CSS</div>
                 </div>
             </div>
