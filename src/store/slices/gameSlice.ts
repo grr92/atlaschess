@@ -4,6 +4,7 @@ import type { BaseEngine } from '../../core/engine/BaseEngine';
 import { TamerlaneEngine } from '../../core/engine/TamerlaneEngine';
 import { VariantRegistry } from '../../core/variants/variantRegistry';
 import { getAvailableDiceNumbers, DICE_PIECE_MAP } from '../../utils/diceMapper';
+import { soundManager } from '../../utils/soundManager';
 
 export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (set, get) => ({
     engine: null,
@@ -20,6 +21,8 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
     currentDiceRoll: null,
     isRollingDice: false,
     availableDiceValues: [],
+    isMuted: soundManager.getMuted(),
+    language: (typeof window !== 'undefined' && (localStorage.getItem('atlas_language') as any)) || 'en',
 
     initGame: (variantId = 'classic', mode, playerColor, difficulty, useDiceRule = false) => {
         const engine = VariantRegistry.createEngine(variantId);
@@ -132,8 +135,18 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
                 // If not an intercepted decision, execute the move normally
                 const success = engine.executeMove(selectedPosition, pos);
                 if (success) {
-                    // Polymorphic post-move interception (succession choice, etc.)
+                    // Play sound effect
                     const lastMove = engine.history[engine.history.length - 1];
+                    const currentState: string = engine.state;
+                    if (currentState === 'check' || currentState === 'checkmate') {
+                        soundManager.playCheck();
+                    } else if (lastMove && lastMove.capturedPiece) {
+                        soundManager.playCapture();
+                    } else {
+                        soundManager.playMove();
+                    }
+
+                    // Polymorphic post-move interception (succession choice, etc.)
                     const postInterception = engine.getPostMoveInterception(lastMove);
                     if (postInterception && postInterception.type === 'SUCCESSION_CHOICE') {
                         set({
@@ -180,6 +193,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
                 }
             }
 
+            soundManager.playSelect();
             const moves = engine.getLegalMoves(piece);
             set({
                 selectedPosition: pos,
@@ -266,6 +280,16 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
         const success = engine.executeMove(pendingPromotion.from, pendingPromotion.to, pieceName);
 
         if (success) {
+            const lastMove = engine.history[engine.history.length - 1];
+            const currentState: string = engine.state;
+            if (currentState === 'check' || currentState === 'checkmate') {
+                soundManager.playCheck();
+            } else if (lastMove && lastMove.capturedPiece) {
+                soundManager.playCapture();
+            } else {
+                soundManager.playMove();
+            }
+
             set({
                 pendingPromotion: null,
                 selectedPosition: null,
@@ -299,6 +323,8 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             engine.executeCitadelSwap(pendingCitadelChoice.from, pendingCitadelChoice.to, chosenRoyalId);
         }
 
+        soundManager.playMove();
+
         set({
             pendingCitadelChoice: null,
             selectedPosition: null,
@@ -325,6 +351,8 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
 
         engine.executeMove(pendingCitadelChoice.from, pendingCitadelChoice.to);
         engine.state = 'draw';
+
+        soundManager.playMove();
 
         set({
             pendingCitadelChoice: null,
@@ -356,5 +384,19 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             gameState: engine.state,
             history: [...engine.history],
         });
+    },
+
+    toggleMute: () => {
+        const newMuted = soundManager.toggleMute();
+        set({ isMuted: newMuted });
+    },
+
+    setLanguage: (lang) => {
+        if (typeof window !== 'undefined') {
+            try {
+                localStorage.setItem('atlas_language', lang);
+            } catch {}
+        }
+        set({ language: lang });
     }
 });

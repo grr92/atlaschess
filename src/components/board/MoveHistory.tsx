@@ -1,8 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { useGameStore } from '../../store/useGameStore';
+import { useTranslation } from '../../i18n';
 
 export const MoveHistory = () => {
     const { history, gameState, currentTurn } = useGameStore();
+    const { t } = useTranslation();
     const scrollRef = useRef<HTMLDivElement>(null);
 
     // Auto-scroll to the bottom of the history whenever a new move is made
@@ -30,13 +32,13 @@ export const MoveHistory = () => {
         <div className="bg-atlas-surface/80 backdrop-blur-md rounded-2xl p-4 w-full h-full flex flex-col shadow-lg border border-white/10 overflow-hidden min-h-0">
 
             <h3 className="font-extrabold mb-3 pb-2 text-xs text-amber-400 tracking-widest uppercase border-b border-white/5">
-                Match History
+                {t.gameplay.matchHistory}
             </h3>
 
             <div ref={scrollRef} className="flex-1 overflow-y-auto pr-2 space-y-1 custom-scrollbar">
                 {pairedMoves.length === 0 && (
                     <div className="opacity-40 text-sm text-slate-400 italic text-center mt-8">
-                        No moves yet. Start playing!
+                        {t.gameplay.noMoves}
                     </div>
                 )}
 

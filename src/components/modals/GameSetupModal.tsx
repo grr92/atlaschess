@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
-import { Bot, Users, Play, X, Sparkles, Shield, Swords, Zap, Dices } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Bot, Users, Play, Sparkles, Shield, Swords, Zap, Dices } from 'lucide-react';
 import type { PieceColor } from '../../types';
 import type { GameMode, AiDifficulty } from '../../store/useGameStore';
+import { soundManager } from '../../utils/soundManager';
+import { CloseButton } from '../ui/CloseButton';
+import { useTranslation } from '../../i18n';
 
 interface GameSetupModalProps {
     variantId: string;
@@ -18,10 +21,26 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
     onClose,
     onStartGame,
 }) => {
+    const { t } = useTranslation();
     const [mode, setMode] = useState<GameMode>('vs_ai');
     const [colorOption, setColorOption] = useState<'white' | 'black' | 'random'>('white');
     const [difficulty, setDifficulty] = useState<AiDifficulty>('medium');
     const [useDiceRule, setUseDiceRule] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                if (document.activeElement instanceof HTMLElement) {
+                    document.activeElement.blur();
+                }
+                soundManager.playUiClick();
+                onClose();
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, onClose]);
 
     if (!isOpen) return null;
 
@@ -33,6 +52,7 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
             chosenColor = colorOption;
         }
 
+        soundManager.playUiClick();
         onStartGame(mode, chosenColor, difficulty, variantId === 'grant_acedrex' ? useDiceRule : false);
         onClose();
     };
@@ -51,20 +71,15 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                             <Sparkles className="w-6 h-6 text-amber-400" />
                             {variantTitle}
                         </h3>
-                        <p className="text-xs text-slate-400 mt-0.5">Select your game mode and preferences</p>
+                        <p className="text-xs text-slate-400 mt-0.5">{t.gameSetup.subtitle}</p>
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors"
-                    >
-                        <X className="w-5 h-5" />
-                    </button>
+                    <CloseButton onClick={onClose} />
                 </div>
 
                 {/* Mode Selector */}
                 <div className="mb-6">
                     <label className="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-2.5">
-                        Game Mode
+                        {t.gameSetup.modeLabel}
                     </label>
                     <div className="grid grid-cols-2 gap-3">
                         <button
@@ -78,8 +93,8 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                         >
                             <Bot className={`w-7 h-7 ${mode === 'vs_ai' ? 'text-amber-400' : 'text-slate-400'}`} />
                             <div className="text-center">
-                                <span className="font-bold text-sm block">Vs Computer</span>
-                                <span className="text-[11px] opacity-60">Fairy-Stockfish AI</span>
+                                <span className="font-bold text-sm block">{t.gameSetup.vsAi}</span>
+                                <span className="text-[11px] opacity-60">{t.gameSetup.vsAiSub}</span>
                             </div>
                         </button>
 
@@ -94,8 +109,8 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                         >
                             <Users className={`w-7 h-7 ${mode === 'pvp' ? 'text-amber-400' : 'text-slate-400'}`} />
                             <div className="text-center">
-                                <span className="font-bold text-sm block">Pass & Play</span>
-                                <span className="text-[11px] opacity-60">2 Players Local</span>
+                                <span className="font-bold text-sm block">{t.gameSetup.pvp}</span>
+                                <span className="text-[11px] opacity-60">{t.gameSetup.pvpSub}</span>
                             </div>
                         </button>
                     </div>
@@ -105,7 +120,7 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                 {variantId === 'grant_acedrex' && (
                     <div className="mb-6">
                         <label className="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-2.5">
-                            Ruleset Variant
+                            {t.gameSetup.rulesetVariant}
                         </label>
                         <div className="grid grid-cols-2 gap-3">
                             <button
@@ -119,8 +134,8 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                             >
                                 <Sparkles className="w-5 h-5 text-amber-400 flex-shrink-0" />
                                 <div className="text-left">
-                                    <div className="font-extrabold text-xs">Standard Rules</div>
-                                    <div className="text-[10px] text-slate-400 font-normal">Pure strategy, no dice</div>
+                                    <div className="font-extrabold text-xs">{t.gameSetup.standardRules}</div>
+                                    <div className="text-[10px] text-slate-400 font-normal">{t.gameSetup.standardRulesSub}</div>
                                 </div>
                             </button>
 
@@ -135,8 +150,8 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                             >
                                 <Dices className="w-5 h-5 text-amber-400 flex-shrink-0" />
                                 <div className="text-left">
-                                    <div className="font-extrabold text-xs">8-Sided Die (d8)</div>
-                                    <div className="text-[10px] text-slate-400 font-normal">Alfonso X medieval rule</div>
+                                    <div className="font-extrabold text-xs">{t.gameSetup.diceRule}</div>
+                                    <div className="text-[10px] text-slate-400 font-normal">{t.gameSetup.diceRuleSub}</div>
                                 </div>
                             </button>
                         </div>
@@ -149,7 +164,7 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                         {/* Play As (Color) */}
                         <div>
                             <label className="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-2.5">
-                                Play As
+                                {t.gameSetup.playAs}
                             </label>
                             <div className="grid grid-cols-3 gap-2.5">
                                 <button
@@ -162,7 +177,7 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                                     }`}
                                 >
                                     <div className="w-3.5 h-3.5 rounded-full bg-white ring-1 ring-slate-400" />
-                                    White
+                                    {t.common.white}
                                 </button>
 
                                 <button
@@ -175,7 +190,7 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                                     }`}
                                 >
                                     <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                                    Random
+                                    {t.common.random}
                                 </button>
 
                                 <button
@@ -188,7 +203,7 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                                     }`}
                                 >
                                     <div className="w-3.5 h-3.5 rounded-full bg-slate-950 border border-white/50" />
-                                    Black
+                                    {t.common.black}
                                 </button>
                             </div>
                         </div>
@@ -196,7 +211,7 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                         {/* Difficulty Level */}
                         <div>
                             <label className="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-2.5">
-                                AI Difficulty
+                                {t.gameSetup.aiDifficulty}
                             </label>
                             <div className="grid grid-cols-3 gap-2.5">
                                 <button
@@ -209,7 +224,7 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                                     }`}
                                 >
                                     <Zap className="w-4 h-4 text-emerald-400" />
-                                    <span>Easy</span>
+                                    <span>{t.gameSetup.easy}</span>
                                 </button>
 
                                 <button
@@ -222,7 +237,7 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                                     }`}
                                 >
                                     <Shield className="w-4 h-4 text-amber-400" />
-                                    <span>Medium</span>
+                                    <span>{t.gameSetup.medium}</span>
                                 </button>
 
                                 <button
@@ -235,7 +250,7 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                                     }`}
                                 >
                                     <Swords className="w-4 h-4 text-rose-400" />
-                                    <span>Master</span>
+                                    <span>{t.gameSetup.master}</span>
                                 </button>
                             </div>
                         </div>
@@ -249,7 +264,7 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                         onClick={onClose}
                         className="flex-1 bg-slate-900/60 hover:bg-slate-800 text-slate-300 py-3 rounded-2xl font-bold transition-all border border-white/10 active:scale-95 text-sm"
                     >
-                        Cancel
+                        {t.common.cancel}
                     </button>
                     <button
                         type="button"
@@ -257,7 +272,7 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                         className="flex-[2] bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 py-3 rounded-2xl font-black transition-all shadow-lg shadow-amber-500/20 hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2 text-sm"
                     >
                         <Play className="w-4 h-4 fill-slate-950" />
-                        Start Match
+                        {t.gameSetup.startMatch}
                     </button>
                 </div>
 

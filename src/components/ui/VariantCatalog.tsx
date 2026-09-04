@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavStore } from '../../store/useNavStore';
 import { useGameStore, type GameMode, type AiDifficulty } from '../../store/useGameStore';
 import { BackButton } from './BackButton';
@@ -7,10 +7,12 @@ import { VariantInfoModal } from '../modals/VariantInfoModal';
 import { GameSetupModal } from '../modals/GameSetupModal';
 import type { PieceColor } from '../../types';
 import { Sparkles, Scroll, Compass } from 'lucide-react';
-
+import { soundManager } from '../../utils/soundManager';
 import { VariantRegistry, type VariantDefinition } from '../../core/variants/variantRegistry';
+import { useTranslation } from '../../i18n';
 
 export const VariantsCatalog = () => {
+    const { t, getVariantMeta } = useTranslation();
     const setScreen = useNavStore((state) => state.setScreen);
     const initGame = useGameStore((state) => state.initGame);
 
@@ -19,9 +21,30 @@ export const VariantsCatalog = () => {
     // State to control game setup modal
     const [setupVariant, setSetupVariant] = useState<{ id: string; title: string } | null>(null);
 
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                if (document.activeElement instanceof HTMLElement) {
+                    document.activeElement.blur();
+                }
+                if (infoVariantId) {
+                    setInfoVariantId(null);
+                } else if (setupVariant) {
+                    setSetupVariant(null);
+                } else {
+                    soundManager.playUiClick();
+                    setScreen('MENU');
+                }
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [infoVariantId, setupVariant, setScreen]);
+
     // Open setup modal for the chosen variant
     const handleSelectVariant = (variant: VariantDefinition) => {
-        setSetupVariant({ id: variant.id, title: variant.title });
+        const meta = getVariantMeta(variant.id);
+        setSetupVariant({ id: variant.id, title: meta.title });
     };
 
     const handleStartVariantGame = (mode: GameMode, playerColor: PieceColor, difficulty: AiDifficulty, useDiceRule?: boolean) => {
@@ -36,35 +59,39 @@ export const VariantsCatalog = () => {
         ...VariantRegistry.getByCategory('standard')
     ];
 
-    const renderCard = (variant: VariantDefinition) => (
-        <div
-            key={variant.id}
-            className="group relative flex w-full bg-atlas-surface/80 hover:bg-atlas-hover/90 rounded-2xl shadow-lg border border-white/10 hover:border-amber-500/50 transition-all duration-300 hover:shadow-amber-500/10 hover:shadow-2xl overflow-hidden backdrop-blur-md"
-        >
-            <button
-                onClick={() => handleSelectVariant(variant)}
-                className="flex-1 text-left p-5 transition-transform duration-200"
+    const renderCard = (variant: VariantDefinition) => {
+        const meta = getVariantMeta(variant.id);
+
+        return (
+            <div
+                key={variant.id}
+                className="group/card relative flex w-full bg-atlas-surface/80 hover:bg-atlas-hover/90 rounded-2xl shadow-lg border border-white/10 hover:border-amber-500/50 transition-all duration-300 hover:shadow-amber-500/10 hover:shadow-2xl overflow-hidden backdrop-blur-md"
             >
-                <div className="flex items-center justify-between gap-2 mb-1.5">
-                    <h4 className="font-extrabold text-xl text-atlas-titleText group-hover:text-amber-400 transition-colors">
-                        {variant.title}
-                    </h4>
-                    <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300">
-                        {variant.tag}
-                    </span>
+                <button
+                    onClick={() => handleSelectVariant(variant)}
+                    className="flex-1 text-left p-5 transition-transform duration-200"
+                >
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                        <h4 className="font-extrabold text-xl text-atlas-titleText group-hover/card:text-amber-400 transition-colors">
+                            {meta.title}
+                        </h4>
+                        <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300">
+                            {meta.tag}
+                        </span>
+                    </div>
+                    <div className="text-xs font-semibold text-amber-500/80 mb-2">
+                        {meta.origin}
+                    </div>
+                    <p className="text-sm text-atlas-normalText leading-relaxed line-clamp-2">
+                        {meta.desc}
+                    </p>
+                </button>
+                <div className="flex items-center justify-center pr-4 pl-1">
+                    <InfoButton variant="ghost" onClick={() => setInfoVariantId(variant.id)} />
                 </div>
-                <div className="text-xs font-semibold text-amber-500/80 mb-2">
-                    {variant.origin}
-                </div>
-                <p className="text-sm text-atlas-normalText leading-relaxed line-clamp-2">
-                    {variant.desc}
-                </p>
-            </button>
-            <div className="flex items-center justify-center px-4 border-l border-white/5 bg-slate-950/20 group-hover:bg-slate-950/40 transition-colors">
-                <InfoButton onClick={() => setInfoVariantId(variant.id)} />
             </div>
-        </div>
-    );
+        );
+    };
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4 md:p-8">
@@ -75,10 +102,10 @@ export const VariantsCatalog = () => {
                     <div>
                         <h2 className="text-3xl md:text-4xl font-black text-atlas-titleText tracking-tight flex items-center gap-3">
                             <Compass className="w-8 h-8 text-amber-400" />
-                            Variant Catalog
+                            {t.variantCatalog.title}
                         </h2>
                         <p className="text-sm text-atlas-normalText mt-1">
-                            Choose an era and embark on a historical chess journey.
+                            {t.variantCatalog.subtitle}
                         </p>
                     </div>
                     <BackButton onClick={() => setScreen('MENU')} />
@@ -91,7 +118,7 @@ export const VariantsCatalog = () => {
                     <div>
                         <h3 className="text-lg font-bold text-amber-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                             <Sparkles className="w-5 h-5 text-amber-400" />
-                            Regional Variants
+                            {t.variantCatalog.regionalCategory}
                         </h3>
                         <div className="space-y-4">
                             {regionalVariants.map(renderCard)}
@@ -102,7 +129,7 @@ export const VariantsCatalog = () => {
                     <div>
                         <h3 className="text-lg font-bold text-amber-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                             <Scroll className="w-5 h-5 text-amber-400" />
-                            Historical Variants
+                            {t.variantCatalog.historicalCategory}
                         </h3>
                         <div className="space-y-4">
                             {historicalVariants.map(renderCard)}

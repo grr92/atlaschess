@@ -4,6 +4,7 @@ import type { BaseEngine } from '../core/engine/BaseEngine';
 
 export type GameMode = 'pvp' | 'vs_ai';
 export type AiDifficulty = 'easy' | 'medium' | 'hard';
+export type AppLanguage = 'en' | 'es' | 'ca';
 
 export interface GameSliceState {
     engine: BaseEngine | null;
@@ -20,6 +21,8 @@ export interface GameSliceState {
     currentDiceRoll: number | null;
     isRollingDice: boolean;
     availableDiceValues: number[];
+    isMuted: boolean;
+    language: AppLanguage;
 }
 
 export interface GameSliceActions {
@@ -40,6 +43,8 @@ export interface GameSliceActions {
     cancelCitadelChoice: () => void;
     confirmSuccession: (chosenRoyalId: string) => void;
     rollDiceForCurrentTurn: (engineOverride?: BaseEngine, turnOverride?: PieceColor) => void;
+    toggleMute: () => void;
+    setLanguage: (lang: AppLanguage) => void;
 }
 
 export interface AiSliceState {

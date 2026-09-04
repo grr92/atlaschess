@@ -3,8 +3,10 @@ import { getPieceImage, getSquareBackground, getPawnBadgeIcon } from '../../util
 import { TamerlanePawn } from '../../core/pieces/piecesIndex';
 import { useEffect, useState } from 'react';
 import type { Position } from '../../types';
+import { useTranslation } from '../../i18n';
 
 export const Board = () => {
+    const { t } = useTranslation();
     const {
         engine,
         currentVariantId,
@@ -38,7 +40,7 @@ export const Board = () => {
     if (!engine) {
         return (
             <div className="text-white text-center py-8">
-                Loading game engine...
+                {t.common.loading}
             </div>
         );
     }
@@ -100,6 +102,25 @@ export const Board = () => {
                         const textColor = (isLight || isMonochrome) ? 'text-atlas-boardDark' : 'text-atlas-boardLight';                         // If the square is light, the text must be dark (and vice versa)
                         const monochromeBorder = isMonochrome ? 'ring-1 ring-inset ring-black/20' : '';
 
+                        // Track the last move to trigger CSS slide transition
+                        const lastMove = engine.history.length > 0 ? engine.history[engine.history.length - 1] : null;
+                        const isJustMoved = Boolean(piece && lastMove && lastMove.to.x === x && lastMove.to.y === y);
+
+                        let animStyle: React.CSSProperties | undefined = undefined;
+                        if (isJustMoved && lastMove) {
+                            const deltaX = isFlipped
+                                ? (lastMove.to.x - lastMove.from.x) * 100
+                                : (lastMove.from.x - lastMove.to.x) * 100;
+                            const deltaY = isFlipped
+                                ? (lastMove.to.y - lastMove.from.y) * 100
+                                : (lastMove.from.y - lastMove.to.y) * 100;
+
+                            animStyle = {
+                                '--slide-x': `${deltaX}%`,
+                                '--slide-y': `${deltaY}%`,
+                            } as React.CSSProperties;
+                        }
+
                         // To rotate the Queen icon to represent the Wazir
                         const isWazir = piece?.name === 'Wazir';
 
@@ -142,58 +163,63 @@ export const Board = () => {
                                     <div className="absolute inset-0 bg-red-500/25 ring-2 ring-inset ring-red-500/60 z-15 pointer-events-none transition-opacity" />
                                 )}
 
-                                {/* Render piece */}
+                                {/* Render piece with smooth slide animation */}
                                 {pieceImage && (
-                                    <img
-                                        src={pieceImage}
-                                        alt={piece?.name}
-                                        className={`w-full h-full object-contain relative z-10 select-none 
-                                        transition-transform ${isSelected ? 'scale-110' : ''} ${isWazir ? 'rotate-180' : ''}`}
-                                    />
-                                )}
-
-                                {/* Shahzada (Prince) badge indicator */}
-                                {piece?.name === 'Shahzada' && (
                                     <div
-                                        className={`absolute bottom-0.5 right-0.5 z-20 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 rounded-full border shadow-md pointer-events-none flex items-center justify-center font-black text-[10px] md:text-xs lg:text-sm ${
-                                            piece.color === 'black'
-                                                ? 'bg-slate-100 text-black border-amber-600 shadow-black/40'
-                                                : 'bg-slate-900/90 text-white border-amber-400 shadow-black/60'
-                                        }`}
-                                    >
-                                        P
-                                    </div>
-                                )}
-
-                                {/* Adventitious King badge indicator */}
-                                {piece?.name === 'AdventitiousShah' && (
-                                    <div
-                                        className={`absolute bottom-0.5 right-0.5 z-20 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 rounded-full border shadow-md pointer-events-none flex items-center justify-center font-black text-[10px] md:text-xs lg:text-sm ${
-                                            piece.color === 'black'
-                                                ? 'bg-slate-100 text-black border-amber-600 shadow-black/40'
-                                                : 'bg-slate-900/90 text-white border-amber-400 shadow-black/60'
-                                        }`}
-                                    >
-                                        A
-                                    </div>
-                                )}
-
-                                {/* Tamerlane pawn sub-badge indicator */}
-                                {piece instanceof TamerlanePawn && getPawnBadgeIcon(piece.pawnType, piece.color) && (
-                                    <div
-                                        className={`absolute bottom-0.5 right-0.5 z-20 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 rounded-full p-0.5 border shadow-md pointer-events-none flex items-center justify-center ${
-                                            piece.color === 'black'
-                                                ? 'bg-slate-100 border-amber-600 shadow-black/40'
-                                                : 'bg-slate-900/90 border-amber-400 shadow-black/60'
-                                        }`}
+                                        key={`${piece?.id}-${engine.history.length}`}
+                                        className={`w-full h-full relative z-10 flex items-center justify-center ${isJustMoved ? 'animate-slide-piece' : ''}`}
+                                        style={animStyle}
                                     >
                                         <img
-                                            src={getPawnBadgeIcon(piece.pawnType, piece.color)!}
-                                            alt="Target piece"
-                                            className={`w-full h-full object-contain ${
-                                                piece.pawnType === 'pawn_of_vizier' ? 'rotate-180' : ''
-                                            }`}
+                                            src={pieceImage}
+                                            alt={piece?.name}
+                                            className={`w-full h-full object-contain select-none transition-transform ${isSelected ? 'scale-110' : ''} ${isWazir ? 'rotate-180' : ''}`}
                                         />
+
+                                        {/* Shahzada (Prince) badge indicator */}
+                                        {piece?.name === 'Shahzada' && (
+                                            <div
+                                                className={`absolute bottom-0.5 right-0.5 z-20 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 rounded-full border shadow-md pointer-events-none flex items-center justify-center font-black text-[10px] md:text-xs lg:text-sm ${
+                                                    piece.color === 'black'
+                                                        ? 'bg-slate-100 text-black border-amber-600 shadow-black/40'
+                                                        : 'bg-slate-900/90 text-white border-amber-400 shadow-black/60'
+                                                }`}
+                                            >
+                                                P
+                                            </div>
+                                        )}
+
+                                        {/* Adventitious King badge indicator */}
+                                        {piece?.name === 'AdventitiousShah' && (
+                                            <div
+                                                className={`absolute bottom-0.5 right-0.5 z-20 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 rounded-full border shadow-md pointer-events-none flex items-center justify-center font-black text-[10px] md:text-xs lg:text-sm ${
+                                                    piece.color === 'black'
+                                                        ? 'bg-slate-100 text-black border-amber-600 shadow-black/40'
+                                                        : 'bg-slate-900/90 text-white border-amber-400 shadow-black/60'
+                                                }`}
+                                            >
+                                                A
+                                            </div>
+                                        )}
+
+                                        {/* Tamerlane pawn sub-badge indicator */}
+                                        {piece instanceof TamerlanePawn && getPawnBadgeIcon(piece.pawnType, piece.color) && (
+                                            <div
+                                                className={`absolute bottom-0.5 right-0.5 z-20 w-4 h-4 md:w-5 md:h-5 lg:w-6 lg:h-6 rounded-full p-0.5 border shadow-md pointer-events-none flex items-center justify-center ${
+                                                    piece.color === 'black'
+                                                        ? 'bg-slate-100 border-amber-600 shadow-black/40'
+                                                        : 'bg-slate-900/90 border-amber-400 shadow-black/60'
+                                                }`}
+                                            >
+                                                <img
+                                                    src={getPawnBadgeIcon(piece.pawnType, piece.color)!}
+                                                    alt="Target piece"
+                                                    className={`w-full h-full object-contain ${
+                                                        piece.pawnType === 'pawn_of_vizier' ? 'rotate-180' : ''
+                                                    }`}
+                                                />
+                                            </div>
+                                        )}
                                     </div>
                                 )}
 
@@ -216,7 +242,7 @@ export const Board = () => {
             {pendingPromotion && (
                 <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm rounded-lg">
                     <div className="bg-slate-800 p-6 rounded-2xl shadow-2xl border border-emerald-500/50 text-center">
-                        <h3 className="text-xl font-bold text-white mb-4">Promote Pawn</h3>
+                        <h3 className="text-xl font-bold text-white mb-4">{t.gameplay.promotePawnTitle}</h3>
                         <div className="flex gap-4 mb-6">
                             {promotionPieces.map(pieceName => {
                                 // Creates a dummy object to fetch the correct piece image
@@ -238,7 +264,7 @@ export const Board = () => {
                             onClick={cancelPromotion}
                             className="text-slate-400 hover:text-white underline text-sm"
                         >
-                            Cancel Move
+                            {t.gameplay.cancelMove}
                         </button>
                     </div>
                 </div>
@@ -248,9 +274,9 @@ export const Board = () => {
             {pendingCitadelChoice && (
                 <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="bg-slate-800 p-6 rounded-2xl shadow-2xl border border-amber-500/50 text-center max-w-md w-full animate-in fade-in zoom-in duration-200">
-                        <h3 className="text-xl font-bold text-white mb-2">Citadel Infiltration!</h3>
+                        <h3 className="text-xl font-bold text-white mb-2">{t.gameplay.citadelTitle}</h3>
                         <p className="text-sm text-slate-300 mb-6">
-                            Your Shah has entered the enemy Citadel. Choose whether to trade places with a royal heir to continue fighting or declare an immediate draw:
+                            {t.gameplay.citadelDesc}
                         </p>
                         <div className="flex flex-col gap-3">
                             {pendingCitadelChoice.royals.map(royal => (
@@ -259,20 +285,20 @@ export const Board = () => {
                                     onClick={() => confirmCitadelSwap(royal.id)}
                                     className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-4 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2"
                                 >
-                                    Trade places with {royal.name === 'Shahzada' ? 'Prince (Shahzada)' : 'Adventitious King'}
+                                    {royal.name === 'Shahzada' ? t.gameplay.citadelTradePrince : t.gameplay.citadelTradeAdventitious}
                                 </button>
                             ))}
                             <button
                                 onClick={confirmCitadelDraw}
                                 className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors shadow-md"
                             >
-                                Declare Draw
+                                {t.gameplay.citadelDeclareDraw}
                             </button>
                             <button
                                 onClick={cancelCitadelChoice}
                                 className="text-slate-400 hover:text-white underline text-xs mt-2"
                             >
-                                Cancel Move
+                                {t.gameplay.cancelMove}
                             </button>
                         </div>
                     </div>
@@ -283,9 +309,9 @@ export const Board = () => {
             {pendingSuccessionChoice && (
                 <div className="fixed inset-0 z-[160] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="bg-slate-800 p-6 rounded-2xl shadow-2xl border border-amber-500/50 text-center max-w-md w-full animate-in fade-in zoom-in duration-200">
-                        <h3 className="text-xl font-bold text-white mb-2">The Shah has Fallen!</h3>
+                        <h3 className="text-xl font-bold text-white mb-2">{t.gameplay.successionTitle}</h3>
                         <p className="text-sm text-slate-300 mb-6">
-                            Choose which royal heir will ascend to the throne as the new Shah:
+                            {t.gameplay.successionDesc}
                         </p>
                         <div className="flex flex-col gap-3">
                             {pendingSuccessionChoice.royals.map(royal => (
@@ -294,7 +320,7 @@ export const Board = () => {
                                     onClick={() => confirmSuccession(royal.id)}
                                     className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-4 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2"
                                 >
-                                    Crown {royal.name === 'Shahzada' ? 'Prince (Shahzada)' : 'Adventitious King'}
+                                    {royal.name === 'Shahzada' ? t.gameplay.successionCrownPrince : t.gameplay.successionCrownAdventitious}
                                 </button>
                             ))}
                         </div>

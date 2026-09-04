@@ -1,8 +1,10 @@
 import { useGameStore } from '../../store/useGameStore';
 import { getPieceImage } from '../../utils/pieceMapper';
 import { getPieceValue, getPieceSortOrder } from '../../core/pieces/pieceRegistry';
+import { useTranslation } from '../../i18n';
 
 export const CapturedPieces = () => {
+    const { t } = useTranslation();
     const history = useGameStore(state => state.history);
     const gameMode = useGameStore(state => state.gameMode);
     const playerColor = useGameStore(state => state.playerColor);
@@ -64,14 +66,14 @@ export const CapturedPieces = () => {
         <div className="bg-atlas-surface/80 backdrop-blur-md rounded-2xl p-4 w-full h-full flex flex-col shadow-lg border border-white/10 text-atlas-titleText">
 
             <h3 className="font-extrabold mb-3 pb-2 text-xs text-amber-400 tracking-widest uppercase border-b border-white/5">
-                Captured Pieces
+                {t.gameplay.capturedPieces}
             </h3>
 
             <div className="flex-1 flex flex-col justify-between">
                 {totalCaptures === 0 ? (
                     // Empty state fallback
                     <div className="opacity-40 text-sm text-slate-400 italic text-center mt-8">
-                        No pieces captured yet!
+                        {t.gameplay.noCaptures}
                     </div>
                 ) : (
                     <>

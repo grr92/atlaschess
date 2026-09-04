@@ -3,6 +3,7 @@ import { historyToUciMoves, uciToMove } from '../../utils/uciNotation';
 import { HeuristicAiEngine } from '../../core/ai/HeuristicAiEngine';
 import { TamerlaneEngine } from '../../core/engine/TamerlaneEngine';
 import { DICE_PIECE_MAP } from '../../utils/diceMapper';
+import { soundManager } from '../../utils/soundManager';
 
 export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, get) => ({
     gameMode: 'pvp',
@@ -108,8 +109,17 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
             }
 
             if (executed) {
-                // Check post-move interception (succession, etc.)
+                // Play sound effect for AI move
                 const lastMove = engine.history[engine.history.length - 1];
+                if (engine.state === 'check' || engine.state === 'checkmate') {
+                    soundManager.playCheck();
+                } else if (lastMove && lastMove.capturedPiece) {
+                    soundManager.playCapture();
+                } else {
+                    soundManager.playMove();
+                }
+
+                // Check post-move interception (succession, etc.)
                 const postInterception = engine.getPostMoveInterception(lastMove);
                 if (postInterception && postInterception.type === 'SUCCESSION_CHOICE' && engine instanceof TamerlaneEngine) {
                     // Auto-crown first royal for AI

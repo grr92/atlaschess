@@ -105,9 +105,9 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
 - [x] Build desktop executables (Windows/Mac/Linux) using **Electron**.
 - [x] Add variant explanation and how to play.
 - [x] AI Opponent integration (Fairy-Stockfish & Native Minimax Engine with difficulty levels).
+- [x] Implement move sound effects.
+- [x] Implement settings (language and mute options).
 - [ ] Add more historical and regional variants.
-- [ ] Implement move sound effects.
-- [ ] Implement settings (language and board custom themes).
 
 ## Feedback & Suggestions
 

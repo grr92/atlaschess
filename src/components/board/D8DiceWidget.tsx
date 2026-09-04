@@ -2,10 +2,11 @@ import React from 'react';
 import { useGameStore } from '../../store/useGameStore';
 import { getPieceImage } from '../../utils/pieceMapper';
 import { DICE_PIECE_MAP } from '../../utils/diceMapper';
-import { getPieceDisplayName } from '../../core/pieces/pieceRegistry';
 import { Dices } from 'lucide-react';
+import { useTranslation } from '../../i18n';
 
 export const D8DiceWidget: React.FC = () => {
+    const { t, getPieceName } = useTranslation();
     const { useDiceRule, currentDiceRoll, isRollingDice, currentTurn } = useGameStore();
 
     if (!useDiceRule) return null;
@@ -13,8 +14,8 @@ export const D8DiceWidget: React.FC = () => {
     const pieceName = currentDiceRoll ? DICE_PIECE_MAP[currentDiceRoll] : null;
     const pieceImg = pieceName ? getPieceImage({ name: pieceName, color: currentTurn } as any) : null;
 
-    // Friendly display name resolved via central piece registry
-    const displayName = pieceName ? getPieceDisplayName(pieceName) : null;
+    // Friendly localized display name
+    const displayName = pieceName ? getPieceName(pieceName) : null;
 
     return (
         <div className="flex items-center gap-3 bg-atlas-surface/90 border border-amber-500/40 rounded-2xl px-4 py-2 shadow-xl backdrop-blur-md">
@@ -33,11 +34,11 @@ export const D8DiceWidget: React.FC = () => {
             <div>
                 <div className="text-[10px] uppercase font-bold text-amber-400 tracking-wider flex items-center gap-1">
                     <Dices className="w-3.5 h-3.5" />
-                    Dice Thrown (d8)
+                    {t.gameplay.diceThrown}
                 </div>
                 <div className="flex items-center gap-1.5 text-sm font-extrabold text-white">
                     {pieceImg && <img src={pieceImg} alt={displayName!} className="w-5 h-5 object-contain" />}
-                    <span>{isRollingDice ? 'Rolling...' : (displayName ? `${displayName}` : 'Select piece')}</span>
+                    <span>{isRollingDice ? t.gameplay.rolling : (displayName ? `${displayName}` : t.gameplay.selectPiece)}</span>
                 </div>
             </div>
         </div>
