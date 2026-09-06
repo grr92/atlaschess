@@ -67,6 +67,7 @@
         "dmg",
         "zip"
       ],
+      "identity": null,
       "category": "public.app-category.board-games",
       "icon": "build/icon.icns"
     },
