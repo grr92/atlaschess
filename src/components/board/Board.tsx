@@ -70,6 +70,8 @@ export const Board = () => {
                             squareSizeClass = 'w-8 h-8 md:w-11 md:h-11 lg:w-[3.8rem] lg:h-[3.8rem]';
                         } else if (currentVariantId === 'grant_acedrex') {
                             squareSizeClass = 'w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-[3.1rem] lg:h-[3.1rem] xl:w-[3.4rem] xl:h-[3.4rem]';
+                        } else if (currentVariantId === 'courier') {
+                            squareSizeClass = 'w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-[3.4rem] lg:h-[3.4rem] xl:w-[3.8rem] xl:h-[3.8rem]';
                         }
 
                         // If the square is "out of bounds", a transparent square is drawn
@@ -121,9 +123,6 @@ export const Board = () => {
                             } as React.CSSProperties;
                         }
 
-                        // To rotate the Queen icon to represent the Wazir
-                        const isWazir = piece?.name === 'Wazir';
-
                         return (
                             <div
                                 key={`${x}-${y}`}
@@ -173,7 +172,7 @@ export const Board = () => {
                                         <img
                                             src={pieceImage}
                                             alt={piece?.name}
-                                            className={`w-full h-full object-contain select-none transition-transform ${isSelected ? 'scale-110' : ''} ${isWazir ? 'rotate-180' : ''}`}
+                                            className={`w-full h-full object-contain select-none transition-transform ${isSelected ? 'scale-110' : ''}`}
                                         />
 
                                         {/* Shahzada (Prince) badge indicator */}
@@ -214,9 +213,7 @@ export const Board = () => {
                                                 <img
                                                     src={getPawnBadgeIcon(piece.pawnType, piece.color)!}
                                                     alt="Target piece"
-                                                    className={`w-full h-full object-contain ${
-                                                        piece.pawnType === 'pawn_of_vizier' ? 'rotate-180' : ''
-                                                    }`}
+                                                    className="w-full h-full object-contain"
                                                 />
                                             </div>
                                         )}

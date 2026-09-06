@@ -7,7 +7,7 @@ import { variantMeta_es, variantCodex_es } from '../../src/i18n/variants/es';
 import { variantMeta_ca, variantCodex_ca } from '../../src/i18n/variants/ca';
 
 describe('i18n Module', () => {
-    const variants = ['classic', 'chaturanga', 'shatranj', 'grant_acedrex', 'tamerlane'];
+    const variants = ['classic', 'chaturanga', 'shatranj', 'courier', 'grant_acedrex', 'tamerlane'];
 
     it('should have matching top-level keys across all locale dictionaries', () => {
         const enKeys = Object.keys(en);

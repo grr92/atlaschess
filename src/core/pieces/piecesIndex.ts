@@ -44,3 +44,13 @@ export * from './grantacedrex/Lion';
 export * from './grantacedrex/Giraffe';
 export * from './grantacedrex/Crocodile';
 export * from './grantacedrex/GrantPawn';
+
+// Courier Chess
+export * from './courier/CourierKing';
+export * from './courier/Courier';
+export * from './courier/CourierBishop';
+export * from './courier/CourierQueen';
+export * from './courier/Schleich';
+export * from './courier/Sage';
+export * from './courier/CourierPawn';
+

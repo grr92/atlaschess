@@ -27,7 +27,7 @@ export const en: Translations = {
         chessVariants: 'Chess variants',
         loadGame: 'Load game',
         settings: 'Settings',
-        versionInfo: 'Version 0.7.0 • Powered by Fairy-Stockfish & Heuristic AI',
+        versionInfo: 'Version 0.8.0 • Powered by Fairy-Stockfish & Heuristic AI',
         techStack: 'Built with React + TypeScript + Zustand + Tailwind CSS',
         invalidSaveFile: 'This save file is invalid or corrupted.',
     },

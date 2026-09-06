@@ -19,6 +19,12 @@ export const variantMeta_es: Record<string, VariantMetaI18n> = {
         tag: 'Edad de Oro',
         desc: 'La joya estratégica de la Ruta de la Seda. El Ferz mueve 1 diagonal, el Elefante salta 2 y el rey solitario pierde.',
     },
+    courier: {
+        title: 'Ajedrez del Mensajero',
+        origin: 'Siglo XII • Alemania',
+        tag: 'Tablero 12x8',
+        desc: 'La obra maestra medieval alemana con Mensajeros, el Sabio, el Schleich y un tablero de 12x8.',
+    },
     grant_acedrex: {
         title: 'Grande Acedrex',
         origin: 'Siglo XIII • Castilla (Alfonso X)',
@@ -180,6 +186,67 @@ export const variantCodex_es: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'Tras la conquista islámica de Persia en el siglo VII, los maestros árabes formalizaron las reglas, crearon la primera notación y diseñaron célebres problemas tácticos llamados "mansubat".',
             rightBoxTitle: 'Llegada a Europa',
             rightBoxDesc: 'El Shatranj entró a Europa a través de Al-Ándalus (Península Ibérica) y las rutas comerciales bizantinas e italianas, permaneciendo prácticamente inalterado hasta finales del siglo XV en España, cuando el Ferz y el Pīl fueron sustituidos por la moderna Dama y el Alfil.',
+        },
+    },
+    courier: {
+        name: 'Ajedrez del Mensajero',
+        rules: {
+            intro: 'La partida se juega en un tablero de 12x8 casillas (96 casillas). Las blancas mueven primero. El objetivo es dar jaque mate al Rey rival. Esta variante es célebre por introducir el Correo (que mueve como el alfil moderno), junto a otras piezas como el Sabio y el Schleich.',
+            bullets: [
+                {
+                    title: 'Rey:',
+                    desc: 'Mueve una casilla en cualquier dirección. No existe el enroque.',
+                    pieceName: 'King',
+                },
+                {
+                    title: 'Mensajero:',
+                    desc: 'Mueve en diagonal cualquier número de casillas libres, exactamente como el alfil moderno.',
+                    pieceName: 'Courier',
+                },
+                {
+                    title: 'Alfil:',
+                    desc: 'Salta exactamente dos casillas en diagonal, saltando por encima de piezas intermedias, como el antiguo Alfil.',
+                    pieceName: 'Bishop',
+                },
+                {
+                    title: 'Reina:',
+                    desc: 'Mueve exactamente una casilla en diagonal en cualquier dirección.',
+                    pieceName: 'Queen',
+                },
+                {
+                    title: 'Schleich (Bufón / Loco):',
+                    desc: 'Mueve exactamente una casilla en ortogonal (adelante, atrás, izquierda, derecha).',
+                    pieceName: 'Schleich',
+                },
+                {
+                    title: 'Sabio / Hombre:',
+                    desc: 'Mueve una casilla en cualquier dirección como un rey, pero es una pieza ordinaria que puede ser capturada.',
+                    pieceName: 'Sage',
+                },
+                {
+                    title: 'Caballo y Torre:',
+                    desc: 'Mueven exactamente como en el ajedrez moderno. El Caballo salta en "L" y la Torre se desplaza en horizontal o vertical.',
+                    pieceName: 'Knight',
+                },
+                {
+                    title: 'Peones y Coronación:',
+                    desc: 'Los peones avanzan una casilla y capturan en diagonal. No tienen doble paso inicial ni captura al paso. Al alcanzar la última fila, un peón corona a Reina.',
+                    pieceName: 'Pawn',
+                },
+                {
+                    title: 'Final y Tablas:',
+                    desc: 'El jaque mate gana la partida. Los registros históricos son ambiguos sobre las reglas de rey ahogado; bajo el estándar del juego, el ahogado resulta en tablas.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Consejo estratégico: Los Correos dominan extensos pasillos diagonales en el amplio tablero de 12x8. ¡Coordínalos con las Torres para generar peligro!',
+        },
+        history: {
+            intro: 'El Ajedrez del Mensajero (Kurierschach) nació en la Alemania del siglo XII y floreció durante más de seis siglos, especialmente en la villa ajedrecística de Ströbeck cerca de los montes Harz.',
+            leftBoxTitle: 'Tradición local y mecenazgo real',
+            leftBoxDesc: 'El Ajedrez del Mensajero sobrevivió hasta bien entrado el siglo XIX como tradición local en la villa alemana de Ströbeck, célebremente documentado por Gustavus Selenus en 1616. En 1651, Federico Guillermo, elector de Brandeburgo y duque de Prusia, obsequió a la villa un tablero personalizado y juegos de piezas de plata en honor al juego.',
+            rightBoxTitle: 'El cuadro de Lucas van Leyden',
+            rightBoxDesc: 'Inmortalizado en 1508 por Lucas van Leyden en su célebre pintura "Los jugadores de ajedrez", que retrata a una mujer jugando al Ajedrez de los Correos contra un hombre ante varios espectadores.',
         },
     },
     grant_acedrex: {

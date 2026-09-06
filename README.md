@@ -8,7 +8,7 @@ This is my very first software project outside my CS studies and it has been dev
 
 ## Features
 
-- **Multiple Variants:** Play Classic Chess, travel back in time with historical variants or ancestors of chess (Chaturanga, Shatranj, Tamerlane Chess, Grant Acedrex) or travel around the world playing regional variants. The underlying engine is built to support custom board sizes and piece mechanics.
+- **Multiple Variants:** Play Classic Chess, travel back in time with historical variants or ancestors of chess (Chaturanga, Shatranj and more...) or travel around the world playing regional variants. The underlying engine is built to support custom board sizes and piece mechanics.
 - **Alfonso X 8-Sided Die (d8) Mode:** Play Grant Acedrex using the historical 13th-century 8-sided die rule commissioned by King Alfonso X, where the rolled die determines which piece hierarchy must move on that turn (fully playable in PvP and against the AI).
 - **AI Opponent (PvE):** Challenge the machine powered by a dual-engine architecture:
     - **Fairy-Stockfish 14:** High-performance native UCI engine for classical chess and standard historical variants.
@@ -122,39 +122,31 @@ I highly value your feedback! Feel free to open an issue to suggest new features
   - License: [Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)](https://creativecommons.org/licenses/by-sa/3.0/) / [GFDL](https://www.gnu.org/licenses/fdl-1.3.html).
 
 - **Camel (Jamal):**
-  - Sources: [White Chess Camel](https://commons.wikimedia.org/wiki/File:White_chess_camel.svg) and [Black Chess Camel](https://commons.wikimedia.org/wiki/File:Black_chess_camel.svg) via Wikimedia Commons.
-  - Author: [Kwamikagami](https://commons.wikimedia.org/wiki/User:Kwamikagami) Modified and adapted for the Atlas Chess visual style by Gerard Romero.
-  - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+  - Attribution: Modified by grr92 using the original by Kwamikagami, CC BY-SA 4.0, https://commons.wikimedia.org/w/index.php?curid=151279591 & https://commons.wikimedia.org/w/index.php?curid=151279589
 
 - **Dabbaba (War Engine):**
-  - Sources: [White Dabbaba](https://commons.wikimedia.org/wiki/File:White_dabbaba.svg) and [Black Dabbaba](https://commons.wikimedia.org/wiki/File:Black_dabbaba.svg) via Wikimedia Commons.
-  - Author: [Kwamikagami](https://commons.wikimedia.org/wiki/User:Kwamikagami)
-  - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+  - Attribution: By Kwamikagami - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/w/index.php?curid=151279587 & https://commons.wikimedia.org/w/index.php?curid=151279588
 
 - **Giraffe (Zurafa / Giraffe):**
-  - Sources: [White Chess Giraffe (Chess_Glt45.svg)](https://commons.wikimedia.org/wiki/File:Chess_Glt45.svg) and [Black Chess Giraffe (Chess_Gdt45.svg)](https://commons.wikimedia.org/wiki/File:Chess_Gdt45.svg) via Wikimedia Commons.
-  - Author: [Francois Pier](https://commons.wikimedia.org/wiki/User:Francois-Pier)
-  - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+  - Attribution: By Francois-Pier - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=48195965 & https://commons.wikimedia.org/w/index.php?curid=48195964
 
 - **Elephant (Pil / Gaja):**
-  - Sources: [White Chess Elephant (Chess_elt45.svg)](https://commons.wikimedia.org/wiki/File:Chess_elt45.svg) and [Black Chess Elephant (Chess_edt45.svg)](https://commons.wikimedia.org/wiki/File:Chess_edt45.svg) via Wikimedia Commons.
-  - *Note: `Chess_elt45.svg` was also used as the foundational piece to design the Atlas Chess main logo.*
-  - Author: [NikNaks93](https://commons.wikimedia.org/wiki/User:NikNaks)
-  - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+  - Attribution: By NikNaks93 - Own work based on: Chess blt45.svg by Cburnett, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=10403980 & https://commons.wikimedia.org/w/index.php?curid=10403985
 
 - **Unicorn (Unicorn / Rhinoceros):**
-  - Sources: [White Chess Unicorn (Chess_Ult45.svg)](https://commons.wikimedia.org/wiki/File:Chess_Ult45.svg) and [Black Chess Unicorn (Chess_Udt45.svg)](https://commons.wikimedia.org/wiki/File:Chess_Udt45.svg) via Wikimedia Commons.
-  - Author: [Francois Pier](https://commons.wikimedia.org/wiki/User:Francois-Pier)
-  - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) / [GFDL](https://www.gnu.org/licenses/fdl-1.3.html) / [GPL](https://www.gnu.org/licenses/gpl.html).
+  - Attribution: By en:User:Cburnett (knight); Francois-Pier (unicorn) - Own work, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=48195799 & https://commons.wikimedia.org/w/index.php?curid=48195800
+
+- **Schleich (Fool / Jester):**
+  - Attribution: By File:Chess tll44.png: Mykola Dolgalov based on Omega Chess Advanced / *derivative work NikNaks93 - File:Chess tll44.png, CC BY-SA 3.0, https://commons.wikimedia.org/w/index.php?curid=10404354 & https://commons.wikimedia.org/w/index.php?curid=10404340
+
+- **Sage:**
+  - Attribution: By Uray M. János - http://zoldsakk.hu/en/info.php?item=images, GFDL, https://commons.wikimedia.org/w/index.php?curid=61257887 & https://commons.wikimedia.org/w/index.php?curid=61261369
 
 - **Knight from the Atlas Chess Fusion Logo:**
-  - Source: [Alfaerie SVG Chess Graphics](https://www.chessvariants.com/graphics.dir/alfaerieSVG/index.html).
-  - Authors: [Gregory Strong](https://www.chessvariants.com/who/GregoryStrong) and [H.G. Muller](https://www.chessvariants.com/who/HGMuller).
+  - Attribution: By [Gregory Strong](https://www.chessvariants.com/who/GregoryStrong) and [H.G. Muller](https://www.chessvariants.com/who/HGMuller), [Alfaerie SVG Chess Graphics](https://www.chessvariants.com/graphics.dir/alfaerieSVG/index.html)
 
 - **Wind Rose Background Logo:**
-  - Source: Jorge de Aguiar Nautical Chart (1492), vector reproduction by [Alvesgaspar](https://commons.wikimedia.org/wiki/File:WInd_Rose_Aguiar.svg) via Wikimedia Commons.
-  - Author: [Alvesgaspar](https://commons.wikimedia.org/wiki/User:Alvesgaspar)
-  - License: [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/).
+  - Attribution: By I, Alvesgaspar, CC BY 2.5, https://commons.wikimedia.org/w/index.php?curid=2268766
 
 ### Chess Engines & Open Source Software
 
@@ -175,7 +167,6 @@ You are free to share and adapt the material for non-commercial purposes, as lon
 ## Planned Variants
 
 - Historical:
-  - Courier chess
   - Senterej
   - Short assize
   - Chaturaji (4 players)

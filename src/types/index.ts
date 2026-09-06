@@ -23,7 +23,9 @@ export type PieceName =
     | 'Pawn of Ferz' | 'Pawn of Giraffes' | 'Pawn of Zurafa' | 'Pawn of Pickets'
     | 'Pawn of Talia' | 'Pawn of Knights' | 'Pawn of Asb' | 'Pawn of Rooks' | 'Pawn of Rukh'
     // Grant Acedrex
-    | 'GrantKing' | 'Aanca' | 'Unicorn' | 'Unicornio' | 'Lion' | 'Crocodile' | 'Grantpawn';
+    | 'GrantKing' | 'Aanca' | 'Unicorn' | 'Unicornio' | 'Lion' | 'Crocodile' | 'Grantpawn'
+    // Courier Chess
+    | 'CourierKing' | 'Courier' | 'CourierBishop' | 'CourierQueen' | 'Schleich' | 'Sage' | 'CourierPawn';
 
 import type { Piece } from '../core/pieces/Piece.ts';
 

@@ -11,7 +11,7 @@ export const getRank = (y: number, totalRows: number) => (totalRows - y).toStrin
 // Ambiguity detector (Must be executed BEFORE moving the piece)
 export const getDisambiguator = (engine: BaseEngine, piece: Piece, from: Position, to: Position): string => {
     // Those pieces cannot cause ambiguity
-    if (['Pawn', 'Padati', 'King', 'Raja', 'Gaja', 'Mantri'].includes(piece.name)) return '';
+    if (['Pawn', 'Padati', 'King', 'Raja', 'Shah', 'GrantKing', 'CourierKing', 'Gaja', 'Mantri'].includes(piece.name) || piece.name.includes('Pawn') || piece.name.includes('pawn')) return '';
 
     const ambiguousPieces: Position[] = [];
 
@@ -59,15 +59,22 @@ export const buildSAN = (
     // Piece Letter
     let pieceStr = '';
     switch (piece.name) {
-        case 'King': case 'Raja': case 'Shah': case 'Shahzada': case 'AdventitiousShah': pieceStr = 'K'; break;
-        case 'Queen': case 'Mantri': case 'Ferz': case 'Wazir': pieceStr = 'Q'; break;
+        case 'King': case 'Raja': case 'Shah': case 'Shahzada': case 'AdventitiousShah': case 'CourierKing': case 'GrantKing': pieceStr = 'K'; break;
+        case 'Queen': case 'Mantri': case 'Ferz': case 'Wazir': case 'CourierQueen': pieceStr = 'Q'; break;
         case 'Rook': case 'Ratha': case 'Rukh': pieceStr = 'R'; break;
-        case 'Bishop': case 'Talia': pieceStr = 'B'; break;
+        case 'Bishop': case 'Talia': case 'CourierBishop': pieceStr = 'B'; break;
+        case 'Courier': pieceStr = 'C'; break;
         case 'Knight': case 'Asva': case 'Asb': pieceStr = 'N'; break;
         case 'Gaja': case 'Pil': pieceStr = 'E'; break;
-        case 'Zurafa': pieceStr = 'G'; break;
+        case 'Zurafa': case 'Giraffe': pieceStr = 'G'; break;
         case 'Dabbaba': pieceStr = 'D'; break;
         case 'Jamal': pieceStr = 'C'; break;
+        case 'Schleich': pieceStr = 'W'; break;
+        case 'Sage': pieceStr = 'M'; break;
+        case 'Aanca': pieceStr = 'A'; break;
+        case 'Unicorn': case 'Unicornio': pieceStr = 'U'; break;
+        case 'Lion': pieceStr = 'L'; break;
+        case 'Crocodile': pieceStr = 'O'; break;
     }
 
     // Captures (If it's a pawn, always include its file of origin)
@@ -75,7 +82,7 @@ export const buildSAN = (
     let captureStr = isCapture ? 'x' : '';
     let finalDis = disambiguator;
 
-    const isPawnType = piece.name.startsWith('Pawn') || piece.name === 'Padati' || piece.name === 'Sarbaz';
+    const isPawnType = piece.name.includes('Pawn') || piece.name.startsWith('Pawn') || piece.name === 'Padati' || piece.name === 'Sarbaz' || piece.name === 'Grantpawn';
     if (isPawnType && isCapture) {
         finalDis = getFile(from.x); // Ex: exd5
     }

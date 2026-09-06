@@ -4,12 +4,14 @@ import { ChaturangaEngine } from '../engine/ChaturangaEngine';
 import { ShatranjEngine } from '../engine/ShatranjEngine';
 import { GrantAcedrexEngine } from '../engine/GrantAcedrexEngine';
 import { TamerlaneEngine } from '../engine/TamerlaneEngine';
+import { CourierEngine } from '../engine/CourierEngine';
 
 import { ClassicChess } from './ClassicChess';
 import { Chaturanga } from './Chaturanga';
 import { Shatranj } from './Shatranj';
 import { GrantAcedrex } from './GrantAcedrex';
 import { TamerlaneChess } from './TamerlaneChess';
+import { CourierChess } from './CourierChess';
 
 export type VariantCategory = 'standard' | 'historical' | 'regional';
 
@@ -89,6 +91,16 @@ VariantRegistry.register({
 });
 
 VariantRegistry.register({
+    id: 'courier',
+    title: 'Courier Chess',
+    category: 'historical',
+    origin: '12th Century • Germany',
+    tag: '12x8 Board',
+    desc: 'The medieval German masterpiece with Couriers, Sage, Schleich, and modern diagonal power.',
+    createEngine: () => new CourierEngine(new CourierChess())
+});
+
+VariantRegistry.register({
     id: 'grant_acedrex',
     title: 'Grant Acedrex',
     category: 'historical',
@@ -108,3 +120,4 @@ VariantRegistry.register({
     desc: 'Timur\'s grand chess with Giraffes, Camels, War Engines, 11 unique pawns, and royal Citadels.',
     createEngine: () => new TamerlaneEngine(new TamerlaneChess())
 });
+

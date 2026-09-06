@@ -39,7 +39,7 @@ export const PIECE_REGISTRY: Record<PieceName, PieceMetadata> = {
     Shahzada: { name: 'Shahzada', displayName: 'Shahzada', value: 900, sortOrder: 0, svgChar: 'k' },
     AdventitiousShah: { name: 'AdventitiousShah', displayName: 'Adventitious Shah', value: 900, sortOrder: 0, svgChar: 'k' },
     General: { name: 'General', displayName: 'General', value: 200, sortOrder: 11, svgChar: 'q' },
-    Wazir: { name: 'Wazir', displayName: 'Wazir', value: 200, sortOrder: 11, svgChar: 'q' },
+    Wazir: { name: 'Wazir', displayName: 'Wazir', value: 200, sortOrder: 11, svgChar: 'w' },
     Giraffe: { name: 'Giraffe', displayName: 'Giraffe', value: 250, sortOrder: 5, svgChar: 'g', diceNumber: 2 },
     Zurafa: { name: 'Zurafa', displayName: 'Zurafa', value: 250, sortOrder: 5, svgChar: 'g', diceNumber: 2 },
     Picket: { name: 'Picket', displayName: 'Picket', value: 300, sortOrder: 6, svgChar: 'b' },
@@ -78,7 +78,16 @@ export const PIECE_REGISTRY: Record<PieceName, PieceMetadata> = {
     Unicornio: { name: 'Unicornio', displayName: 'Unicorn', value: 750, sortOrder: 3, svgChar: 'u', diceNumber: 6 },
     Lion: { name: 'Lion', displayName: 'Lion', value: 350, sortOrder: 7, svgChar: 'l', diceNumber: 4 },
     Crocodile: { name: 'Crocodile', displayName: 'Crocodile', value: 300, sortOrder: 9, svgChar: 'o', diceNumber: 3 },
-    Grantpawn: { name: 'Grantpawn', displayName: 'Pawn', value: 100, sortOrder: 13, svgChar: 'p', diceNumber: 1 }
+    Grantpawn: { name: 'Grantpawn', displayName: 'Pawn', value: 100, sortOrder: 13, svgChar: 'p', diceNumber: 1 },
+
+    // Courier Chess
+    CourierKing: { name: 'CourierKing', displayName: 'King', value: 10000, sortOrder: 0, svgChar: 'k' },
+    Courier: { name: 'Courier', displayName: 'Courier', value: 330, sortOrder: 6, svgChar: 's' },
+    CourierBishop: { name: 'CourierBishop', displayName: 'Bishop', value: 150, sortOrder: 10, svgChar: 'b' },
+    CourierQueen: { name: 'CourierQueen', displayName: 'Queen', value: 200, sortOrder: 11, svgChar: 'q' },
+    Schleich: { name: 'Schleich', displayName: 'Schleich', value: 200, sortOrder: 11, svgChar: 't' },
+    Sage: { name: 'Sage', displayName: 'Sage', value: 300, sortOrder: 6, svgChar: 'x' },
+    CourierPawn: { name: 'CourierPawn', displayName: 'Pawn', value: 100, sortOrder: 13, svgChar: 'p' }
 };
 
 export const getPieceMetadata = (name: string): PieceMetadata | undefined => {

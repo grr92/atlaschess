@@ -44,16 +44,24 @@ export const App = () => {
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape' && confirmAction) {
+            if (e.key === 'Escape') {
                 if (document.activeElement instanceof HTMLElement) {
                     document.activeElement.blur();
                 }
-                setConfirmAction(null);
+                if (confirmAction) {
+                    setConfirmAction(null);
+                } else if (infoModalOpen) {
+                    setInfoModalOpen(false);
+                } else if (isSettingsOpen) {
+                    setIsSettingsOpen(false);
+                } else if (currentScreen === 'GAME') {
+                    setConfirmAction('exit');
+                }
             }
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [confirmAction]);
+    }, [confirmAction, infoModalOpen, isSettingsOpen, currentScreen]);
 
     // function to process the "yes" confirmation
     const handleConfirm = () => {

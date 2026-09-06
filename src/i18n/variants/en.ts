@@ -19,6 +19,12 @@ export const variantMeta_en: Record<string, VariantMetaI18n> = {
         tag: 'Golden Age',
         desc: 'The strategic jewel of the Silk Road. Ferz moves 1 diagonal, Pil leaps 2, and bare king loses.',
     },
+    courier: {
+        title: 'Courier Chess',
+        origin: '12th Century • Germany',
+        tag: '12x8 Board',
+        desc: 'The medieval German masterpiece with Couriers, Sage, Schleich, and a 12x8 board.',
+    },
     grant_acedrex: {
         title: 'Grant Acedrex',
         origin: '13th Century • Castile (Alfonso X)',
@@ -182,6 +188,67 @@ export const variantCodex_en: Record<string, VariantCodexI18n> = {
             rightBoxDesc: 'Shatranj was introduced to Europe via Al-Andalus (Iberian Peninsula) and Italian trade routes. It remained largely unchanged until the late 15th century in Spain, when the Ferz and Pīl were replaced by the modern Queen and Bishop.',
         },
     },
+    courier: {
+        name: 'Courier Chess',
+        rules: {
+            intro: 'The game is played on a 12x8 board (96 squares). White moves first. The objective is to checkmate the opponent\'s King. The game is famous for introducing the Courier (which moves like the modern Bishop), alongside other pieces like the Sage and the Schleich.',
+            bullets: [
+                {
+                    title: 'King:',
+                    desc: 'Moves one square in any direction. There is no castling.',
+                    pieceName: 'King',
+                },
+                {
+                    title: 'Courier:',
+                    desc: 'Moves diagonally any number of unoccupied squares, exactly like the modern bishop.',
+                    pieceName: 'Courier',
+                },
+                {
+                    title: 'Bishop:',
+                    desc: 'Leaps exactly two squares diagonally, jumping over intermediate pieces, just like the ancient Alfil.',
+                    pieceName: 'Bishop',
+                },
+                {
+                    title: 'Queen:',
+                    desc: 'Moves exactly one square diagonally in any direction.',
+                    pieceName: 'Queen',
+                },
+                {
+                    title: 'Schleich (Jester / Fool):',
+                    desc: 'Moves exactly one square orthogonally (forward, backward, left, right).',
+                    pieceName: 'Schleich',
+                },
+                {
+                    title: 'Sage / Man:',
+                    desc: 'Moves one square in any direction like a king, but is a regular piece that can be hazarded and captured.',
+                    pieceName: 'Sage',
+                },
+                {
+                    title: 'Knight & Rook:',
+                    desc: 'Move exactly as in modern chess. The Knight leaps in an "L" shape, and the Rook moves horizontally or vertically.',
+                    pieceName: 'Knight',
+                },
+                {
+                    title: 'Pawns & Promotion:',
+                    desc: 'Pawns move one square forward and capture one square diagonally. There is no initial double step or en passant. Upon reaching the last rank, a pawn promotes to a Queen.',
+                    pieceName: 'Pawn',
+                },
+                {
+                    title: 'Endgame & Stalemate:',
+                    desc: 'Checkmate wins the game. Historical records are ambiguous regarding stalemate and bare king rules; under standard variant rules, stalemate results in a draw.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Pro tip: The Couriers control extensive diagonal corridors on the wide 12x8 battlefield. Coordinate them with the Rooks to generate danger!',
+        },
+        history: {
+            intro: 'Courier Chess (Kurierschach) originated in 12th-century Germany and flourished for over six centuries, particularly in the chess village of Ströbeck near the Harz mountains.',
+            leftBoxTitle: 'Village Tradition and Roya Patronage',
+            leftBoxDesc: 'Courier Chess survived well into the 19th century as a local tradition in the German village of Ströbeck, famously documented by Gustavus Selenus in 1616. In 1651, Frederick William, Elector of Brandenburg and Duke of Prussia, gifted the village a custom board and silver playing sets to honor the game.',
+            rightBoxTitle: 'Lucas van Leyden\'s Painting',
+            rightBoxDesc: 'The game was immortalized in 1508 by Lucas van Leyden in his celebrated painting "The Chess Players", depicting a woman playing Courier Chess against a man with onlookers.',
+        },
+    },
     grant_acedrex: {
         name: 'Grant Acedrex',
         rules: {
@@ -334,7 +401,7 @@ export const variantCodex_en: Record<string, VariantCodexI18n> = {
         history: {
             intro: 'Tamerlane chess is a strategic behemoth developed in the 14th century during the reign of Timur (Tamerlane), the Turco-Mongol conqueror. It is the most famous and complex variant of "Great Chess" (Shatranj Kamil).',
             leftBoxTitle: 'The Game of a Conqueror',
-            leftBoxDesc: 'Timur himself loved to play chess and preferred large board variants over the smaller 8x8 shatranj. He invited the best masters of the land to his court in Samarkand, including Ali ash-Shatranji of Tabriz.',
+            leftBoxDesc: 'Timur himself loved to play chess and preferred large board variants over the smaller 8x8 shatranj. He invited the best masters of the land to his court in Samarcanda, including Ali ash-Shatranji of Tabriz.',
             rightBoxTitle: 'Myths and Legends',
             rightBoxDesc: 'A Persian manuscript attributes the origin of great chess variants to ancient legends, stating that tactical large-board variants were gifted to Alexander the Great by Hermes.',
         },

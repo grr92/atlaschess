@@ -19,6 +19,12 @@ export const variantMeta_ca: Record<string, VariantMetaI18n> = {
         tag: 'Edat d\'Or',
         desc: 'La joia estratègica de la Ruta de la Seda. El Ferz mou 1 diagonal, l\'Elefant en salta 2 i el rei solitari perd.',
     },
+    courier: {
+        title: 'Escacs del Missatger',
+        origin: 'Segle XII • Alemanya',
+        tag: 'Tauler 12x8',
+        desc: 'L\'obra mestra medieval alemanya amb Missatgers, el Savi, el Schleich i un tauler de 12x8.',
+    },
     grant_acedrex: {
         title: 'Gran Acedrex',
         origin: 'Segle XIII • Castella (Alfons X)',
@@ -180,6 +186,67 @@ export const variantCodex_ca: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'Després de la conquesta islàmica de Pèrsia al segle VII, els mestres àrabs van formalitzar les regles, van crear les primeres notacions i van dissenyar problemes tàctics coneguts com a "mansubat".',
             rightBoxTitle: 'Arribada a Europa',
             rightBoxDesc: 'El Xatranj va entrar a Europa a través d\'Al-Àndalus i les rutes comercials italianes, romanent pràcticament inalterat fins a finals del segle XV a Espanya, quan el Ferz i el Pīl van ser substituïts per la moderna Dama i l\'Alfil.\'',
+        },
+    },
+    courier: {
+        name: 'Escacs del Missatger',
+        rules: {
+            intro: 'La partida es juga en un tauler de 12x8 caselles (96 caselles). Les blanques mouen primer. L\'objectiu és fer escac i mat al Rei rival. Aquesta variant és cèlebre per introduir el Missatger (que mou com l\'alfil modern), juntament amb altres peces com el Savi i el Schleich.',
+            bullets: [
+                {
+                    title: 'Rei:',
+                    desc: 'Mou una casella en qualsevol direcció. No hi ha enroc.',
+                    pieceName: 'King',
+                },
+                {
+                    title: 'Missatger:',
+                    desc: 'Mou en diagonal qualsevol nombre de caselles lliures, exactament com l\'alfil modern.',
+                    pieceName: 'Courier',
+                },
+                {
+                    title: 'Alfil:',
+                    desc: 'Salta exactament dues caselles en diagonal, saltant per sobre de peces intermèdies, com l\'antic Alfil.',
+                    pieceName: 'Bishop',
+                },
+                {
+                    title: 'Reina:',
+                    desc: 'Mou exactament una casella en diagonal en qualsevol direcció.',
+                    pieceName: 'Queen',
+                },
+                {
+                    title: 'Schleich (Bufó / Foll):',
+                    desc: 'Mou exactament una casella en ortogonal (endavant, endarrere, esquerra, dreta).',
+                    pieceName: 'Schleich',
+                },
+                {
+                    title: 'Savi / Home:',
+                    desc: 'Mou una casella en qualsevol direcció com un rei, però és una peça ordinària que pot ser capturada.',
+                    pieceName: 'Sage',
+                },
+                {
+                    title: 'Cavall i Torre:',
+                    desc: 'Mouen exactament com als escacs moderns. El Cavall salta en "L" i la Torre es desplaça en horitzontal o vertical.',
+                    pieceName: 'Knight',
+                },
+                {
+                    title: 'Peons i Promoció:',
+                    desc: 'Els peons avancen una casella i capturen en diagonal. No tenen doble pas inicial ni captura al pas. En arribar a l\'última fila, un peó promociona a Reina.',
+                    pieceName: 'Pawn',
+                },
+                {
+                    title: 'Final i Taules:',
+                    desc: 'L\'escac i mat guanya la partida. Els registres històrics són ambigus sobre les regles d\'ofegat; sota l\'estàndard del joc, l\'ofegat resulta en taules.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Consell estratègic: Els Missatgers dominen extensos passadissos diagonals a l\'ampli tauler de 12x8. Coordina\'ls amb les Torres per generar perill!',
+        },
+        history: {
+            intro: 'Els Escacs del Missatger (Kurierschach) van néixer a l\'Alemanya del segle XII i van florir durant més de sis segles, especialment a la vila escaquística de Ströbeck, a prop de les muntanyes del Harz.',
+            leftBoxTitle: 'Tradició local i mecenatge reial',
+            leftBoxDesc: 'Els Escacs del Missatger van sobreviure fins ben entrat el segle XIX com a tradició local a la vila alemanya de Ströbeck, cèlebrement documentat per Gustavus Selenus el 1616. El 1651, Frederic Guillem, elector de Brandenburg i duc de Prússia, va obsequiar a la vila un tauler personalitzat i jocs de peces de plata en honor al joc.',
+            rightBoxTitle: 'El quadre de Lucas van Leyden',
+            rightBoxDesc: 'Immortalitzat el 1508 per Lucas van Leyden en la seva cèlebre pintura "Els jugadors d\'escacs", que retrata una dona jugant als Escacs dels Missatgers contra un home davant de diversos espectadors.',
         },
     },
     grant_acedrex: {

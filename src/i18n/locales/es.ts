@@ -27,7 +27,7 @@ export const es: Translations = {
         chessVariants: 'Variantes de ajedrez',
         loadGame: 'Cargar partida',
         settings: 'Ajustes',
-        versionInfo: 'Versión 0.7.0 • Desarrollado con Fairy-Stockfish e IA Heurística',
+        versionInfo: 'Versión 0.8.0 • Desarrollado con Fairy-Stockfish e IA Heurística',
         techStack: 'Creado con React + TypeScript + Zustand + Tailwind CSS',
         invalidSaveFile: 'Este archivo de guardado es inválido o está corrupto.',
     },
