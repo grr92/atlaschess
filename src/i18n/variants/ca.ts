@@ -37,6 +37,12 @@ export const variantMeta_ca: Record<string, VariantMetaI18n> = {
         tag: '112 Caselles',
         desc: 'Els escacs monumentals de Tamerlà amb Girafes, Camells, Màquines de Guerra, 11 peons únics i Ciutadelles reials.',
     },
+    chaturaji: {
+        title: 'Chaturaji',
+        origin: 'Segles X–XI • Índia',
+        tag: '4 Jugadors',
+        desc: 'El Chaturanga per a 4 jugadors (conegut popularment com a Chaturaji) en un tauler Ashtāpada de 8x8 amb Triomf de la Barca, trons, promocions i apostes.',
+    },
 };
 
 export const variantCodex_ca: Record<string, VariantCodexI18n> = {
@@ -404,6 +410,65 @@ export const variantCodex_ca: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'El mateix Timur era un apassionat dels escacs i preferia els taulers gegantins al tradicional 8x8. Convocava els millors escaquistes a la seva cort a Samarcanda, com el cèlebre Ali ash-Shatranji.',
             rightBoxTitle: 'Mites i Llegendes',
             rightBoxDesc: 'Manuscrits perses atribueixen l\'origen d\'aquestes complexes variants a llegendes antigues, afirmant que Hermes va obsequiar taulers colossals d\'escacs tàctics a Alexandre el Gran.',
+        },
+    },
+    chaturaji: {
+        name: 'Chaturaji (Chaturanga per a 4 jugadors)',
+        rules: {
+            intro: 'El Chaturaji (nom amb què es coneix habitualment, tot i que de manera històricament inexacta, el Chaturanga per a 4 jugadors) es juga en un tauler de 8x8 sense caselles escaquejades entre 4 jugadors: Vermelles (Est), Verdes (Sud), Grogues (Oest) i Blaves (Nord), en torns en sentit horari. Els jugadors enfrontats (Vermelles i Grogues, Verdes i Blaves) són aliats militars, però cada jugador puntua apostes individualment. Existeixen diverses variants i reconstruccions històriques en manuscrits indis i perses; AtlasChess implementa el conjunt de regles recopilat i documentat per chessvariants.com (a excepció de la regla exclusiva per a apostes de diners).',
+            bullets: [
+                {
+                    title: 'El Rei:',
+                    desc: 'Mou una casella en qualsevol direcció. No hi ha concepte d\'escac ni d\'escac i mat; els reis es poden capturar directament com qualsevol peça normal. Quan un jugador perd el seu Rei, perd el torn i resta inactiu tret que el seu aliat el rescati.',
+                    pieceName: 'ChaturajiKing',
+                },
+                {
+                    title: 'L\'Elefant:',
+                    desc: 'Mou horitzontalment o verticalment a través de qualsevol nombre de caselles desocupades, exactament igual que la Torre moderna.',
+                    pieceName: 'ChaturajiElephant',
+                },
+                {
+                    title: 'El Cavall:',
+                    desc: 'Mou en forma de "L" (dues caselles en una direcció i una en perpendicular), saltant sobre peces intermèdies, idèntic al Cavall modern.',
+                    pieceName: 'ChaturajiHorse',
+                },
+                {
+                    title: 'La Barca:',
+                    desc: 'Salta exactament dues caselles en diagonal, sobrevolant qualsevol peça intermèdia. Triomf de la Barca (Vrihannauka)!: Si una Barca mou i completa un quadrat de 2x2 compost per les quatre barques presents al tauler, la barca que mou captura instantàniament les altres tres barques alhora!',
+                    pieceName: 'ChaturajiBoat',
+                },
+                {
+                    title: 'El Peó:',
+                    desc: 'Avança 1 casella endavant en la direcció de marxa del seu exèrcit i captura 1 casella en diagonal endavant (sense avanç doble inicial). En arribar a la fila final oposada, pot coronar en la peça original d\'aquella columna (Cantonada = Barca, Columna de Cavall = Cavall, Columna d\'Elefant = Elefant, Columna de Rei = Rei). Tanmateix, la coronació només es permet si al jugador li queden 2 o menys peons; si encara té 3 o 4 peons, roman congelat a l\'última fila fins que es perdin peons aliats.',
+                    pieceName: 'ChaturajiPawn',
+                },
+                {
+                    title: 'Trons (Sinhasana):',
+                    desc: 'Un Rei que entri a la casella de tron inicial d\'un rival guanya 1 aposta (2 apostes si captura el rei rival en aquell tron). Un Rei que entri al tron inicial del seu aliat pren el comandament suprem de tot l\'exèrcit aliat, controlant ambdues forces en el seu torn (i guanya 2 apostes si captura el rei aliat allà).',
+                },
+                {
+                    title: 'Rescat de Reis:',
+                    desc: 'Si un jugador captura un rei enemic mentre el rei del seu aliat ha caigut (i no ha estat rescatat prèviament), pot optar per rescatar el rei del seu company i col·locar-lo immediatament a qualsevol casella buida del tauler.',
+                },
+                {
+                    title: 'El Dau (d4):',
+                    desc: 'En jugar amb la regla tradicional de daus, es llança un dau per determinar quina peça pot moure: 1 = Peó o Rei, 2 = Barca, 3 = Cavall, 4 = Elefant. Si es juga sense daus, el jugador tria lliurement qualsevol moviment legal.',
+                    iconType: 'dices',
+                },
+                {
+                    title: 'Rei Solitari i Victòria:',
+                    desc: 'Si qualsevol jugador queda reduït únicament al seu Rei sense altres peces, la partida finalitza immediatament en Taules. L\'últim Rei supervivent guanya 1 aposta (2 si aquell Rei va capturar personalment els 3 reis rivals, 4 si va ser als seus respectius trons). La partida global la guanya el jugador que hagi acumulat el nombre més alt d\'apostes.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Consell estratègic: Vigila les agrupacions de barques per activar el demolidor Triomf de la Barca (Vrihannauka). Si el teu aliat cau, envaeix el seu tron per comandar el seu exèrcit o captura un rei enemic per efectuar un Rescat de Rei!',
+        },
+        history: {
+            intro: 'El joc per a quatre participants conegut avui com a Chaturaji s\'anomenava realment Chaturanga (en sànscrit, "quatre divisions de l\'exèrcit"). Tot i que a la literatura moderna tardana se\'l va anomenar Chaturaji ("Quatre Reis"), les fonts històriques confirmen que era una modalitat per a quatre jugadors del Chaturanga original.',
+            leftBoxTitle: 'Al-Biruni i els Manuscrits Indis',
+            leftBoxDesc: 'El primer testimoni detallat va ser documentat cap al 1030 dC pel polímata persa Al-Biruni al seu Kitab al-Hind (Llibre de l\'Índia). Posteriorment va aparèixer en textos sànscrits com el Tithitattva de Raghunandana (segles XV-XVI), descrivint quatre exèrcits (Vermell, Verd, Groc, Blau) que disputaven apostes al tauler Ashtāpada de 8x8 amb daus.',
+            rightBoxTitle: 'La Refutada Teoria de Cox-Forbes',
+            rightBoxDesc: 'Al segle XIX, Hiram Cox i Duncan Forbes van formular la cèlebre teoria que els escacs amb daus per a 4 jugadors eren l\'ancestre primigeni de tots els escacs. El 1913, l\'historiador H.J.R. Murray i investigadors moderns com Jean-Louis Cazaux van refutar totalment aquesta hipòtesi, demostrant que el Chaturanga per a 2 jugadors va néixer primer (c. segle VI) i la versió per a 4 jugadors va sorgir més tard (segles X-XI).',
         },
     },
 };

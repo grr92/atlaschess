@@ -1,8 +1,10 @@
 import type { StoreSlice, AiSliceState, AiSliceActions } from '../types';
+import type { Position } from '../../types';
 import { historyToUciMoves, uciToMove } from '../../utils/uciNotation';
 import { HeuristicAiEngine } from '../../core/ai/HeuristicAiEngine';
 import { TamerlaneEngine } from '../../core/engine/TamerlaneEngine';
-import { DICE_PIECE_MAP } from '../../utils/diceMapper';
+import { ChaturajiEngine } from '../../core/engine/ChaturajiEngine';
+import { DICE_PIECE_MAP, CHATURAJI_DICE_PIECE_MAP } from '../../utils/diceMapper';
 import { soundManager } from '../../utils/soundManager';
 
 export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, get) => ({
@@ -15,9 +17,13 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
     setAiDifficulty: (aiDifficulty) => set({ aiDifficulty }),
 
     triggerAiMove: async () => {
-        const { engine, gameState, currentTurn, gameMode, playerColor, aiDifficulty, currentVariantId, isAiThinking, useDiceRule, currentDiceRoll, isRollingDice } = get();
+        const { engine, gameState, gameMode, playerColor, aiDifficulty, currentVariantId, isAiThinking, useDiceRule, currentDiceRoll, isRollingDice } = get();
         if (!engine || gameState === 'checkmate' || gameState === 'draw') return;
-        if (gameMode !== 'vs_ai' || currentTurn === playerColor) return;
+
+        const isChaturaji = currentVariantId === 'chaturaji';
+        const activeController = engine.getActiveController();
+
+        if (gameMode !== 'vs_ai' || activeController === playerColor) return;
         if (isAiThinking) return;
 
         // If the dice is currently rolling, wait for it to settle before calculating AI move
@@ -33,21 +39,24 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
         try {
             let executed = false;
 
-            // 1. If playing with 8-sided dice rule, use Native Heuristic AI restricted to the rolled piece
+            let allowedPieces: string | string[] | undefined = undefined;
             if (useDiceRule && currentDiceRoll) {
-                const allowedPieceName = DICE_PIECE_MAP[currentDiceRoll];
-                const aiMove = HeuristicAiEngine.findBestMove(engine, aiDifficulty, allowedPieceName);
-                if (aiMove) {
-                    executed = engine.executeMove(aiMove.from, aiMove.to, aiMove.promotionPiece);
+                if (isChaturaji) {
+                    const normalizedRoll = currentDiceRoll === 5 ? 1 : (currentDiceRoll === 6 ? 4 : currentDiceRoll);
+                    allowedPieces = CHATURAJI_DICE_PIECE_MAP[normalizedRoll];
+                } else {
+                    allowedPieces = DICE_PIECE_MAP[currentDiceRoll];
                 }
-            } else if (currentVariantId === 'tamerlane') {
-                // 2. If playing Tamerlane, use the specialized Native Heuristic AI Engine
-                const aiMove = HeuristicAiEngine.findBestMove(engine, aiDifficulty);
+            }
+
+            // 1. If playing Chaturaji or with Dice Rule or Tamerlane, use Native Heuristic AI
+            if (isChaturaji || currentVariantId === 'tamerlane' || (useDiceRule && currentDiceRoll)) {
+                const aiMove = HeuristicAiEngine.findBestMove(engine, aiDifficulty, allowedPieces);
                 if (aiMove) {
                     executed = engine.executeMove(aiMove.from, aiMove.to, aiMove.promotionPiece);
                 }
             } else if (window.electronAPI?.engine) {
-                // 3. Otherwise, attempt Fairy-Stockfish calculation
+                // 2. Otherwise, attempt Fairy-Stockfish calculation
                 try {
                     await window.electronAPI.engine.setVariant(currentVariantId);
 
@@ -99,10 +108,9 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                 }
             }
 
-            // 4. Robust Fallback: If Fairy-Stockfish failed or was unable to execute the move, use Heuristic Engine
+            // 3. Robust Fallback: If Fairy-Stockfish failed or was unable to execute the move, use Heuristic Engine
             if (!executed) {
-                const allowedPieceName = (useDiceRule && currentDiceRoll) ? DICE_PIECE_MAP[currentDiceRoll] : undefined;
-                const fallbackMove = HeuristicAiEngine.findBestMove(engine, aiDifficulty, allowedPieceName);
+                const fallbackMove = HeuristicAiEngine.findBestMove(engine, aiDifficulty, allowedPieces);
                 if (fallbackMove) {
                     executed = engine.executeMove(fallbackMove.from, fallbackMove.to, fallbackMove.promotionPiece);
                 }
@@ -119,7 +127,7 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                     soundManager.playMove();
                 }
 
-                // Check post-move interception (succession, etc.)
+                // Check post-move interception (succession in Tamerlane, etc.)
                 const postInterception = engine.getPostMoveInterception(lastMove);
                 if (postInterception && postInterception.type === 'SUCCESSION_CHOICE' && engine instanceof TamerlaneEngine) {
                     // Auto-crown first royal for AI
@@ -131,18 +139,58 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                     }
                 }
 
+                // Auto-handle King Rescue in Chaturaji for AI
+                if (engine instanceof ChaturajiEngine) {
+                    if (engine.pendingKingRescueChoice) {
+                        engine.confirmKingRescue();
+                    }
+                    if (engine.pendingKingPlacement) {
+                        const partnerColor = engine.pendingKingPlacement.color;
+                        const initialThrone = ChaturajiEngine.INITIAL_THRONES[partnerColor];
+                        const candidateSquares: Position[] = [];
+                        for (let y = 0; y < 8; y++) {
+                            for (let x = 0; x < 8; x++) {
+                                if (engine.board.getPieceAt(x, y) === null) {
+                                    candidateSquares.push({ x, y });
+                                }
+                            }
+                        }
+                        candidateSquares.sort((a, b) => {
+                            const distA = Math.abs(a.x - initialThrone.x) + Math.abs(a.y - initialThrone.y);
+                            const distB = Math.abs(b.x - initialThrone.x) + Math.abs(b.y - initialThrone.y);
+                            return distA - distB;
+                        });
+                        if (candidateSquares.length > 0) {
+                            engine.placeRescuedKing(candidateSquares[0]);
+                        }
+                    }
+                }
+
                 set({
                     selectedPosition: null,
                     legalMoves: [],
                     gameState: engine.state,
                     currentTurn: engine.currentTurn,
+                    subTurn: (engine as any).subTurn || 1,
                     history: [...engine.history],
                     isAiThinking: false,
+                    activeInterception: null,
                 });
 
                 // Roll dice for the next turn if dice rule is active
                 if (useDiceRule) {
                     get().rollDiceForCurrentTurn();
+                }
+
+                // If the next turn is ALSO an AI player, trigger AI move after animation delay (for 4 player variants)
+                if (gameMode === 'vs_ai' && engine.state !== 'checkmate' && engine.state !== 'draw') {
+                    const nextActiveController = engine.getActiveController();
+
+                    if (nextActiveController !== playerColor) {
+                        setTimeout(() => {
+                            get().triggerAiMove();
+                        }, useDiceRule ? 850 : 350);
+                    }
                 }
             } else {
                 console.warn("No legal moves were executed for the AI.");
@@ -157,3 +205,4 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
         }
     }
 });
+

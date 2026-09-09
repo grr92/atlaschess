@@ -1,4 +1,4 @@
-export type PieceColor = 'white' | 'black';
+export type PieceColor = 'white' | 'black' | 'red' | 'green' | 'yellow' | 'blue';
 
 export interface Position {
     x: number;
@@ -23,9 +23,11 @@ export type PieceName =
     | 'Pawn of Ferz' | 'Pawn of Giraffes' | 'Pawn of Zurafa' | 'Pawn of Pickets'
     | 'Pawn of Talia' | 'Pawn of Knights' | 'Pawn of Asb' | 'Pawn of Rooks' | 'Pawn of Rukh'
     // Grant Acedrex
-    | 'GrantKing' | 'Aanca' | 'Unicorn' | 'Unicornio' | 'Lion' | 'Crocodile' | 'Grantpawn'
+    | 'GrantKing' | 'Aanca' | 'Unicorn' | 'Lion' | 'Crocodile' | 'Grantpawn'
     // Courier Chess
-    | 'CourierKing' | 'Courier' | 'CourierBishop' | 'CourierQueen' | 'Schleich' | 'Sage' | 'CourierPawn';
+    | 'CourierKing' | 'Courier' | 'CourierBishop' | 'CourierQueen' | 'Schleich' | 'Sage' | 'CourierPawn'
+    // Chaturaji (Four Kings)
+    | 'ChaturajiKing' | 'ChaturajiElephant' | 'ChaturajiHorse' | 'ChaturajiBoat' | 'ChaturajiPawn';
 
 import type { Piece } from '../core/pieces/Piece.ts';
 
@@ -37,6 +39,10 @@ export interface Move {
     san?: string;
     crownedSuccessorId?: string;
     citadelSwappedRoyalId?: string;
+    rescuedKingPlacement?: { color: PieceColor; pos: Position };
+    rescuedKingDeclined?: boolean;
+    isPass?: boolean;
 }
 
 export type GameState = 'playing' | 'check' | 'checkmate' | 'draw';
+export * from './interceptions';

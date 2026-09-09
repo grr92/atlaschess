@@ -1,8 +1,6 @@
 import type { Position, PieceColor } from '../../types';
 import type { BaseEngine } from '../engine/BaseEngine';
 import type { Piece } from '../pieces/Piece';
-import { TamerlaneEngine } from '../engine/TamerlaneEngine';
-import { GrantAcedrexEngine } from '../engine/GrantAcedrexEngine';
 
 export interface AiMoveResult {
     from: Position;
@@ -29,14 +27,8 @@ export class HeuristicAiEngine {
         freshEngine.currentTurn = engine.currentTurn;
         freshEngine.state = engine.state;
 
-        if (engine instanceof TamerlaneEngine && freshEngine instanceof TamerlaneEngine) {
-            freshEngine.whiteCitadelExchangeUsed = engine.whiteCitadelExchangeUsed;
-            freshEngine.blackCitadelExchangeUsed = engine.blackCitadelExchangeUsed;
-        }
-
-        if (engine instanceof GrantAcedrexEngine && freshEngine instanceof GrantAcedrexEngine) {
-            freshEngine.hasPawnCapturedYet = engine.hasPawnCapturedYet;
-        }
+        // Polymorphic delegation to copy variant-specific internal state
+        engine.cloneCustomFields(freshEngine);
 
         return freshEngine;
     }
@@ -49,27 +41,37 @@ export class HeuristicAiEngine {
     }
 
     /**
-     * Collects all legal moves for a given color, optionally filtered by piece type name.
+     * Collects all legal moves for a given color, optionally filtered by piece type name or array of allowed piece names.
      */
     public static getAllLegalMoves(
         engine: BaseEngine,
         color: PieceColor,
-        allowedPieceName?: string
+        allowedPieceNames?: string | string[]
     ): { piece: Piece; from: Position; to: Position; isCapture: boolean }[] {
         const movesList: { piece: Piece; from: Position; to: Position; isCapture: boolean }[] = [];
         const board = engine.board;
 
+        const isAllowed = (pieceName: string) => {
+            if (!allowedPieceNames) return true;
+            if (Array.isArray(allowedPieceNames)) return allowedPieceNames.includes(pieceName);
+            return allowedPieceNames === pieceName;
+        };
+
         for (let y = 0; y < board.rows; y++) {
             for (let x = 0; x < board.cols; x++) {
                 const piece = board.getPieceAt(x, y);
-                if (piece && piece.color === color) {
-                    if (allowedPieceName && piece.name !== allowedPieceName) {
+                if (piece) {
+                    const isControllable = (piece.color === color) || engine.isPieceControllableByCurrentTurn(piece);
+                    if (!isControllable) continue;
+
+                    if (!isAllowed(piece.name)) {
                         continue;
                     }
+
                     const legal = engine.getLegalMoves(piece);
                     for (const to of legal) {
                         const target = board.getPieceAt(to.x, to.y);
-                        const isCapture = target !== null && target.color !== color;
+                        const isCapture = target !== null && target.color !== piece.color;
                         movesList.push({
                             piece,
                             from: { x: piece.position.x, y: piece.position.y },
@@ -92,15 +94,50 @@ export class HeuristicAiEngine {
     }
 
     /**
+     * Automatically resolves Chaturaji's pending King rescue choice/placement in simulated engine instances.
+     */
+    public static autoResolveSimulatedRescue(engine: BaseEngine): void {
+        if ('pendingKingRescueChoice' in engine && (engine as any).pendingKingRescueChoice) {
+            (engine as any).confirmKingRescue();
+        }
+        if ('pendingKingPlacement' in engine && (engine as any).pendingKingPlacement) {
+            const partnerColor = (engine as any).pendingKingPlacement.color;
+            const throneMap: Record<string, { x: number; y: number }> = {
+                red: { x: 7, y: 4 },
+                green: { x: 3, y: 7 },
+                yellow: { x: 0, y: 3 },
+                blue: { x: 4, y: 0 }
+            };
+            const throne = throneMap[partnerColor] || { x: 0, y: 0 };
+            const emptySquares: Position[] = [];
+            for (let r = 0; r < 8; r++) {
+                for (let c = 0; c < 8; c++) {
+                    if (engine.board.getPieceAt(c, r) === null) {
+                        emptySquares.push({ x: c, y: r });
+                    }
+                }
+            }
+            emptySquares.sort((a, b) => {
+                const distA = Math.abs(a.x - throne.x) + Math.abs(a.y - throne.y);
+                const distB = Math.abs(b.x - throne.x) + Math.abs(b.y - throne.y);
+                return distA - distB;
+            });
+            if (emptySquares.length > 0) {
+                (engine as any).placeRescuedKing(emptySquares[0]);
+            }
+        }
+    }
+
+    /**
      * Finds the best move using Minimax with Alpha-Beta pruning, optionally constrained to a piece type.
      */
     public static findBestMove(
         engine: BaseEngine,
         difficulty: 'easy' | 'medium' | 'hard' = 'medium',
-        allowedPieceName?: string
+        allowedPieceName?: string | string[]
     ): AiMoveResult | null {
-        const color = engine.currentTurn;
-        const allMoves = this.getAllLegalMoves(engine, color, allowedPieceName);
+        const rootColor = engine.currentTurn;
+        const allMoves = this.getAllLegalMoves(engine, rootColor, allowedPieceName);
 
         if (allMoves.length === 0) return null;
 
@@ -108,12 +145,10 @@ export class HeuristicAiEngine {
         let maxDepth = 3;
         if (difficulty === 'easy') maxDepth = 1;
         else if (difficulty === 'medium') maxDepth = 2;
-        else maxDepth = 3; // Hard
+        else maxDepth = (engine.variant.name === 'Chaturaji' ? 2 : 3);
 
         let bestMove = allMoves[0];
         let bestScore = -Infinity;
-        const alpha = -Infinity;
-        const beta = Infinity;
 
         // Easy mode adds slight randomness among top moves
         if (difficulty === 'easy' && Math.random() < 0.3) {
@@ -130,7 +165,15 @@ export class HeuristicAiEngine {
             const success = simulatedEngine.executeMove(candidate.from, candidate.to);
             if (!success) continue;
 
-            const score = -this.alphaBeta(simulatedEngine, maxDepth - 1, -beta, -alpha, color === 'white' ? 'black' : 'white');
+            this.autoResolveSimulatedRescue(simulatedEngine);
+
+            const score = this.minimax(
+                simulatedEngine,
+                maxDepth - 1,
+                -Infinity,
+                Infinity,
+                rootColor
+            );
 
             if (score > bestScore) {
                 bestScore = score;
@@ -151,48 +194,92 @@ export class HeuristicAiEngine {
         };
     }
 
+    private static isFriendly(c1: PieceColor, c2: PieceColor, engine: BaseEngine): boolean {
+        if (c1 === c2) return true;
+        if (engine.variant.name === 'Chaturaji') {
+            const PARTNER_MAP: Record<string, string> = {
+                red: 'yellow',
+                yellow: 'red',
+                green: 'blue',
+                blue: 'green'
+            };
+            return PARTNER_MAP[c1] === c2;
+        }
+        return false;
+    }
+
     /**
-     * Minimax with Alpha-Beta pruning recursion.
+     * Generalized Minimax with Alpha-Beta pruning recursion supporting 2-player and multi-player teams.
      */
-    private static alphaBeta(
+    private static minimax(
         engine: BaseEngine,
         depth: number,
         alpha: number,
         beta: number,
-        currentColor: PieceColor
+        rootColor: PieceColor
     ): number {
         if (depth === 0 || engine.state === 'checkmate' || engine.state === 'draw') {
-            return this.evaluateBoard(engine, currentColor);
+            return this.evaluateBoard(engine, rootColor);
         }
 
-        const legalMoves = this.getAllLegalMoves(engine, currentColor);
+        const currentTurn = engine.currentTurn;
+        const legalMoves = this.getAllLegalMoves(engine, currentTurn);
         if (legalMoves.length === 0) {
-            return this.evaluateBoard(engine, currentColor);
+            return this.evaluateBoard(engine, rootColor);
         }
 
-        let maxScore = -Infinity;
+        const isMax = this.isFriendly(currentTurn, rootColor, engine);
 
-        for (const move of legalMoves) {
-            const simulatedEngine = this.cloneEngineState(engine);
-            const success = simulatedEngine.executeMove(move.from, move.to);
-            if (!success) continue;
+        if (isMax) {
+            let maxEval = -Infinity;
+            for (const move of legalMoves) {
+                const simulatedEngine = this.cloneEngineState(engine);
+                const success = simulatedEngine.executeMove(move.from, move.to);
+                if (!success) continue;
 
-            const score = -this.alphaBeta(
-                simulatedEngine,
-                depth - 1,
-                -beta,
-                -alpha,
-                currentColor === 'white' ? 'black' : 'white'
-            );
+                this.autoResolveSimulatedRescue(simulatedEngine);
 
-            maxScore = Math.max(maxScore, score);
-            alpha = Math.max(alpha, score);
-            if (alpha >= beta) {
-                break; // Beta cutoff
+                const score = this.minimax(
+                    simulatedEngine,
+                    depth - 1,
+                    alpha,
+                    beta,
+                    rootColor
+                );
+
+                maxEval = Math.max(maxEval, score);
+                alpha = Math.max(alpha, score);
+                if (beta <= alpha) {
+                    break; // Beta cutoff
+                }
             }
-        }
+            return maxEval;
+        } else {
+            let minEval = Infinity;
+            for (const move of legalMoves) {
+                const simulatedEngine = this.cloneEngineState(engine);
+                const success = simulatedEngine.executeMove(move.from, move.to);
+                if (!success) continue;
 
-        return maxScore;
+                this.autoResolveSimulatedRescue(simulatedEngine);
+
+                const score = this.minimax(
+                    simulatedEngine,
+                    depth - 1,
+                    alpha,
+                    beta,
+                    rootColor
+                );
+
+                minEval = Math.min(minEval, score);
+                beta = Math.min(beta, score);
+                if (beta <= alpha) {
+                    break; // Alpha cutoff
+                }
+            }
+            return minEval;
+        }
     }
 }
+
 

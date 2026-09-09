@@ -5,6 +5,7 @@ import { ShatranjEngine } from '../engine/ShatranjEngine';
 import { GrantAcedrexEngine } from '../engine/GrantAcedrexEngine';
 import { TamerlaneEngine } from '../engine/TamerlaneEngine';
 import { CourierEngine } from '../engine/CourierEngine';
+import { ChaturajiEngine } from '../engine/ChaturajiEngine';
 
 import { ClassicChess } from './ClassicChess';
 import { Chaturanga } from './Chaturanga';
@@ -12,6 +13,7 @@ import { Shatranj } from './Shatranj';
 import { GrantAcedrex } from './GrantAcedrex';
 import { TamerlaneChess } from './TamerlaneChess';
 import { CourierChess } from './CourierChess';
+import { Chaturaji } from './Chaturaji';
 
 export type VariantCategory = 'standard' | 'historical' | 'regional';
 
@@ -23,6 +25,7 @@ export interface VariantDefinition {
     tag: string;
     desc: string;
     supportsDiceRule?: boolean;
+    tileSize?: 'standard' | 'compact' | 'small';
     createEngine: () => BaseEngine;
 }
 
@@ -67,6 +70,7 @@ VariantRegistry.register({
     origin: '15th Century • Europe',
     tag: 'Standard',
     desc: 'The worldwide recognized modern rules with castling, en passant, and the queen.',
+    tileSize: 'standard',
     createEngine: () => new ClassicChessEngine(new ClassicChess())
 });
 
@@ -77,6 +81,7 @@ VariantRegistry.register({
     origin: '6th Century • India',
     tag: 'The Origin',
     desc: 'The ancient four-division ancestor of chess played on an 8x8 uncheckered Ashtāpada.',
+    tileSize: 'standard',
     createEngine: () => new ChaturangaEngine(new Chaturanga())
 });
 
@@ -87,7 +92,20 @@ VariantRegistry.register({
     origin: '7th Century • Persia',
     tag: 'Golden Age',
     desc: 'The strategic jewel of the Silk Road. Ferz moves 1 diagonal, Pil leaps 2, and bare king wins.',
+    tileSize: 'standard',
     createEngine: () => new ShatranjEngine(new Shatranj())
+});
+
+VariantRegistry.register({
+    id: 'chaturaji',
+    title: 'Chaturaji',
+    category: 'historical',
+    origin: '10th-11th Century • India',
+    tag: '4 Players',
+    desc: 'Four kings battle on an 8x8 Ashtāpada with Boat Triumphs, Thrones (Sinhasana), pawn promotions, and stakes.',
+    supportsDiceRule: true,
+    tileSize: 'standard',
+    createEngine: () => new ChaturajiEngine(new Chaturaji())
 });
 
 VariantRegistry.register({
@@ -97,6 +115,7 @@ VariantRegistry.register({
     origin: '12th Century • Germany',
     tag: '12x8 Board',
     desc: 'The medieval German masterpiece with Couriers, Sage, Schleich, and modern diagonal power.',
+    tileSize: 'compact',
     createEngine: () => new CourierEngine(new CourierChess())
 });
 
@@ -108,6 +127,7 @@ VariantRegistry.register({
     tag: '12x12 Board',
     desc: 'The grand royal chess of Alfonso the Wise with Aancas, Unicorns, Lions, Giraffes, and Crocodiles.',
     supportsDiceRule: true,
+    tileSize: 'small',
     createEngine: () => new GrantAcedrexEngine(new GrantAcedrex())
 });
 
@@ -118,6 +138,8 @@ VariantRegistry.register({
     origin: '14th Century • Timurid Empire',
     tag: '112 Squares',
     desc: 'Timur\'s grand chess with Giraffes, Camels, War Engines, 11 unique pawns, and royal Citadels.',
+    tileSize: 'compact',
     createEngine: () => new TamerlaneEngine(new TamerlaneChess())
 });
+
 

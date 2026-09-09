@@ -2,8 +2,8 @@ import { Piece } from '../core/pieces/piecesIndex';
 import { getPieceSvgChar } from '../core/pieces/pieceRegistry';
 
 // Vite creates a dictionary mapping all processed paths:
-// Keys are formatted like: '../assets/pieces/Chess_elt45.svg'
-const svgAssets = import.meta.glob<string>('../assets/pieces/*.svg', {
+// Keys are formatted like: '../assets/pieces/Chess_elt45.svg' or '../assets/pieces/chaturaji/Chess_krt45.svg'
+const svgAssets = import.meta.glob<string>('../assets/pieces/**/*.svg', {
     eager: true,
     import: 'default',
 });
@@ -19,12 +19,42 @@ if (typeof window !== 'undefined') {
 export const getPieceImage = (piece: Piece | null): string | null => {
     if (!piece) return null;
 
-    const colorChar = piece.color === 'white' ? 'l' : 'd';
     const pieceChar = getPieceSvgChar(piece.name);
     if (!pieceChar) return null;
 
+    const isChaturajiPiece = piece.name.startsWith('Chaturaji');
+    let colorChar = isChaturajiPiece ? 'r' : 'l';
+    let folderPrefix = isChaturajiPiece ? 'chaturaji/' : '';
+
+    switch (piece.color) {
+        case 'white':
+            colorChar = isChaturajiPiece ? 'r' : 'l';
+            break;
+        case 'black':
+            colorChar = isChaturajiPiece ? 'b' : 'd';
+            break;
+        case 'red':
+            colorChar = 'r';
+            folderPrefix = 'chaturaji/';
+            break;
+        case 'green':
+            colorChar = 'g';
+            folderPrefix = 'chaturaji/';
+            break;
+        case 'yellow':
+            colorChar = 'y';
+            folderPrefix = 'chaturaji/';
+            break;
+        case 'blue':
+            colorChar = 'b';
+            folderPrefix = 'chaturaji/';
+            break;
+        default:
+            colorChar = isChaturajiPiece ? 'r' : 'l';
+    }
+
     const fileName = `Chess_${pieceChar}${colorChar}t45.svg`;
-    const key = `../assets/pieces/${fileName}`;
+    const key = `../assets/pieces/${folderPrefix}${fileName}`;
 
     // Retrieve the exact URL from the pre-loaded dictionary
     return svgAssets[key] || null;
@@ -70,8 +100,8 @@ export const getSquareBackground = (x: number, y: number, variantId: string): st
         ];
         isMarked = markedSquares.includes(`${x},${y}`);
         colorChar = 'l';
-    } else if (variantId === 'shatranj' || variantId === 'tamerlane') {
-        // Those games used the same board as Chaturanga but without the X's
+    } else if (variantId === 'shatranj' || variantId === 'tamerlane' || variantId === 'chaturaji') {
+        // Those games use the uncheckered monochrome board without the X's
         isMarked = false;
         colorChar = 'l';
     }

@@ -110,14 +110,16 @@ export function uciToMove(
  * Converts a list of Atlas Chess Move objects to a list of UCI move strings.
  */
 export function historyToUciMoves(history: Move[], totalRows: number = 8): string[] {
-    return history.map((move) => {
-        let promoPiece: string | undefined = undefined;
-        if (move.san?.includes('=Q')) promoPiece = 'Queen';
-        else if (move.san?.includes('=R')) promoPiece = 'Rook';
-        else if (move.san?.includes('=B')) promoPiece = 'Bishop';
-        else if (move.san?.includes('=N')) promoPiece = 'Knight';
-        else if (move.san?.includes('=F')) promoPiece = 'Ferz';
+    return history
+        .filter((move) => !move.isPass && move.san !== 'pass' && move.from && move.from.x >= 0)
+        .map((move) => {
+            let promoPiece: string | undefined = undefined;
+            if (move.san?.includes('=Q')) promoPiece = 'Queen';
+            else if (move.san?.includes('=R')) promoPiece = 'Rook';
+            else if (move.san?.includes('=B')) promoPiece = 'Bishop';
+            else if (move.san?.includes('=N')) promoPiece = 'Knight';
+            else if (move.san?.includes('=F')) promoPiece = 'Ferz';
 
-        return moveToUci(move.from, move.to, promoPiece, totalRows);
-    });
+            return moveToUci(move.from, move.to, promoPiece, totalRows);
+        });
 }

@@ -1,6 +1,6 @@
 import { Board } from '../models/Board';
 import type { GameVariant } from '../variants/GameVariant';
-import type { Move, PieceColor, Position, GameState } from '../../types';
+import type { Move, PieceColor, Position, GameState, GameInterception, InterceptionDecision } from '../../types';
 import { Piece } from '../pieces/piecesIndex';
 import { getDisambiguator, buildSAN } from "../../utils/notation";
 import type { ICheckStrategy } from './strategies/CheckStrategy';
@@ -8,12 +8,8 @@ import type { IVictoryStrategy } from './strategies/VictoryStrategy';
 import type { IEvaluationStrategy } from '../ai/strategies/EvaluationStrategy';
 import { DefaultEvaluationStrategy } from '../ai/strategies/EvaluationStrategy';
 
-export type PreMoveInterception =
-    | { type: 'PROMOTION'; from: Position; to: Position }
-    | { type: 'CITADEL_CHOICE'; from: Position; to: Position; royals: { id: string; name: string }[] };
-
-export type PostMoveInterception =
-    | { type: 'SUCCESSION_CHOICE'; color: PieceColor; royals: { id: string; name: string }[] };
+export type PreMoveInterception = GameInterception;
+export type PostMoveInterception = GameInterception;
 
 export abstract class BaseEngine {
     board: Board;
@@ -45,9 +41,51 @@ export abstract class BaseEngine {
         return this.evaluationStrategy || new DefaultEvaluationStrategy();
     }
 
+    isPieceControllableByCurrentTurn(piece: Piece): boolean {
+        return piece.color === this.getActiveController();
+    }
+
+    getActiveController(color?: PieceColor): PieceColor {
+        return color || this.currentTurn;
+    }
+
+    rotateTurn(): void {
+        this.currentTurn = this.currentTurn === 'white' ? 'black' : 'white';
+    }
+
+    /**
+     * Passes the current player's turn to the next player.
+     */
+    passTurn(): boolean {
+        if (this.state === 'checkmate' || this.state === 'draw') return false;
+        const passRecord: Move = {
+            piece: null as any,
+            from: { x: -1, y: -1 },
+            to: { x: -1, y: -1 },
+            san: 'pass',
+            isPass: true
+        };
+        this.history.push(passRecord);
+        this.rotateTurn();
+        this.updateGameState();
+        return true;
+    }
+
+    /**
+     * Template hook for variant-specific engines to clone their internal states.
+     */
+    cloneCustomFields(_target: BaseEngine): void {}
+
+    /**
+     * Polymorphic resolver for interactive game interceptions.
+     */
+    resolveInterception(_decision: InterceptionDecision): boolean {
+        return false;
+    }
+
     executeMove(from: Position, to: Position, promotionPiece?: string): boolean {
         const piece = this.board.getPieceAt(from.x, from.y);
-        if (!piece || piece.color !== this.currentTurn) return false;
+        if (!piece || !this.isPieceControllableByCurrentTurn(piece)) return false;
 
         const legalMoves = this.getLegalMoves(piece);
         const isLegal = legalMoves.some(m => m.x === to.x && m.y === to.y);
@@ -62,17 +100,13 @@ export abstract class BaseEngine {
 
         this.afterMoveHook(piece, from, to, capturedPiece, promotionPiece);
 
-        // core logic: execution order
+        // Switch turn polymorphically (supports 2-player, 4-player, etc.)
+        this.rotateTurn();
 
-        // 1. switch turn to the opponent first
-        // this allows the engine to evaluate the enemy king's health (check or mate)
-        this.currentTurn = this.currentTurn === 'white' ? 'black' : 'white';
-
-        // 2. update the game state
-        // the engine now detects if the opponent has no valid moves left
+        // Update game state (detects check, mate, draws)
         this.updateGameState();
 
-        // 3. prepare the promotion letter
+        // Prepare promotion letter for SAN
         let promotedToChar: string | undefined = undefined;
         if (promotionPiece) {
             switch(promotionPiece) {
@@ -83,14 +117,13 @@ export abstract class BaseEngine {
             }
         }
 
-        // 4. build the standard algebraic notation (san)
-        // since the game state is updated, it correctly appends mate or check symbols
+        // Build standard algebraic notation
         const san = buildSAN(this, piece, from, to, capturedPiece, disambiguator, promotedToChar);
 
-        // 5. save to history
+        // Save to history
         this.history.push({ piece, from, to, capturedPiece, san });
 
-        // 6. trigger the final hook
+        // Trigger final hook
         this.postTurnHook();
 
         return true;
@@ -120,7 +153,7 @@ export abstract class BaseEngine {
     }
 
     // Interception hook before executing move (e.g. pawn promotion, citadel infiltration)
-    getPreMoveInterception(from: Position, to: Position): PreMoveInterception | null {
+    getPreMoveInterception(from: Position, to: Position): GameInterception | null {
         const piece = this.board.getPieceAt(from.x, from.y);
         const isPawn = piece?.name === 'Pawn';
         const isPromotionRank = piece?.color === 'white' ? to.y === 0 : to.y === 7;
@@ -132,16 +165,9 @@ export abstract class BaseEngine {
     }
 
     // Interception hook after executing move (e.g. royal succession)
-    getPostMoveInterception(_lastMove: Move): PostMoveInterception | null {
+    getPostMoveInterception(_lastMove: Move): GameInterception | null {
         return null;
     }
-
-    // Special moves support (overridden by variants such as Tamerlane)
-    executeCitadelSwap(_from: Position, _to: Position, _chosenRoyalId?: string): boolean {
-        return false;
-    }
-
-    crownSuccessor(_chosenRoyalId: string): void {}
 
     // Hook for actions before moving: Castling
     protected beforeMoveHook(_piece: Piece, _from: Position, _to: Position, capturedPiece: Piece | null): Piece | null {
@@ -153,4 +179,4 @@ export abstract class BaseEngine {
 
     // Hook for actions after turn: for example saving hashes of the board for the triple repetition rule
     protected postTurnHook(): void {}
-}
+}

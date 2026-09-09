@@ -25,6 +25,12 @@ export class GrantAcedrexEngine extends BaseEngine {
         );
     }
 
+    override cloneCustomFields(target: BaseEngine): void {
+        if (target instanceof GrantAcedrexEngine) {
+            target.hasPawnCapturedYet = this.hasPawnCapturedYet;
+        }
+    }
+
     override getLegalMoves(piece: Piece): Position[] {
         if (piece instanceof GrantPawn) {
             piece.canDoubleStep = !this.hasPawnCapturedYet && !piece.hasMoved;

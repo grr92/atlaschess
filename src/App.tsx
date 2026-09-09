@@ -6,6 +6,7 @@ import { Board } from './components/board/Board';
 import { VariantsCatalog } from "./components/ui/VariantCatalog";
 import { MoveHistory } from './components/board/MoveHistory';
 import { CapturedPieces } from './components/board/CapturedPieces';
+import { ChaturajiStakesCounter } from './components/board/ChaturajiStakesCounter';
 import { Undo2, RefreshCcw, Save, Bot, Volume2, VolumeX, Settings } from 'lucide-react';
 import { BackButton } from "./components/ui/BackButton";
 import { GameTimer } from "./components/board/GameTimer";
@@ -13,6 +14,7 @@ import { InfoButton } from "./components/ui/InfoButton";
 import { VariantInfoModal } from "./components/modals/VariantInfoModal";
 import { SettingsModal } from "./components/modals/SettingsModal";
 import { D8DiceWidget } from "./components/board/D8DiceWidget";
+import { ChaturajiEngine } from "./core/engine/ChaturajiEngine";
 import { useTranslation } from './i18n';
 
 export const App = () => {
@@ -21,6 +23,7 @@ export const App = () => {
     const setScreen = useNavStore((state) => state.setScreen);
 
     const {
+        engine,
         currentTurn,
         gameState,
         currentVariantId,
@@ -77,9 +80,39 @@ export const App = () => {
 
     const getGameStateLabel = () => {
         if (gameState === 'check') return t.gameplay.check;
+        if (currentVariantId === 'chaturaji' && engine instanceof ChaturajiEngine) {
+            if (gameState === 'checkmate' || gameState === 'draw') {
+                const match = engine.getMatchWinner();
+                if (match.winner) {
+                    const winnerName = getPlayerColorName(match.winner);
+                    return `🏆 ${winnerName} (${match.maxStakes} ${t.gameplay.wonStakes.toLowerCase()})`;
+                }
+                if (match.isTie && match.maxStakes > 0) {
+                    return `🤝 ${t.gameplay.draw} (${match.maxStakes} ${t.gameplay.wonStakes.toLowerCase()})`;
+                }
+                return t.gameplay.draw;
+            }
+        }
         if (gameState === 'checkmate') return t.gameplay.checkmate;
         if (gameState === 'draw') return t.gameplay.draw;
         return t.gameplay.playing;
+    };
+
+    const getPlayerColorDot = (color: string) => {
+        switch (color) {
+            case 'white': return 'bg-white shadow-white/50';
+            case 'black': return 'bg-slate-900 border border-white/40 shadow-black';
+            case 'red': return 'bg-red-500 shadow-red-500/50';
+            case 'green': return 'bg-emerald-500 shadow-emerald-500/50';
+            case 'yellow': return 'bg-amber-400 shadow-amber-400/50';
+            case 'blue': return 'bg-sky-500 shadow-sky-500/50';
+            default: return 'bg-white';
+        }
+    };
+
+    const getPlayerColorName = (color: string) => {
+        const key = color as keyof typeof t.common;
+        return t.common[key] || color;
     };
 
     return (
@@ -148,13 +181,13 @@ export const App = () => {
                         {/* 2. center column: board and texts */}
                         <div className="flex flex-col flex-shrink-0 items-center lg:items-stretch">
 
-                            <div className="flex justify-between items-center h-14 pb-2 px-2 w-full">
-                                <h2 className="text-atlas-titleText text-2xl font-black tracking-tight flex items-center gap-2 capitalize">
+                            <div className="flex justify-between items-center h-14 pb-2 px-2 w-full gap-2">
+                                <h2 className="text-atlas-titleText text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2 capitalize flex-shrink-0 whitespace-nowrap">
                                     {currentVariantMeta.title}
                                 </h2>
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2 flex-shrink-0">
                                     <D8DiceWidget />
-                                    <div className="flex items-center gap-3 bg-atlas-surface/80 px-4 py-1.5 rounded-full border border-white/10 shadow-md backdrop-blur-md">
+                                    <div className="flex items-center gap-2.5 bg-atlas-surface/80 px-3 py-1.5 rounded-full border border-white/10 shadow-md backdrop-blur-md flex-shrink-0">
                                     {isAiThinking ? (
                                         <div className="flex items-center gap-2 text-amber-400 font-bold text-xs animate-pulse">
                                             <Bot className="w-4 h-4 animate-spin text-amber-400" />
@@ -162,11 +195,9 @@ export const App = () => {
                                         </div>
                                     ) : (
                                         <div className="flex items-center gap-2">
-                                            <div className={`w-3.5 h-3.5 rounded-full ring-2 ring-amber-400/50 ${
-                                                currentTurn === 'white' ? 'bg-white shadow-white/50' : 'bg-slate-900 border border-white/40 shadow-black'
-                                            } shadow-md`} />
+                                            <div className={`w-3.5 h-3.5 rounded-full ring-2 ring-amber-400/50 ${getPlayerColorDot(currentTurn)} shadow-md`} />
                                             <span className="text-xs uppercase font-bold tracking-wider text-atlas-titleText">
-                                                {currentTurn === 'white' ? t.common.white : t.common.black}
+                                                {getPlayerColorName(currentTurn)}
                                             </span>
                                             {gameMode === 'vs_ai' && (
                                                 <span className="text-[10px] px-1.5 py-0.2 bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold rounded">
@@ -235,7 +266,7 @@ export const App = () => {
 
                             <div className="flex-1 relative w-full min-h-[300px] lg:min-h-0">
                                 <div className="absolute inset-0 py-4">
-                                    <MoveHistory />
+                                    {currentVariantId === 'chaturaji' ? <ChaturajiStakesCounter /> : <MoveHistory />}
                                 </div>
                             </div>
                         </div>

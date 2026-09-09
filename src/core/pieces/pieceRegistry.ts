@@ -75,7 +75,6 @@ export const PIECE_REGISTRY: Record<PieceName, PieceMetadata> = {
     GrantKing: { name: 'GrantKing', displayName: 'King', value: 10000, sortOrder: 0, svgChar: 'k', diceNumber: 8 },
     Aanca: { name: 'Aanca', displayName: 'Aanca', value: 950, sortOrder: 1, svgChar: 'a', diceNumber: 7 },
     Unicorn: { name: 'Unicorn', displayName: 'Unicorn', value: 750, sortOrder: 3, svgChar: 'u', diceNumber: 6 },
-    Unicornio: { name: 'Unicornio', displayName: 'Unicorn', value: 750, sortOrder: 3, svgChar: 'u', diceNumber: 6 },
     Lion: { name: 'Lion', displayName: 'Lion', value: 350, sortOrder: 7, svgChar: 'l', diceNumber: 4 },
     Crocodile: { name: 'Crocodile', displayName: 'Crocodile', value: 300, sortOrder: 9, svgChar: 'o', diceNumber: 3 },
     Grantpawn: { name: 'Grantpawn', displayName: 'Pawn', value: 100, sortOrder: 13, svgChar: 'p', diceNumber: 1 },
@@ -87,7 +86,14 @@ export const PIECE_REGISTRY: Record<PieceName, PieceMetadata> = {
     CourierQueen: { name: 'CourierQueen', displayName: 'Queen', value: 200, sortOrder: 11, svgChar: 'q' },
     Schleich: { name: 'Schleich', displayName: 'Schleich', value: 200, sortOrder: 11, svgChar: 't' },
     Sage: { name: 'Sage', displayName: 'Sage', value: 300, sortOrder: 6, svgChar: 'x' },
-    CourierPawn: { name: 'CourierPawn', displayName: 'Pawn', value: 100, sortOrder: 13, svgChar: 'p' }
+    CourierPawn: { name: 'CourierPawn', displayName: 'Pawn', value: 100, sortOrder: 13, svgChar: 'p' },
+
+    // Chaturaji (Four Kings)
+    ChaturajiKing: { name: 'ChaturajiKing', displayName: 'King', value: 10000, sortOrder: 0, svgChar: 'k', diceNumber: 5 },
+    ChaturajiElephant: { name: 'ChaturajiElephant', displayName: 'Elephant', value: 500, sortOrder: 4, svgChar: 'e', diceNumber: 4 },
+    ChaturajiHorse: { name: 'ChaturajiHorse', displayName: 'Horse', value: 320, sortOrder: 8, svgChar: 'n', diceNumber: 3 },
+    ChaturajiBoat: { name: 'ChaturajiBoat', displayName: 'Boat', value: 200, sortOrder: 10, svgChar: 's', diceNumber: 2 },
+    ChaturajiPawn: { name: 'ChaturajiPawn', displayName: 'Pawn', value: 100, sortOrder: 13, svgChar: 'p', diceNumber: 5 }
 };
 
 export const getPieceMetadata = (name: string): PieceMetadata | undefined => {

@@ -37,7 +37,9 @@ export const VariantInfoModal = ({ variantId, onClose }: VariantInfoModalProps) 
 
     const renderBulletIcon = (bullet: CodexBullet) => {
         if (bullet.pieceName) {
-            const imgUrl = getPieceImage({ name: bullet.pieceName, color: 'white' } as any);
+            const isChaturaji = variantId === 'chaturaji' || bullet.pieceName.startsWith('Chaturaji');
+            const color = isChaturaji ? 'red' : 'white';
+            const imgUrl = getPieceImage({ name: bullet.pieceName, color } as any);
             if (imgUrl) {
                 return <img src={imgUrl} alt={bullet.pieceName} className="w-5 h-5 object-contain -mt-1" />;
             }

@@ -4,6 +4,8 @@ import { TamerlanePawn } from '../../core/pieces/piecesIndex';
 import { useEffect, useState } from 'react';
 import type { Position } from '../../types';
 import { useTranslation } from '../../i18n';
+import { VariantRegistry } from '../../core/variants/variantRegistry';
+import { InterceptionOverlay } from '../modals/interceptions';
 
 export const Board = () => {
     const { t } = useTranslation();
@@ -14,15 +16,6 @@ export const Board = () => {
         legalMoves,
         selectSquare,
         initGame,
-        pendingPromotion,
-        confirmPromotion,
-        cancelPromotion,
-        pendingCitadelChoice,
-        confirmCitadelSwap,
-        confirmCitadelDraw,
-        cancelCitadelChoice,
-        pendingSuccessionChoice,
-        confirmSuccession,
         isAiThinking,
         gameMode,
         playerColor
@@ -46,14 +39,22 @@ export const Board = () => {
     }
 
     const board = engine.board;
-    const promotionPieces = ['Queen', 'Knight', 'Rook', 'Bishop'];
+    const variantDef = VariantRegistry.get(currentVariantId);
 
     const isFlipped = gameMode === 'vs_ai' && playerColor === 'black';
     const yIndices = Array.from({ length: board.rows }, (_, i) => isFlipped ? board.rows - 1 - i : i);
     const xIndices = Array.from({ length: board.cols }, (_, i) => isFlipped ? board.cols - 1 - i : i);
 
+    let squareSizeClass = 'w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20';
+    if (variantDef?.tileSize === 'compact') {
+        squareSizeClass = 'w-8 h-8 md:w-11 md:h-11 lg:w-[3.8rem] lg:h-[3.8rem]';
+    } else if (variantDef?.tileSize === 'small') {
+        squareSizeClass = 'w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-[3.1rem] lg:h-[3.1rem] xl:w-[3.4rem] xl:h-[3.4rem]';
+    }
+
     return (
-        <div className="flex justify-center items-center p-4">
+        <div className="flex justify-center items-center p-4 relative">
+            <InterceptionOverlay />
             <div
                 className="grid border-4 border-slate-950 shadow-2xl rounded overflow-hidden relative"
                 style={{
@@ -65,14 +66,6 @@ export const Board = () => {
                     xIndices.map((x) => {
                         const piece = board.getPieceAt(x, y);
                         const isPlayable = !board.isOutOfBounds(x, y);
-                        let squareSizeClass = 'w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20';
-                        if (currentVariantId === 'tamerlane') {
-                            squareSizeClass = 'w-8 h-8 md:w-11 md:h-11 lg:w-[3.8rem] lg:h-[3.8rem]';
-                        } else if (currentVariantId === 'grant_acedrex') {
-                            squareSizeClass = 'w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-[3.1rem] lg:h-[3.1rem] xl:w-[3.4rem] xl:h-[3.4rem]';
-                        } else if (currentVariantId === 'courier') {
-                            squareSizeClass = 'w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 lg:w-[3.4rem] lg:h-[3.4rem] xl:w-[3.8rem] xl:h-[3.8rem]';
-                        }
 
                         // If the square is "out of bounds", a transparent square is drawn
                         if (!isPlayable) {
@@ -80,7 +73,7 @@ export const Board = () => {
                         }
 
                         const isLight = (x + y) % 2 === 0;
-                        const isMonochrome = currentVariantId === 'chaturanga' || currentVariantId === 'shatranj' || currentVariantId === 'tamerlane';
+                        const isMonochrome = currentVariantId === 'chaturanga' || currentVariantId === 'shatranj' || currentVariantId === 'tamerlane' || currentVariantId === 'chaturaji';
                         const bgImage = getSquareBackground(x, y, currentVariantId);
                         const pieceImage = getPieceImage(piece);
 
@@ -99,9 +92,9 @@ export const Board = () => {
                             ? (isTamerlane ? x === 1 : x === 0)
                             : (isTamerlane ? x === 11 : x === board.cols - 1);
 
-                        // If uses monocrome board use only light tiles and add a black separator
+                        // If uses monochrome board use only light tiles and add a black separator
                         const cssBgClass = (isLight || isMonochrome) ? 'bg-atlas-boardLight' : 'bg-atlas-boardDark';
-                        const textColor = (isLight || isMonochrome) ? 'text-atlas-boardDark' : 'text-atlas-boardLight';                         // If the square is light, the text must be dark (and vice versa)
+                        const textColor = (isLight || isMonochrome) ? 'text-atlas-boardDark' : 'text-atlas-boardLight';
                         const monochromeBorder = isMonochrome ? 'ring-1 ring-inset ring-black/20' : '';
 
                         // Track the last move to trigger CSS slide transition
@@ -235,95 +228,7 @@ export const Board = () => {
                     })
                 )}
             </div>
-            {/* Pawn promotion modal */}
-            {pendingPromotion && (
-                <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm rounded-lg">
-                    <div className="bg-slate-800 p-6 rounded-2xl shadow-2xl border border-emerald-500/50 text-center">
-                        <h3 className="text-xl font-bold text-white mb-4">{t.gameplay.promotePawnTitle}</h3>
-                        <div className="flex gap-4 mb-6">
-                            {promotionPieces.map(pieceName => {
-                                // Creates a dummy object to fetch the correct piece image
-                                const dummyPiece = { name: pieceName, color: engine.currentTurn } as any;
-                                const imgUrl = getPieceImage(dummyPiece);
-
-                                return (
-                                    <button
-                                        key={pieceName}
-                                        onClick={() => confirmPromotion(pieceName)}
-                                        className="w-16 h-16 bg-slate-700 hover:bg-emerald-600 rounded-xl flex items-center justify-center transition-all hover:scale-110 shadow-lg"
-                                    >
-                                        <img src={imgUrl!} alt={pieceName} className="w-12 h-12 object-contain" />
-                                    </button>
-                                );
-                            })}
-                        </div>
-                        <button
-                            onClick={cancelPromotion}
-                            className="text-slate-400 hover:text-white underline text-sm"
-                        >
-                            {t.gameplay.cancelMove}
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {/* Citadel decision modal */}
-            {pendingCitadelChoice && (
-                <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                    <div className="bg-slate-800 p-6 rounded-2xl shadow-2xl border border-amber-500/50 text-center max-w-md w-full animate-in fade-in zoom-in duration-200">
-                        <h3 className="text-xl font-bold text-white mb-2">{t.gameplay.citadelTitle}</h3>
-                        <p className="text-sm text-slate-300 mb-6">
-                            {t.gameplay.citadelDesc}
-                        </p>
-                        <div className="flex flex-col gap-3">
-                            {pendingCitadelChoice.royals.map(royal => (
-                                <button
-                                    key={royal.id}
-                                    onClick={() => confirmCitadelSwap(royal.id)}
-                                    className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-4 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2"
-                                >
-                                    {royal.name === 'Shahzada' ? t.gameplay.citadelTradePrince : t.gameplay.citadelTradeAdventitious}
-                                </button>
-                            ))}
-                            <button
-                                onClick={confirmCitadelDraw}
-                                className="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 px-4 rounded-xl transition-colors shadow-md"
-                            >
-                                {t.gameplay.citadelDeclareDraw}
-                            </button>
-                            <button
-                                onClick={cancelCitadelChoice}
-                                className="text-slate-400 hover:text-white underline text-xs mt-2"
-                            >
-                                {t.gameplay.cancelMove}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Royal succession modal */}
-            {pendingSuccessionChoice && (
-                <div className="fixed inset-0 z-[160] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-                    <div className="bg-slate-800 p-6 rounded-2xl shadow-2xl border border-amber-500/50 text-center max-w-md w-full animate-in fade-in zoom-in duration-200">
-                        <h3 className="text-xl font-bold text-white mb-2">{t.gameplay.successionTitle}</h3>
-                        <p className="text-sm text-slate-300 mb-6">
-                            {t.gameplay.successionDesc}
-                        </p>
-                        <div className="flex flex-col gap-3">
-                            {pendingSuccessionChoice.royals.map(royal => (
-                                <button
-                                    key={royal.id}
-                                    onClick={() => confirmSuccession(royal.id)}
-                                    className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 px-4 rounded-xl transition-colors shadow-md flex items-center justify-center gap-2"
-                                >
-                                    {royal.name === 'Shahzada' ? t.gameplay.successionCrownPrince : t.gameplay.successionCrownAdventitious}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
-};
+};
+

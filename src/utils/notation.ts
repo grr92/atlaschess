@@ -72,7 +72,7 @@ export const buildSAN = (
         case 'Schleich': pieceStr = 'W'; break;
         case 'Sage': pieceStr = 'M'; break;
         case 'Aanca': pieceStr = 'A'; break;
-        case 'Unicorn': case 'Unicornio': pieceStr = 'U'; break;
+        case 'Unicorn': pieceStr = 'U'; break;
         case 'Lion': pieceStr = 'L'; break;
         case 'Crocodile': pieceStr = 'O'; break;
     }

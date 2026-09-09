@@ -9,7 +9,7 @@ This is my very first software project outside my CS studies and it has been dev
 ## Features
 
 - **Multiple Variants:** Play Classic Chess, travel back in time with historical variants or ancestors of chess (Chaturanga, Shatranj and more...) or travel around the world playing regional variants. The underlying engine is built to support custom board sizes and piece mechanics.
-- **Alfonso X 8-Sided Die (d8) Mode:** Play Grant Acedrex using the historical 13th-century 8-sided die rule commissioned by King Alfonso X, where the rolled die determines which piece hierarchy must move on that turn (fully playable in PvP and against the AI).
+- **Dice Modes:** Play Grant Acedrex using the historical 13th-century 8-sided dice rule commissioned by King Alfonso X or Chaturanga for 4 players with a 4-sided dice where the rolled die determines which piece must move on that turn (fully playable in PvP and against the AI).
 - **AI Opponent (PvE):** Challenge the machine powered by a dual-engine architecture:
     - **Fairy-Stockfish 14:** High-performance native UCI engine for classical chess and standard historical variants.
     - **Native Minimax Heuristic Engine:** Custom TypeScript game-theory engine with Alpha-Beta pruning built specifically for complex non-standard variants (such as Tamerlane's 112 squares, 11 pawn stages, citadel mechanics, and Grant Acedrex's d8 dice rule).
@@ -142,6 +142,9 @@ I highly value your feedback! Feel free to open an issue to suggest new features
 - **Sage:**
   - Attribution: By Uray M. János - http://zoldsakk.hu/en/info.php?item=images, GFDL, https://commons.wikimedia.org/w/index.php?curid=61257887 & https://commons.wikimedia.org/w/index.php?curid=61261369
 
+- **Colour Pieces (Chaturaji)**
+  - Attibution: By SpinningSpark work: NikNaks, CC BY-SA 3.0
+
 - **Knight from the Atlas Chess Fusion Logo:**
   - Attribution: By [Gregory Strong](https://www.chessvariants.com/who/GregoryStrong) and [H.G. Muller](https://www.chessvariants.com/who/HGMuller), [Alfaerie SVG Chess Graphics](https://www.chessvariants.com/graphics.dir/alfaerieSVG/index.html)
 
@@ -167,9 +170,8 @@ You are free to share and adapt the material for non-commercial purposes, as lon
 ## Planned Variants
 
 - Historical:
-  - Senterej
-  - Short assize
-  - Chaturaji (4 players)
+  - ~~Senterej~~ (not implemented due to differing rule sets)
+  - ~~Short assize~~ (not implemented due to lack of evidence)
   - 4 seasons chess (4 players)
 
 - Regional:

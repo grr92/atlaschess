@@ -37,6 +37,12 @@ export const variantMeta_en: Record<string, VariantMetaI18n> = {
         tag: '112 Squares',
         desc: 'Timur\'s grand chess with Giraffes, Camels, War Engines, 11 unique pawns, and royal Citadels.',
     },
+    chaturaji: {
+        title: 'Chaturaji',
+        origin: '10th–11th Century • India',
+        tag: '4 Players',
+        desc: 'Four-player Chaturanga (often called Chaturaji) on an 8x8 Ashtāpada with Boat Triumphs, thrones, pawn promotions, and stakes.',
+    },
 };
 
 export const variantCodex_en: Record<string, VariantCodexI18n> = {
@@ -404,6 +410,65 @@ export const variantCodex_en: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'Timur himself loved to play chess and preferred large board variants over the smaller 8x8 shatranj. He invited the best masters of the land to his court in Samarcanda, including Ali ash-Shatranji of Tabriz.',
             rightBoxTitle: 'Myths and Legends',
             rightBoxDesc: 'A Persian manuscript attributes the origin of great chess variants to ancient legends, stating that tactical large-board variants were gifted to Alexander the Great by Hermes.',
+        },
+    },
+    chaturaji: {
+        name: 'Chaturaji (Four-Player Chaturanga)',
+        rules: {
+            intro: 'Chaturaji (as four-player Chaturanga is commonly, though historically imprecisely, called) is played on an 8x8 uncheckered board by 4 players: Red (East), Green (South), Yellow (West), and Blue (North), rotating in clockwise turn order. Facing players (Red & Yellow, Green & Blue) are allied military partners, but each player scores stakes individually. Several historical rule variants and reconstructions exist across Indian and Persian manuscripts; AtlasChess implements the complete rules compiled and documented by chessvariants.com (excluding the gambling-specific rule).',
+            bullets: [
+                {
+                    title: 'The King:',
+                    desc: 'Moves one square in any direction. There is no concept of check or checkmate; Kings can be captured like any normal piece. When a player loses their King, they lose their turn and remain inactive unless their partner rescues the King.',
+                    pieceName: 'ChaturajiKing',
+                },
+                {
+                    title: 'The Elephant:',
+                    desc: 'Moves horizontally or vertically through any number of unoccupied squares, exactly like the modern Rook.',
+                    pieceName: 'ChaturajiElephant',
+                },
+                {
+                    title: 'The Horse:',
+                    desc: 'Moves in an "L" shape (two squares straight and one square perpendicularly), leaping over intermediate pieces, identical to the modern Knight.',
+                    pieceName: 'ChaturajiHorse',
+                },
+                {
+                    title: 'The Boat:',
+                    desc: 'Leaps exactly two squares diagonally, jumping over any intervening pieces. Boat Triumph (Vrihannauka): If a Boat moves and completes a 2x2 square containing all four boats on the board, the moving boat instantly captures all other three boats simultaneously!',
+                    pieceName: 'ChaturajiBoat',
+                },
+                {
+                    title: 'The Pawn:',
+                    desc: 'Moves 1 square forward in its army\'s direction of march and captures 1 square diagonally forward (no double-step). Upon reaching the far opposite baseline, it can promote to the original piece of that square (Corner = Boat, Knight-square = Horse, Rook-square = Elephant, King-square = King). However, promotion is only permitted if the player owns 2 or fewer pawns; if 3 or 4 pawns remain, it stays frozen on the baseline until allied pawns are lost.',
+                    pieceName: 'ChaturajiPawn',
+                },
+                {
+                    title: 'Thrones (Sinhasana):',
+                    desc: 'A King entering an opponent\'s starting throne square earns 1 stake (2 stakes if capturing the enemy King on that throne). A King entering their partner\'s throne takes supreme command of the partner\'s entire army, controlling both forces on their turn (and earns 2 stakes if capturing the partner\'s king there).',
+                },
+                {
+                    title: 'King Rescue:',
+                    desc: 'If a player captures an enemy King while their partner\'s King has fallen (and has not been previously rescued), they can choose to rescue their partner\'s fallen King and place it on any empty square on the board.',
+                },
+                {
+                    title: 'The Die (d4):',
+                    desc: 'When playing with traditional dice rules, players roll a die to determine which piece may move: 1 = Pawn or King, 2 = Boat, 3 = Horse, 4 = Elephant. When playing without dice, players choose any legal move freely.',
+                    iconType: 'dices',
+                },
+                {
+                    title: 'Bare King & Match Victory:',
+                    desc: 'If any player is reduced to only a King without other pieces, the game ends immediately in a Draw. The last surviving King earns 1 stake (2 if that King captured all 3 opposing kings, 4 if on their thrones). The overall match is won by the player who accumulated the highest number of stakes.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Pro tip: Watch for Boat clusters to unleash the devastating Boat Triumph (Vrihannauka). If your partner falls, invade their throne to commandeer their army or capture an enemy King to perform a King Rescue!',
+        },
+        history: {
+            intro: 'The four-handed game known today as Chaturaji was historically called Chaturanga (literally "four divisions of the military"). While popular modern lore often calls it Chaturaji ("Four Kings"), historical manuscripts confirm it was a four-player dice variant of original Chaturanga.',
+            leftBoxTitle: 'Al-Biruni & Indian Manuscripts',
+            leftBoxDesc: 'The earliest detailed account was recorded around 1030 AD by the Persian polymath Al-Biruni in his Kitab al-Hind (India). The game was later documented in Sanskrit texts like Raghunandana\'s Tithitattva (15th-16th century), describing four armies (Red, Green, Yellow, Blue) competing for stakes on an 8x8 Ashtāpada board using dice.',
+            rightBoxTitle: 'The Refuted Cox-Forbes Theory',
+            rightBoxDesc: 'In the 19th century, Hiram Cox and Duncan Forbes famously hypothesized that 4-player dice chess was the primitive ancestor of all chess. In 1913, chess historian H.J.R. Murray and modern historians like Jean-Louis Cazaux completely disproved this theory, proving that 2-player Chaturanga came first (c. 6th century) and 4-player Chaturanga developed later around the 10th-11th century.',
         },
     },
 };

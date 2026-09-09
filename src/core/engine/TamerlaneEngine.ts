@@ -29,6 +29,24 @@ export class TamerlaneEngine extends BaseEngine {
         super(variant, undefined, undefined, new TamerlaneEvaluationStrategy());
     }
 
+    override cloneCustomFields(target: BaseEngine): void {
+        if (target instanceof TamerlaneEngine) {
+            target.whiteCitadelExchangeUsed = this.whiteCitadelExchangeUsed;
+            target.blackCitadelExchangeUsed = this.blackCitadelExchangeUsed;
+        }
+    }
+
+    override resolveInterception(decision: import('../../types').InterceptionDecision): boolean {
+        if (decision.type === 'SUCCESSION') {
+            this.crownSuccessor(decision.chosenRoyalId);
+            if (this.history.length > 0) {
+                this.history[this.history.length - 1].crownedSuccessorId = decision.chosenRoyalId;
+            }
+            return true;
+        }
+        return super.resolveInterception(decision);
+    }
+
     override getPreMoveInterception(from: Position, to: Position): PreMoveInterception | null {
         const piece = this.board.getPieceAt(from.x, from.y);
         const isTamerlaneShah = piece?.name === 'Shah';

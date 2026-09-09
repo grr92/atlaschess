@@ -1,9 +1,10 @@
 import type { StoreSlice, GameSliceState, GameSliceActions } from '../types';
-import type { Position, PieceColor } from '../../types';
+import type { Position, PieceColor, InterceptionDecision } from '../../types';
 import type { BaseEngine } from '../../core/engine/BaseEngine';
 import { TamerlaneEngine } from '../../core/engine/TamerlaneEngine';
+import { ChaturajiEngine } from '../../core/engine/ChaturajiEngine';
 import { VariantRegistry } from '../../core/variants/variantRegistry';
-import { getAvailableDiceNumbers, DICE_PIECE_MAP } from '../../utils/diceMapper';
+import { getAvailableDiceNumbers, isPieceAllowedByDice } from '../../utils/diceMapper';
 import { soundManager } from '../../utils/soundManager';
 
 export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (set, get) => ({
@@ -14,10 +15,9 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
     currentTurn: 'white',
     history: [],
     currentVariantId: 'classic',
-    pendingPromotion: null,
-    pendingCitadelChoice: null,
-    pendingSuccessionChoice: null,
+    activeInterception: null,
     useDiceRule: false,
+    subTurn: 1,
     currentDiceRoll: null,
     isRollingDice: false,
     availableDiceValues: [],
@@ -33,17 +33,20 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
         const activeDifficulty = difficulty !== undefined ? difficulty : get().aiDifficulty;
         const activeDiceRule = variantDef?.supportsDiceRule ? !!useDiceRule : false;
 
+        if (activeDiceRule && engine instanceof ChaturajiEngine) {
+            engine.useDiceRule = true;
+        }
+
         set({
             engine,
             selectedPosition: null,
             legalMoves: [],
             gameState: engine.state,
             currentTurn: engine.currentTurn,
+            subTurn: (engine as any).subTurn || 1,
             history: engine.history,
             currentVariantId: variantId,
-            pendingPromotion: null,
-            pendingCitadelChoice: null,
-            pendingSuccessionChoice: null,
+            activeInterception: null,
             gameTime: 0,
             gameMode: activeMode,
             playerColor: activePlayerColor,
@@ -60,8 +63,10 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             get().rollDiceForCurrentTurn(engine, engine.currentTurn);
         }
 
-        // If playing vs AI as Black, White (AI) makes the opening move
-        if (activeMode === 'vs_ai' && activePlayerColor === 'black') {
+        // If playing vs AI and it's not the player's opening turn, AI makes the opening move
+        const openingController = engine.getActiveController();
+
+        if (activeMode === 'vs_ai' && openingController !== activePlayerColor) {
             setTimeout(() => {
                 get().triggerAiMove();
             }, activeDiceRule ? 900 : 300);
@@ -71,9 +76,10 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
     rollDiceForCurrentTurn: (engineOverride?: BaseEngine, turnOverride?: PieceColor) => {
         const engine = engineOverride || get().engine;
         const currentTurn = turnOverride || (engine ? engine.currentTurn : get().currentTurn);
+        const currentVariantId = get().currentVariantId;
         if (!engine) return;
 
-        const availableNumbers = getAvailableDiceNumbers(engine, currentTurn);
+        const availableNumbers = getAvailableDiceNumbers(engine, currentTurn, currentVariantId);
         if (availableNumbers.length === 0) {
             set({ currentDiceRoll: null, isRollingDice: false, availableDiceValues: [] });
             return;
@@ -93,12 +99,36 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
     },
 
     selectSquare: (pos: Position) => {
-        const { engine, selectedPosition, legalMoves, gameMode, playerColor, isAiThinking, useDiceRule, currentDiceRoll, isRollingDice } = get();
+        const {
+            engine,
+            selectedPosition,
+            legalMoves,
+            gameMode,
+            playerColor,
+            isAiThinking,
+            useDiceRule,
+            currentDiceRoll,
+            isRollingDice,
+            activeInterception,
+            currentVariantId
+        } = get();
+
         if (!engine || engine.state === 'checkmate' || engine.state === 'draw') return;
 
         // Disallow moves while AI is thinking or if it's not the player's turn in PvE mode
+        const activeController = engine.getActiveController();
+
         if (isAiThinking) return;
-        if (gameMode === 'vs_ai' && engine.currentTurn !== playerColor) return;
+        if (gameMode === 'vs_ai' && activeController !== playerColor) return;
+
+        // If pending King Placement is active (Chaturaji), clicking a board square places the King
+        if (activeInterception?.type === 'KING_PLACEMENT') {
+            get().resolveInterception({ type: 'KING_PLACEMENT', pos });
+            return;
+        }
+
+        // If any modal interception is currently active, disallow standard board clicks
+        if (activeInterception) return;
 
         // Deselect the current position if clicked again
         if (selectedPosition && selectedPosition.x === pos.x && selectedPosition.y === pos.y) {
@@ -116,20 +146,8 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
                 // Polymorphic pre-move interception (promotion, citadel infiltration, etc.)
                 const interception = engine.getPreMoveInterception(selectedPosition, pos);
                 if (interception) {
-                    if (interception.type === 'PROMOTION') {
-                        set({ pendingPromotion: { from: selectedPosition, to: pos } });
-                        return;
-                    }
-                    if (interception.type === 'CITADEL_CHOICE') {
-                        set({
-                            pendingCitadelChoice: {
-                                from: selectedPosition,
-                                to: pos,
-                                royals: interception.royals
-                            }
-                        });
-                        return;
-                    }
+                    set({ activeInterception: interception });
+                    return;
                 }
 
                 // If not an intercepted decision, execute the move normally
@@ -146,35 +164,30 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
                         soundManager.playMove();
                     }
 
-                    // Polymorphic post-move interception (succession choice, etc.)
+                    // Polymorphic post-move interception (succession choice, king rescue, etc.)
                     const postInterception = engine.getPostMoveInterception(lastMove);
-                    if (postInterception && postInterception.type === 'SUCCESSION_CHOICE') {
-                        set({
-                            pendingSuccessionChoice: {
-                                color: postInterception.color,
-                                royals: postInterception.royals
-                            }
-                        });
-                    }
 
                     set({
                         selectedPosition: null,
                         legalMoves: [],
                         gameState: engine.state,
                         currentTurn: engine.currentTurn,
+                        subTurn: (engine as any).subTurn || 1,
                         history: [...engine.history],
+                        activeInterception: postInterception || null,
                     });
 
-                    // If dice rule is active, roll the die for the next turn
-                    if (useDiceRule) {
-                        get().rollDiceForCurrentTurn();
-                    }
+                    // If no blocking modal interception, continue turn flow
+                    if (!postInterception) {
+                        if (useDiceRule) {
+                            get().rollDiceForCurrentTurn();
+                        }
 
-                    // If playing vs AI, trigger the machine's turn
-                    if (gameMode === 'vs_ai') {
-                        setTimeout(() => {
-                            get().triggerAiMove();
-                        }, useDiceRule ? 850 : 200);
+                        if (gameMode === 'vs_ai') {
+                            setTimeout(() => {
+                                get().triggerAiMove();
+                            }, useDiceRule ? 850 : 200);
+                        }
                     }
                     return;
                 }
@@ -183,12 +196,11 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
 
         const piece = engine.board.getPieceAt(pos.x, pos.y);
 
-        if (piece && piece.color === engine.currentTurn) {
+        if (piece && engine.isPieceControllableByCurrentTurn(piece)) {
             // Check dice restriction if dice rule is active
             if (useDiceRule) {
                 if (!currentDiceRoll || isRollingDice) return;
-                const allowedPieceName = DICE_PIECE_MAP[currentDiceRoll];
-                if (piece.name !== allowedPieceName) {
+                if (!isPieceAllowedByDice(piece.name, currentDiceRoll, currentVariantId)) {
                     return;
                 }
             }
@@ -213,31 +225,86 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
     },
 
     undoMove: () => {
-        const { history, currentVariantId, gameMode, playerColor, initGame, isAiThinking, useDiceRule } = get();
+        const { history, currentVariantId, gameMode, playerColor, isAiThinking, useDiceRule } = get();
 
         // If history is empty or AI is currently calculating, do not undo
         if (history.length === 0 || isAiThinking) return;
 
-        // In vs_ai mode, if it's the player's turn, undo 2 moves (AI move + player move)
-        let movesToDrop = 1;
+        let newHistoryLength = history.length - 1;
+
         if (gameMode === 'vs_ai') {
-            const currentTurn = get().currentTurn;
-            if (currentTurn === playerColor && history.length >= 2) {
-                movesToDrop = 2;
+            // Replay history on a temporary simulation engine to track who controlled each move
+            const simEngine = VariantRegistry.createEngine(currentVariantId);
+            if (useDiceRule && simEngine instanceof ChaturajiEngine) {
+                simEngine.useDiceRule = true;
+            }
+
+            const humanActionIndices: number[] = [];
+
+            for (let i = 0; i < history.length; i++) {
+                const move = history[i];
+                const activeCtrl = simEngine.getActiveController();
+                if (activeCtrl === playerColor) {
+                    humanActionIndices.push(i);
+                }
+
+                if (move.isPass || move.san === 'pass') {
+                    simEngine.passTurn();
+                    continue;
+                }
+
+                let promotionPiece: string | undefined = undefined;
+                if (move.san?.includes('=Q')) promotionPiece = 'Queen';
+                else if (move.san?.includes('=R')) promotionPiece = 'Rook';
+                else if (move.san?.includes('=B')) promotionPiece = 'Bishop';
+                else if (move.san?.includes('=N')) promotionPiece = 'Knight';
+                else if (move.san?.includes('=F')) promotionPiece = 'Ferz';
+
+                if (move.citadelSwappedRoyalId && simEngine instanceof TamerlaneEngine) {
+                    simEngine.executeCitadelSwap(move.from, move.to, move.citadelSwappedRoyalId);
+                } else {
+                    simEngine.executeMove(move.from, move.to, promotionPiece);
+                }
+
+                if (move.crownedSuccessorId && simEngine instanceof TamerlaneEngine) {
+                    simEngine.crownSuccessor(move.crownedSuccessorId);
+                }
+
+                if (simEngine instanceof ChaturajiEngine) {
+                    if (move.rescuedKingPlacement) {
+                        simEngine.confirmKingRescue();
+                        simEngine.placeRescuedKing(move.rescuedKingPlacement.pos);
+                    } else if (move.rescuedKingDeclined || simEngine.pendingKingRescueChoice) {
+                        simEngine.declineKingRescue();
+                    }
+                }
+            }
+
+            const currentActiveController = simEngine.getActiveController();
+            if (currentActiveController === playerColor && humanActionIndices.length > 0) {
+                // Drop back to before the player's last executed action
+                newHistoryLength = humanActionIndices[humanActionIndices.length - 1];
+            } else {
+                newHistoryLength = Math.max(0, history.length - 1);
             }
         }
 
-        const newHistory = history.slice(0, -movesToDrop);
+        const newHistory = history.slice(0, newHistoryLength);
         const originalTime = get().gameTime;
 
-        // Reset the board from scratch
-        initGame(currentVariantId, gameMode, playerColor, get().aiDifficulty, useDiceRule);
-        const engine = get().engine;
-
-        if (!engine) return;
+        // Create a clean engine instance for replay
+        const engine = VariantRegistry.createEngine(currentVariantId);
+        if (useDiceRule && engine instanceof ChaturajiEngine) {
+            engine.useDiceRule = true;
+        }
 
         // Replay previous moves
         for (const move of newHistory) {
+            if (move.isPass || move.san === 'pass') {
+                engine.passTurn();
+                continue;
+            }
+
             let promotionPiece: string | undefined = undefined;
 
             if (move.san?.includes('=Q')) promotionPiece = 'Queen';
@@ -255,7 +322,19 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             if (move.crownedSuccessorId && engine instanceof TamerlaneEngine) {
                 engine.crownSuccessor(move.crownedSuccessorId);
             }
+
+            if (engine instanceof ChaturajiEngine) {
+                if (move.rescuedKingPlacement) {
+                    engine.confirmKingRescue();
+                    engine.placeRescuedKing(move.rescuedKingPlacement.pos);
+                } else if (move.rescuedKingDeclined || engine.pendingKingRescueChoice) {
+                    engine.declineKingRescue();
+                }
+            }
         }
+
+        const lastMove = engine.history.length > 0 ? engine.history[engine.history.length - 1] : null;
+        const postInterception = lastMove ? engine.getPostMoveInterception(lastMove) : null;
 
         // Update the UI state with the reconstructed board
         set({
@@ -264,38 +343,115 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             legalMoves: [],
             gameState: engine.state,
             currentTurn: engine.currentTurn,
+            subTurn: (engine as any).subTurn || 1,
             history: engine.history,
-            pendingPromotion: null,
-            pendingCitadelChoice: null,
-            pendingSuccessionChoice: null,
+            activeInterception: postInterception || null,
             gameTime: originalTime,
-            isAiThinking: false
+            isAiThinking: false,
+            isRollingDice: false,
         });
+
+        if (useDiceRule) {
+            get().rollDiceForCurrentTurn(engine, engine.currentTurn);
+        }
     },
 
-    confirmPromotion: (pieceName: string) => {
-        const { engine, pendingPromotion, gameMode, useDiceRule } = get();
-        if (!engine || !pendingPromotion) return;
+    passTurn: () => {
+        const { engine, gameState, gameMode, playerColor, isAiThinking, useDiceRule, currentVariantId } = get();
+        if (!engine || currentVariantId !== 'chaturaji' || gameState === 'checkmate' || gameState === 'draw' || isAiThinking) return;
 
-        const success = engine.executeMove(pendingPromotion.from, pendingPromotion.to, pieceName);
+        // In vs_ai mode, only human player can manually trigger passTurn from UI
+        const activeController = engine.getActiveController();
+        if (gameMode === 'vs_ai' && activeController !== playerColor) return;
+
+        const success = engine.passTurn();
 
         if (success) {
-            const lastMove = engine.history[engine.history.length - 1];
-            const currentState: string = engine.state;
-            if (currentState === 'check' || currentState === 'checkmate') {
-                soundManager.playCheck();
-            } else if (lastMove && lastMove.capturedPiece) {
-                soundManager.playCapture();
-            } else {
-                soundManager.playMove();
-            }
+            soundManager.playMove();
 
             set({
-                pendingPromotion: null,
                 selectedPosition: null,
                 legalMoves: [],
                 gameState: engine.state,
                 currentTurn: engine.currentTurn,
+                subTurn: (engine as any).subTurn || 1,
+                history: [...engine.history],
+            });
+
+            if (useDiceRule) {
+                get().rollDiceForCurrentTurn();
+            }
+
+            if (gameMode === 'vs_ai' && engine.state !== 'checkmate' && engine.state !== 'draw') {
+                const nextActiveController = engine.getActiveController();
+                if (nextActiveController !== playerColor) {
+                    setTimeout(() => {
+                        get().triggerAiMove();
+                    }, useDiceRule ? 850 : 200);
+                }
+            }
+        }
+    },
+
+    resolveInterception: (decision: InterceptionDecision) => {
+        const { engine, activeInterception, gameMode, useDiceRule } = get();
+        if (!engine || !activeInterception) return;
+
+        if (decision.type === 'PROMOTION' && activeInterception.type === 'PROMOTION') {
+            const success = engine.executeMove(activeInterception.from, activeInterception.to, decision.pieceName);
+
+            if (success) {
+                const lastMove = engine.history[engine.history.length - 1];
+                const currentState: string = engine.state;
+                if (currentState === 'check' || currentState === 'checkmate') {
+                    soundManager.playCheck();
+                } else if (lastMove && lastMove.capturedPiece) {
+                    soundManager.playCapture();
+                } else {
+                    soundManager.playMove();
+                }
+
+                const postInterception = engine.getPostMoveInterception(lastMove);
+
+                set({
+                    activeInterception: postInterception || null,
+                    selectedPosition: null,
+                    legalMoves: [],
+                    gameState: engine.state,
+                    currentTurn: engine.currentTurn,
+                    subTurn: (engine as any).subTurn || 1,
+                    history: [...engine.history],
+                });
+
+                if (!postInterception) {
+                    if (useDiceRule) {
+                        get().rollDiceForCurrentTurn();
+                    }
+
+                    if (gameMode === 'vs_ai') {
+                        setTimeout(() => {
+                            get().triggerAiMove();
+                        }, useDiceRule ? 850 : 200);
+                    }
+                }
+            }
+            return;
+        }
+
+        if (decision.type === 'CITADEL_SWAP' && activeInterception.type === 'CITADEL_CHOICE') {
+            if (engine instanceof TamerlaneEngine) {
+                engine.executeCitadelSwap(activeInterception.from, activeInterception.to, decision.chosenRoyalId);
+            }
+
+            soundManager.playMove();
+
+            set({
+                activeInterception: null,
+                selectedPosition: null,
+                legalMoves: [],
+                gameState: engine.state,
+                currentTurn: engine.currentTurn,
+                subTurn: (engine as any).subTurn || 1,
                 history: [...engine.history],
             });
 
@@ -308,82 +464,103 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
                     get().triggerAiMove();
                 }, useDiceRule ? 850 : 200);
             }
-        }
-    },
-
-    cancelPromotion: () => {
-        set({ pendingPromotion: null, selectedPosition: null, legalMoves: [] });
-    },
-
-    confirmCitadelSwap: (chosenRoyalId?: string) => {
-        const { engine, pendingCitadelChoice, gameMode, useDiceRule } = get();
-        if (!engine || !pendingCitadelChoice) return;
-
-        if (engine instanceof TamerlaneEngine) {
-            engine.executeCitadelSwap(pendingCitadelChoice.from, pendingCitadelChoice.to, chosenRoyalId);
+            return;
         }
 
-        soundManager.playMove();
+        if (decision.type === 'CITADEL_DRAW' && activeInterception.type === 'CITADEL_CHOICE') {
+            engine.executeMove(activeInterception.from, activeInterception.to);
+            engine.state = 'draw';
 
-        set({
-            pendingCitadelChoice: null,
-            selectedPosition: null,
-            legalMoves: [],
-            gameState: engine.state,
-            currentTurn: engine.currentTurn,
-            history: [...engine.history],
-        });
+            soundManager.playMove();
 
-        if (useDiceRule) {
-            get().rollDiceForCurrentTurn();
+            set({
+                activeInterception: null,
+                selectedPosition: null,
+                legalMoves: [],
+                gameState: 'draw',
+                currentTurn: engine.currentTurn,
+                subTurn: (engine as any).subTurn || 1,
+                history: [...engine.history],
+            });
+            return;
         }
 
-        if (gameMode === 'vs_ai') {
-            setTimeout(() => {
-                get().triggerAiMove();
-            }, useDiceRule ? 850 : 200);
+        if (decision.type === 'SUCCESSION') {
+            engine.resolveInterception(decision);
+
+            set({
+                activeInterception: null,
+                gameState: engine.state,
+                subTurn: (engine as any).subTurn || 1,
+                history: [...engine.history],
+            });
+            return;
         }
-    },
 
-    confirmCitadelDraw: () => {
-        const { engine, pendingCitadelChoice } = get();
-        if (!engine || !pendingCitadelChoice) return;
+        if (decision.type === 'KING_RESCUE_ACCEPT') {
+            engine.resolveInterception(decision);
+            const lastMove = engine.history[engine.history.length - 1];
+            const nextInterception = lastMove ? engine.getPostMoveInterception(lastMove) : null;
 
-        engine.executeMove(pendingCitadelChoice.from, pendingCitadelChoice.to);
-        engine.state = 'draw';
+            set({
+                activeInterception: nextInterception || null,
+                subTurn: (engine as any).subTurn || 1,
+            });
+            return;
+        }
 
-        soundManager.playMove();
+        if (decision.type === 'KING_RESCUE_DECLINE') {
+            engine.resolveInterception(decision);
 
-        set({
-            pendingCitadelChoice: null,
-            selectedPosition: null,
-            legalMoves: [],
-            gameState: 'draw',
-            currentTurn: engine.currentTurn,
-            history: [...engine.history],
-        });
-    },
+            set({
+                activeInterception: null,
+                gameState: engine.state,
+                currentTurn: engine.currentTurn,
+                subTurn: (engine as any).subTurn || 1,
+            });
 
-    cancelCitadelChoice: () => {
-        set({ pendingCitadelChoice: null, selectedPosition: null, legalMoves: [] });
-    },
-
-    confirmSuccession: (chosenRoyalId: string) => {
-        const { engine } = get();
-        if (!engine) return;
-
-        if (engine instanceof TamerlaneEngine) {
-            engine.crownSuccessor(chosenRoyalId);
-            if (engine.history.length > 0) {
-                engine.history[engine.history.length - 1].crownedSuccessorId = chosenRoyalId;
+            if (useDiceRule) {
+                get().rollDiceForCurrentTurn();
             }
+
+            if (gameMode === 'vs_ai') {
+                setTimeout(() => {
+                    get().triggerAiMove();
+                }, useDiceRule ? 850 : 200);
+            }
+            return;
         }
 
-        set({
-            pendingSuccessionChoice: null,
-            gameState: engine.state,
-            history: [...engine.history],
-        });
+        if (decision.type === 'KING_PLACEMENT') {
+            const success = engine.resolveInterception(decision);
+            if (success) {
+                soundManager.playMove();
+                set({
+                    activeInterception: null,
+                    selectedPosition: null,
+                    legalMoves: [],
+                    gameState: engine.state,
+                    currentTurn: engine.currentTurn,
+                    subTurn: (engine as any).subTurn || 1,
+                    history: [...engine.history],
+                });
+
+                if (useDiceRule) {
+                    get().rollDiceForCurrentTurn();
+                }
+
+                if (gameMode === 'vs_ai') {
+                    setTimeout(() => {
+                        get().triggerAiMove();
+                    }, useDiceRule ? 850 : 200);
+                }
+            }
+            return;
+        }
+    },
+
+    cancelInterception: () => {
+        set({ activeInterception: null, selectedPosition: null, legalMoves: [] });
     },
 
     toggleMute: () => {

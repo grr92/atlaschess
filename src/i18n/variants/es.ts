@@ -37,6 +37,12 @@ export const variantMeta_es: Record<string, VariantMetaI18n> = {
         tag: '112 Casillas',
         desc: 'El ajedrez colosal de Tamerlán con Jirafas, Camellos, Máquinas de Guerra, 11 peones únicos y Ciudadelas reales.',
     },
+    chaturaji: {
+        title: 'Chaturaji',
+        origin: 'Siglos X–XI • India',
+        tag: '4 Jugadores',
+        desc: 'El Chaturanga para 4 jugadores (conocido popularmente como Chaturaji) en un tablero Ashtāpada de 8x8 con Triunfo del Barco, tronos, promociones y apuestas.',
+    },
 };
 
 export const variantCodex_es: Record<string, VariantCodexI18n> = {
@@ -404,6 +410,65 @@ export const variantCodex_es: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'El propio Timur era un apasionado del ajedrez y prefería los tableros gigantescos al tradicional 8x8. Convocaba a los mejores ajedrecistas a su corte en Samarcanda, como el célebre Ali ash-Shatranji.',
             rightBoxTitle: 'Mitos y Leyendas',
             rightBoxDesc: 'Manuscritos persas atribuyen el origen de estas complejas variantes a leyendas antiguas, afirmando que Hermes obsequió tableros colosales de ajedrez táctico a Alejandro Magno.',
+        },
+    },
+    chaturaji: {
+        name: 'Chaturaji (Chaturanga para 4 jugadores)',
+        rules: {
+            intro: 'El Chaturaji (nombre con el que se conoce comúnmente, aunque de forma históricamente inexacta, al Chaturanga para 4 jugadores) se juega en un tablero de 8x8 sin casillas ajedrezadas entre 4 jugadores: Rojas (Este), Verdes (Sur), Amarillas (Oeste) y Azules (Norte), en turnos en sentido horario. Los jugadores enfrentados (Rojas y Amarillas, Verdes y Azules) son aliados militares, pero cada jugador puntúa apuestas individualmente. Existen diversas variantes y reconstrucciones históricas en manuscritos indios y persas; AtlasChess implementa el conjunto de reglas recopilado y documentado por chessvariants.com (a excepción de la regla exclusiva para apuestas de dinero).',
+            bullets: [
+                {
+                    title: 'El Rey:',
+                    desc: 'Mueve una casilla en cualquier dirección. No existe el concepto de jaque ni de jaque mate; los reyes pueden ser capturados directamente como cualquier pieza normal. Cuando un jugador pierde su Rey, pierde su turno y queda inactivo a menos que su aliado lo rescate.',
+                    pieceName: 'ChaturajiKing',
+                },
+                {
+                    title: 'El Elefante:',
+                    desc: 'Mueve horizontal o verticalmente a través de cualquier número de casillas desocupadas, exactamente igual que la Torre moderna.',
+                    pieceName: 'ChaturajiElephant',
+                },
+                {
+                    title: 'El Caballo:',
+                    desc: 'Mueve en forma de "L" (dos casillas en una dirección y una en perpendicular), saltando sobre piezas intermedias, idéntico al Caballo moderno.',
+                    pieceName: 'ChaturajiHorse',
+                },
+                {
+                    title: 'El Barco:',
+                    desc: 'Salta exactamente dos casillas en diagonal, sobrevolando cualquier pieza intermedia. ¡Triunfo del Barco (Vrihannauka)!: Si un Barco se mueve y completa un cuadrado de 2x2 compuesto por los cuatro barcos presentes en el tablero, ¡el barco que mueve captura instantáneamente a los otros tres barcos a la vez!',
+                    pieceName: 'ChaturajiBoat',
+                },
+                {
+                    title: 'El Peón:',
+                    desc: 'Avanza 1 casilla hacia adelante en la dirección de marcha de su ejército y captura 1 casilla en diagonal hacia adelante (sin avance doble inicial). Al alcanzar la fila final opuesta, puede coronar en la pieza original de esa columna (Esquina = Barco, Columna de Caballo = Caballo, Columna de Elefante = Elefante, Columna de Rey = Rey). Sin embargo, la coronación solo se permite si al jugador le quedan 2 o menos peones; si aún tiene 3 o 4 peones, permanece congelado en la última fila hasta que se pierdan peones aliados.',
+                    pieceName: 'ChaturajiPawn',
+                },
+                {
+                    title: 'Tronos (Sinhasana):',
+                    desc: 'Un Rey que entre en la casilla de trono inicial de un oponente gana 1 apuesta (2 apuestas si captura al rey rival en dicho trono). Un Rey que entre en el trono inicial de su aliado toma el mando supremo de todo el ejército aliado, controlando ambas fuerzas en su turno (y gana 2 apuestas si captura al rey aliado allí).',
+                },
+                {
+                    title: 'Rescate de Reyes:',
+                    desc: 'Si un jugador captura a un rey enemigo mientras el rey de su aliado ha caído (y no ha sido rescatado previamente), puede optar por rescatar al rey de su compañero y colocarlo inmediatamente en cualquier casilla vacía del tablero.',
+                },
+                {
+                    title: 'El Dado (d4):',
+                    desc: 'Al jugar con la regla tradicional de dados, se tira un dado para determinar qué pieza puede mover: 1 = Peón o Rey, 2 = Barco, 3 = Caballo, 4 = Elefante. Si se juega sin dados, el jugador elige libremente cualquier movimiento legal.',
+                    iconType: 'dices',
+                },
+                {
+                    title: 'Rey Solitario y Victoria:',
+                    desc: 'Si cualquier jugador queda reducido únicamente a su Rey sin otras piezas, la partida finaliza inmediatamente en Tablas. El último Rey superviviente gana 1 apuesta (2 si dicho Rey capturó personalmente a los 3 reyes rivales, 4 si fue en sus respectivos tronos). La partida global la gana el jugador que haya acumulado el mayor número de apuestas.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Consejo estratégico: Vigila las agrupaciones de barcos para desatar el demoledor Triunfo del Barco (Vrihannauka). Si tu aliado cae, ¡invade su trono para comandar su ejército o captura a un rey enemigo para efectuar un Rescate de Rey!',
+        },
+        history: {
+            intro: 'El juego para cuatro participantes conocido hoy como Chaturaji se llamaba realmente Chaturanga (en sánscrito, "cuatro divisiones del ejército"). Aunque en la literatura moderna tardía se le denominó Chaturaji ("Cuatro Reyes"), las fuentes históricas confirman que era una modalidad para cuatro jugadores del Chaturanga original.',
+            leftBoxTitle: 'Al-Biruni y los Manuscritos Indios',
+            leftBoxDesc: 'El primer testimonio detallado fue documentado hacia 1030 d.C. por el polímata persa Al-Biruni en su Kitab al-Hind (Libro de la India). Posteriormente apareció en textos sánscritos como el Tithitattva de Raghunandana (siglos XV-XVI), describiendo cuatro ejércitos (Rojo, Verde, Amarillo, Azul) que disputaban apuestas en el tablero Ashtāpada de 8x8 con dados.',
+            rightBoxTitle: 'La Refutada Teoría de Cox-Forbes',
+            rightBoxDesc: 'En el siglo XIX, Hiram Cox y Duncan Forbes formularon la célebre teoría de que el ajedrez con dados para 4 jugadores era el ancestro primigenio de todos los ajedreces. En 1913, el historiador H.J.R. Murray e investigadores modernos como Jean-Louis Cazaux refutaron totalmente esta hipótesis, demostrando que el Chaturanga para 2 jugadores nació primero (c. siglo VI) y la versión para 4 jugadores surgió más tarde (siglos X-XI).',
         },
     },
 };

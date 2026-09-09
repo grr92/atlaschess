@@ -54,3 +54,10 @@ export * from './courier/Schleich';
 export * from './courier/Sage';
 export * from './courier/CourierPawn';
 
+// Chaturaji
+export * from './chaturaji/ChaturajiKing';
+export * from './chaturaji/ChaturajiElephant';
+export * from './chaturaji/ChaturajiHorse';
+export * from './chaturaji/ChaturajiBoat';
+export * from './chaturaji/ChaturajiPawn';
+

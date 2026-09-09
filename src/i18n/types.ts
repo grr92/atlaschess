@@ -12,6 +12,10 @@ export interface Translations {
         close: string;
         white: string;
         black: string;
+        red: string;
+        green: string;
+        yellow: string;
+        blue: string;
         random: string;
         yes: string;
         no: string;
@@ -52,11 +56,15 @@ export interface Translations {
         vsAiSub: string;
         pvp: string;
         pvpSub: string;
+        pvp4Players: string;
+        pvp4PlayersSub: string;
         rulesetVariant: string;
         standardRules: string;
         standardRulesSub: string;
         diceRule: string;
         diceRuleSub: string;
+        diceRuleChaturaji: string;
+        diceRuleChaturajiSub: string;
         playAs: string;
         aiDifficulty: string;
         easy: string;
@@ -98,9 +106,20 @@ export interface Translations {
         successionDesc: string;
         successionCrownPrince: string;
         successionCrownAdventitious: string;
+        chaturajiStakesTitle: string;
+        wonStakes: string;
+        kingRescueTitle: string;
+        kingRescueDesc: string;
+        kingRescueAccept: string;
+        kingRescueDecline: string;
+        kingRescuePlacementPrompt: string;
         diceThrown: string;
+        diceThrownChaturaji: string;
+        winnerByStakes: string;
         rolling: string;
         selectPiece: string;
+        passTurn: string;
+        subTurnBadge: string;
         tooltips: {
             undo: string;
             restart: string;

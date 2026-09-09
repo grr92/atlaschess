@@ -3,9 +3,13 @@ import type { Piece } from '../../core/pieces/Piece';
 import {
     King, Queen, Rook, Bishop, Knight, Pawn,
     Shah, Shahzada, AdventitiousShah, Dabbaba, Jamal, Talia, Wazir, Zurafa, TamerlanePawn,
-    Ferz, Pil, Asb, Rukh, Raja, Ratha, Asva, Mantri, Gaja, Padati, Sarbaz
+    Ferz, Pil, Asb, Rukh, Raja, Ratha, Asva, Mantri, Gaja, Padati, Sarbaz,
+    ChaturajiKing, ChaturajiElephant, ChaturajiHorse, ChaturajiBoat, ChaturajiPawn,
+    GrantKing, Aanca, Unicorn, Lion, Giraffe, Crocodile, GrantPawn,
+    CourierKing, Courier, CourierBishop, CourierQueen, Schleich, Sage, CourierPawn
 } from '../../core/pieces/piecesIndex';
 import { TamerlaneEngine } from '../../core/engine/TamerlaneEngine';
+import { ChaturajiEngine } from '../../core/engine/ChaturajiEngine';
 
 export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceActions> = (set, get) => ({
     gameTime: 0,
@@ -13,7 +17,7 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
     setGameTime: (fn) => set((state) => ({ gameTime: fn(state.gameTime) })),
 
     saveGame: () => {
-        const { currentVariantId, history, gameTime, gameMode, playerColor, aiDifficulty } = get();
+        const { currentVariantId, history, gameTime, gameMode, playerColor, aiDifficulty, useDiceRule, subTurn, currentDiceRoll } = get();
         if (history.length === 0) return;
 
         const saveData = {
@@ -22,25 +26,33 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
             time: gameTime,
             gameMode,
             playerColor,
-            aiDifficulty
+            currentTurn: get().currentTurn,
+            aiDifficulty,
+            useDiceRule: !!useDiceRule,
+            subTurn: subTurn || 1,
+            currentDiceRoll: currentDiceRoll || null
         };
         const jsonString = JSON.stringify(saveData, null, 2);
 
-        const blob = new Blob([jsonString], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
+        if (typeof document !== 'undefined') {
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
 
-        const now = new Date();
-        const date = now.toISOString().split('T')[0];
-        const time = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+            const now = new Date();
+            const date = now.toISOString().split('T')[0];
+            const time = now.toTimeString().split(' ')[0].replace(/:/g, '-');
 
-        a.download = `AtlasChess_${currentVariantId}_${date}_${time}.atlas`;
+            a.download = `AtlasChess_${currentVariantId}_${date}_${time}.atlas`;
 
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        return jsonString;
     },
 
     loadGame: (jsonData: string) => {
@@ -55,8 +67,9 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
             const loadedMode = parsed.gameMode || 'pvp';
             const loadedColor = parsed.playerColor || 'white';
             const loadedDifficulty = parsed.aiDifficulty || 'medium';
+            const loadedUseDiceRule = parsed.useDiceRule !== undefined ? !!parsed.useDiceRule : false;
 
-            initGame(parsed.variantId, loadedMode, loadedColor, loadedDifficulty);
+            initGame(parsed.variantId, loadedMode, loadedColor, loadedDifficulty, loadedUseDiceRule);
             const engine = get().engine;
             if (!engine) return false;
 
@@ -87,6 +100,33 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
                             pieceInstance = tp;
                             break;
                         }
+                        // Chaturaji
+                        case 'ChaturajiKing': pieceInstance = new ChaturajiKing(p.id, p.color, p.position); break;
+                        case 'ChaturajiElephant': pieceInstance = new ChaturajiElephant(p.id, p.color, p.position); break;
+                        case 'ChaturajiHorse': pieceInstance = new ChaturajiHorse(p.id, p.color, p.position); break;
+                        case 'ChaturajiBoat': pieceInstance = new ChaturajiBoat(p.id, p.color, p.position); break;
+                        case 'ChaturajiPawn': pieceInstance = new ChaturajiPawn(p.id, p.color, p.position); break;
+                        // Grant Acedrex
+                        case 'GrantKing': pieceInstance = new GrantKing(p.id, p.color, p.position); break;
+                        case 'Aanca': pieceInstance = new Aanca(p.id, p.color, p.position); break;
+                        case 'Unicorn': pieceInstance = new Unicorn(p.id, p.color, p.position); break;
+                        case 'Lion': pieceInstance = new Lion(p.id, p.color, p.position); break;
+                        case 'Giraffe': pieceInstance = new Giraffe(p.id, p.color, p.position); break;
+                        case 'Crocodile': pieceInstance = new Crocodile(p.id, p.color, p.position); break;
+                        case 'GrantPawn': {
+                            const originFile = p.originFile !== undefined ? p.originFile : p.position.x;
+                            const gp = new GrantPawn(p.id, p.color, p.position, originFile);
+                            pieceInstance = gp;
+                            break;
+                        }
+                        // Courier Chess
+                        case 'CourierKing': pieceInstance = new CourierKing(p.id, p.color, p.position); break;
+                        case 'Courier': pieceInstance = new Courier(p.id, p.color, p.position); break;
+                        case 'CourierBishop': pieceInstance = new CourierBishop(p.id, p.color, p.position); break;
+                        case 'CourierQueen': pieceInstance = new CourierQueen(p.id, p.color, p.position); break;
+                        case 'Schleich': pieceInstance = new Schleich(p.id, p.color, p.position); break;
+                        case 'Sage': pieceInstance = new Sage(p.id, p.color, p.position); break;
+                        case 'CourierPawn': pieceInstance = new CourierPawn(p.id, p.color, p.position); break;
                         // Chaturanga & Classic
                         case 'Raja': pieceInstance = new Raja(p.id, p.color, p.position); break;
                         case 'Ratha': pieceInstance = new Ratha(p.id, p.color, p.position); break;
@@ -109,6 +149,11 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
                 engine.updateGameState();
             } else if (Array.isArray(parsed.history)) {
                 for (const move of parsed.history) {
+                    if (move.isPass || move.san === 'pass') {
+                        engine.passTurn();
+                        continue;
+                    }
+
                     let promotionPiece: string | undefined = undefined;
 
                     if (move.san?.includes('=Q')) promotionPiece = 'Queen';
@@ -126,13 +171,21 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
                     if (move.crownedSuccessorId && engine instanceof TamerlaneEngine) {
                         engine.crownSuccessor(move.crownedSuccessorId);
                     }
+
+                    if (engine instanceof ChaturajiEngine) {
+                        if (move.rescuedKingPlacement) {
+                            engine.confirmKingRescue();
+                            engine.placeRescuedKing(move.rescuedKingPlacement.pos);
+                        } else if (move.rescuedKingDeclined || engine.pendingKingRescueChoice) {
+                            engine.declineKingRescue();
+                        }
+                    }
                 }
             }
 
             const loadedTime = typeof parsed.time === 'number' ? parsed.time : 0;
-            if (parsed.currentTurn) {
-                engine.currentTurn = parsed.currentTurn;
-            }
+            const lastMove = engine.history.length > 0 ? engine.history[engine.history.length - 1] : null;
+            const postInterception = lastMove ? engine.getPostMoveInterception(lastMove) : null;
 
             set({
                 engine,
@@ -140,17 +193,26 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
                 legalMoves: [],
                 gameState: engine.state,
                 currentTurn: engine.currentTurn,
+                subTurn: (engine as any).subTurn || 1,
                 history: engine.history,
-                pendingPromotion: null,
+                activeInterception: postInterception || null,
                 gameTime: loadedTime,
-                isAiThinking: false
+                isAiThinking: false,
+                useDiceRule: loadedUseDiceRule,
+                currentDiceRoll: null,
+                isRollingDice: false,
             });
 
+            if (loadedUseDiceRule) {
+                get().rollDiceForCurrentTurn(engine, engine.currentTurn);
+            }
+
             // If it's the AI's turn upon loading, trigger AI move
-            if (loadedMode === 'vs_ai' && engine.currentTurn !== loadedColor) {
+            const activeController = engine.getActiveController();
+            if (loadedMode === 'vs_ai' && activeController !== loadedColor) {
                 setTimeout(() => {
                     get().triggerAiMove();
-                }, 300);
+                }, loadedUseDiceRule ? 850 : 300);
             }
 
             return true;
@@ -160,3 +222,4 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
         }
     }
 });
+

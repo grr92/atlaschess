@@ -1,5 +1,5 @@
 import type { StateCreator } from 'zustand';
-import type { Position, GameState, Move, PieceColor } from '../types';
+import type { Position, GameState, Move, PieceColor, GameInterception, InterceptionDecision } from '../types';
 import type { BaseEngine } from '../core/engine/BaseEngine';
 
 export type GameMode = 'pvp' | 'vs_ai';
@@ -14,10 +14,9 @@ export interface GameSliceState {
     currentTurn: PieceColor;
     history: Move[];
     currentVariantId: string;
-    pendingPromotion: { from: Position; to: Position } | null;
-    pendingCitadelChoice: { from: Position; to: Position; royals: { id: string; name: string }[] } | null;
-    pendingSuccessionChoice: { color: PieceColor; royals: { id: string; name: string }[] } | null;
+    activeInterception: GameInterception | null;
     useDiceRule: boolean;
+    subTurn: number;
     currentDiceRoll: number | null;
     isRollingDice: boolean;
     availableDiceValues: number[];
@@ -36,12 +35,9 @@ export interface GameSliceActions {
     selectSquare: (pos: Position) => void;
     resetGame: () => void;
     undoMove: () => void;
-    confirmPromotion: (pieceName: string) => void;
-    cancelPromotion: () => void;
-    confirmCitadelSwap: (chosenRoyalId?: string) => void;
-    confirmCitadelDraw: () => void;
-    cancelCitadelChoice: () => void;
-    confirmSuccession: (chosenRoyalId: string) => void;
+    passTurn: () => void;
+    resolveInterception: (decision: InterceptionDecision) => void;
+    cancelInterception: () => void;
     rollDiceForCurrentTurn: (engineOverride?: BaseEngine, turnOverride?: PieceColor) => void;
     toggleMute: () => void;
     setLanguage: (lang: AppLanguage) => void;
@@ -66,7 +62,7 @@ export interface SaveLoadSliceState {
 
 export interface SaveLoadSliceActions {
     setGameTime: (fn: (prev: number) => number) => void;
-    saveGame: () => void;
+    saveGame: () => string | void;
     loadGame: (jsonData: string) => boolean;
 }
 

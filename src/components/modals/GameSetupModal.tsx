@@ -6,6 +6,8 @@ import { soundManager } from '../../utils/soundManager';
 import { CloseButton } from '../ui/CloseButton';
 import { useTranslation } from '../../i18n';
 
+import { VariantRegistry } from '../../core/variants/variantRegistry';
+
 interface GameSetupModalProps {
     variantId: string;
     variantTitle?: string;
@@ -22,13 +24,20 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
     onStartGame,
 }) => {
     const { t } = useTranslation();
+    const variantDef = VariantRegistry.get(variantId);
+    const supportsDice = !!variantDef?.supportsDiceRule;
+    const isChaturaji = variantId === 'chaturaji';
+
     const [mode, setMode] = useState<GameMode>('vs_ai');
-    const [colorOption, setColorOption] = useState<'white' | 'black' | 'random'>('white');
+    const [colorOption, setColorOption] = useState<string>(isChaturaji ? 'red' : 'white');
     const [difficulty, setDifficulty] = useState<AiDifficulty>('medium');
     const [useDiceRule, setUseDiceRule] = useState<boolean>(false);
 
     useEffect(() => {
         if (!isOpen) return;
+        if (isChaturaji && (colorOption === 'white' || colorOption === 'black')) {
+            setColorOption('red');
+        }
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
                 if (document.activeElement instanceof HTMLElement) {
@@ -40,20 +49,29 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, onClose]);
+    }, [isOpen, onClose, isChaturaji, colorOption]);
 
     if (!isOpen) return null;
 
     const handleStart = () => {
         let chosenColor: PieceColor = 'white';
-        if (colorOption === 'random') {
-            chosenColor = Math.random() < 0.5 ? 'white' : 'black';
+        if (isChaturaji) {
+            if (colorOption === 'random') {
+                const colors: PieceColor[] = ['red', 'green', 'yellow', 'blue'];
+                chosenColor = colors[Math.floor(Math.random() * colors.length)];
+            } else {
+                chosenColor = colorOption as PieceColor;
+            }
         } else {
-            chosenColor = colorOption;
+            if (colorOption === 'random') {
+                chosenColor = Math.random() < 0.5 ? 'white' : 'black';
+            } else {
+                chosenColor = colorOption as PieceColor;
+            }
         }
 
         soundManager.playUiClick();
-        onStartGame(mode, chosenColor, difficulty, variantId === 'grant_acedrex' ? useDiceRule : false);
+        onStartGame(mode, chosenColor, difficulty, supportsDice ? useDiceRule : false);
         onClose();
     };
 
@@ -94,7 +112,9 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                             <Bot className={`w-7 h-7 ${mode === 'vs_ai' ? 'text-amber-400' : 'text-slate-400'}`} />
                             <div className="text-center">
                                 <span className="font-bold text-sm block">{t.gameSetup.vsAi}</span>
-                                <span className="text-[11px] opacity-60">{t.gameSetup.vsAiSub}</span>
+                                <span className="text-[11px] opacity-60">
+                                    {isChaturaji ? 'Heuristic AI' : t.gameSetup.vsAiSub}
+                                </span>
                             </div>
                         </button>
 
@@ -109,15 +129,19 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                         >
                             <Users className={`w-7 h-7 ${mode === 'pvp' ? 'text-amber-400' : 'text-slate-400'}`} />
                             <div className="text-center">
-                                <span className="font-bold text-sm block">{t.gameSetup.pvp}</span>
-                                <span className="text-[11px] opacity-60">{t.gameSetup.pvpSub}</span>
+                                <span className="font-bold text-sm block">
+                                    {isChaturaji ? t.gameSetup.pvp4Players : t.gameSetup.pvp}
+                                </span>
+                                <span className="text-[11px] opacity-60">
+                                    {isChaturaji ? t.gameSetup.pvp4PlayersSub : t.gameSetup.pvpSub}
+                                </span>
                             </div>
                         </button>
                     </div>
                 </div>
 
-                {/* Grant Acedrex Ruleset Selector (Standard vs 8-Sided Die) */}
-                {variantId === 'grant_acedrex' && (
+                {/* Ruleset Selector (Standard vs Dice) */}
+                {supportsDice && (
                     <div className="mb-6">
                         <label className="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-2.5">
                             {t.gameSetup.rulesetVariant}
@@ -150,8 +174,12 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                             >
                                 <Dices className="w-5 h-5 text-amber-400 flex-shrink-0" />
                                 <div className="text-left">
-                                    <div className="font-extrabold text-xs">{t.gameSetup.diceRule}</div>
-                                    <div className="text-[10px] text-slate-400 font-normal">{t.gameSetup.diceRuleSub}</div>
+                                    <div className="font-extrabold text-xs">
+                                        {isChaturaji ? t.gameSetup.diceRuleChaturaji : t.gameSetup.diceRule}
+                                    </div>
+                                    <div className="text-[10px] text-slate-400 font-normal">
+                                        {isChaturaji ? t.gameSetup.diceRuleChaturajiSub : t.gameSetup.diceRuleSub}
+                                    </div>
                                 </div>
                             </button>
                         </div>
@@ -166,46 +194,115 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                             <label className="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-2.5">
                                 {t.gameSetup.playAs}
                             </label>
-                            <div className="grid grid-cols-3 gap-2.5">
-                                <button
-                                    type="button"
-                                    onClick={() => setColorOption('white')}
-                                    className={`py-2.5 px-3 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs transition-all ${
-                                        colorOption === 'white'
-                                            ? 'bg-white text-slate-950 border-white shadow-md'
-                                            : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
-                                    }`}
-                                >
-                                    <div className="w-3.5 h-3.5 rounded-full bg-white ring-1 ring-slate-400" />
-                                    {t.common.white}
-                                </button>
+                            {isChaturaji ? (
+                                <div className="grid grid-cols-5 gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setColorOption('red')}
+                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
+                                            colorOption === 'red'
+                                                ? 'bg-red-500/20 border-red-500 text-red-300 shadow-md ring-2 ring-red-500'
+                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
+                                        }`}
+                                    >
+                                        <div className="w-3.5 h-3.5 rounded-full bg-red-500 shadow-sm" />
+                                        {t.common.red}
+                                    </button>
 
-                                <button
-                                    type="button"
-                                    onClick={() => setColorOption('random')}
-                                    className={`py-2.5 px-3 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs transition-all ${
-                                        colorOption === 'random'
-                                            ? 'bg-amber-500/20 border-amber-500 text-amber-300 shadow-md'
-                                            : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
-                                    }`}
-                                >
-                                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                                    {t.common.random}
-                                </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setColorOption('green')}
+                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
+                                            colorOption === 'green'
+                                                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-md ring-2 ring-emerald-500'
+                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
+                                        }`}
+                                    >
+                                        <div className="w-3.5 h-3.5 rounded-full bg-emerald-500 shadow-sm" />
+                                        {t.common.green}
+                                    </button>
 
-                                <button
-                                    type="button"
-                                    onClick={() => setColorOption('black')}
-                                    className={`py-2.5 px-3 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs transition-all ${
-                                        colorOption === 'black'
-                                            ? 'bg-slate-950 text-white border-slate-600 shadow-md'
-                                            : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
-                                    }`}
-                                >
-                                    <div className="w-3.5 h-3.5 rounded-full bg-slate-950 border border-white/50" />
-                                    {t.common.black}
-                                </button>
-                            </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => setColorOption('yellow')}
+                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
+                                            colorOption === 'yellow'
+                                                ? 'bg-amber-400/20 border-amber-400 text-amber-300 shadow-md ring-2 ring-amber-400'
+                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
+                                        }`}
+                                    >
+                                        <div className="w-3.5 h-3.5 rounded-full bg-amber-400 shadow-sm" />
+                                        {t.common.yellow}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setColorOption('blue')}
+                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
+                                            colorOption === 'blue'
+                                                ? 'bg-sky-500/20 border-sky-500 text-sky-300 shadow-md ring-2 ring-sky-500'
+                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
+                                        }`}
+                                    >
+                                        <div className="w-3.5 h-3.5 rounded-full bg-sky-500 shadow-sm" />
+                                        {t.common.blue}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setColorOption('random')}
+                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
+                                            colorOption === 'random'
+                                                ? 'bg-amber-500/20 border-amber-500 text-amber-300 shadow-md ring-2 ring-amber-500'
+                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
+                                        }`}
+                                    >
+                                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                                        {t.common.random}
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-3 gap-2.5">
+                                    <button
+                                        type="button"
+                                        onClick={() => setColorOption('white')}
+                                        className={`py-2.5 px-3 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs transition-all ${
+                                            colorOption === 'white'
+                                                ? 'bg-white text-slate-950 border-white shadow-md'
+                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
+                                        }`}
+                                    >
+                                        <div className="w-3.5 h-3.5 rounded-full bg-white ring-1 ring-slate-400" />
+                                        {t.common.white}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setColorOption('random')}
+                                        className={`py-2.5 px-3 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs transition-all ${
+                                            colorOption === 'random'
+                                                ? 'bg-amber-500/20 border-amber-500 text-amber-300 shadow-md'
+                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
+                                        }`}
+                                    >
+                                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                                        {t.common.random}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setColorOption('black')}
+                                        className={`py-2.5 px-3 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs transition-all ${
+                                            colorOption === 'black'
+                                                ? 'bg-slate-950 text-white border-slate-600 shadow-md'
+                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
+                                        }`}
+                                    >
+                                        <div className="w-3.5 h-3.5 rounded-full bg-slate-950 border border-white/50" />
+                                        {t.common.black}
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
                         {/* Difficulty Level */}
