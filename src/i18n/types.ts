@@ -65,6 +65,8 @@ export interface Translations {
         diceRuleSub: string;
         diceRuleChaturaji: string;
         diceRuleChaturajiSub: string;
+        diceRuleFourSeasons: string;
+        diceRuleFourSeasonsSub: string;
         playAs: string;
         aiDifficulty: string;
         easy: string;
@@ -113,13 +115,15 @@ export interface Translations {
         kingRescueAccept: string;
         kingRescueDecline: string;
         kingRescuePlacementPrompt: string;
+        commandingArmies: string;
+        annexedBy: string;
         diceThrown: string;
         diceThrownChaturaji: string;
+        diceThrownFourSeasons: string;
         winnerByStakes: string;
         rolling: string;
         selectPiece: string;
         passTurn: string;
-        subTurnBadge: string;
         tooltips: {
             undo: string;
             restart: string;

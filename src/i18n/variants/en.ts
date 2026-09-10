@@ -31,6 +31,12 @@ export const variantMeta_en: Record<string, VariantMetaI18n> = {
         tag: '12x12 Board',
         desc: 'The grand royal chess of Alfonso the Wise with Aancas, Unicorns, Lions, Giraffes, and Crocodiles.',
     },
+    four_seasons: {
+        title: 'Four Seasons Chess',
+        origin: '13th Century • Castile (Alfonso X)',
+        tag: '4 Players',
+        desc: 'King Alfonso X\'s medieval four-player masterpiece representing the four seasons, bodily humors, and cosmic elements on an 8x8 board.',
+    },
     tamerlane: {
         title: 'Tamerlane Chess',
         origin: '14th Century • Timurid Empire',
@@ -469,6 +475,66 @@ export const variantCodex_en: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'The earliest detailed account was recorded around 1030 AD by the Persian polymath Al-Biruni in his Kitab al-Hind (India). The game was later documented in Sanskrit texts like Raghunandana\'s Tithitattva (15th-16th century), describing four armies (Red, Green, Yellow, Blue) competing for stakes on an 8x8 Ashtāpada board using dice.',
             rightBoxTitle: 'The Refuted Cox-Forbes Theory',
             rightBoxDesc: 'In the 19th century, Hiram Cox and Duncan Forbes famously hypothesized that 4-player dice chess was the primitive ancestor of all chess. In 1913, chess historian H.J.R. Murray and modern historians like Jean-Louis Cazaux completely disproved this theory, proving that 2-player Chaturanga came first (c. 6th century) and 4-player Chaturanga developed later around the 10th-11th century.',
+        },
+    },
+    four_seasons: {
+        name: 'Four Seasons Chess (Acedrex de los cuatro tiempos)',
+        rules: {
+            intro: 'Four Seasons Chess is played on an 8x8 checkered board by 4 players: Green (Spring), Red (Summer), Black (Autumn), and White (Winter). Play proceeds in counter-clockwise turn order (Green → Red → Black → White). Unlike Chaturaji, this is a 4-player free-for-all: each season fights for itself! When a King is checkmated, their army is annexed by the victor. The last player standing wins.',
+            bullets: [
+                {
+                    title: 'The King (Rey):',
+                    desc: 'Moves one square in any direction (orthogonal or diagonal). If a King is checkmated, the King is removed from the board, and the player who delivered checkmate takes command of all remaining pieces in that army.',
+                    pieceName: 'FourSeasonsKing',
+                },
+                {
+                    title: 'The General:',
+                    desc: 'Moves exactly one square diagonally in any direction.',
+                    pieceName: 'FourSeasonsGeneral',
+                },
+                {
+                    title: 'The Rook (Torre):',
+                    desc: 'Moves horizontally or vertically across any number of unoccupied squares, exactly like the modern Rook.',
+                    pieceName: 'FourSeasonsRook',
+                },
+                {
+                    title: 'The Knight (Caballo):',
+                    desc: 'Leaps in an "L" shape (two squares straight and one perpendicular), leaping over any intermediate pieces.',
+                    pieceName: 'FourSeasonsKnight',
+                },
+                {
+                    title: 'The Bishop (Alfil):',
+                    desc: 'Leaps exactly two squares diagonally, jumping over any intervening piece on the intermediate square.',
+                    pieceName: 'FourSeasonsBishop',
+                },
+                {
+                    title: 'The Pawn (Peón):',
+                    desc: 'Moves one square forward along its quadrant\'s designated path and captures one square diagonally forward. Upon reaching the far edge of the board corresponding to the end of its march, it promotes immediately to a General.',
+                    pieceName: 'FourSeasonsPawn',
+                },
+                {
+                    title: 'Checkmate & Army Annexation:',
+                    desc: 'When you deliver checkmate to an opponent\'s King, their King is eliminated and you inherit their entire surviving army, controlling their pieces on your turns!',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Stalemate (Ahogado):',
+                    desc: 'If a player has no legal moves on their turn and is not in check, they are stalemated. All pieces of the stalemated player are removed from the board.',
+                },
+                {
+                    title: 'The 6-Sided Die (d6):',
+                    desc: 'When playing with traditional dice rules, roll a d6 each turn: 1 = Pawn, 2 = Bishop (Alfil), 3 = Knight, 4 = Rook, 5 = General, 6 = King. If the rolled piece has no legal moves, the turn is forfeited.',
+                    iconType: 'dices',
+                },
+            ],
+            proTip: 'Pro tip: Target vulnerable enemy Kings to deliver checkmate and annex their entire army! Controlling multiple armies gives you overwhelming numerical dominance across the board.',
+        },
+        history: {
+            intro: 'Documented in 1283 in the "Libro de los Juegos" (fol. 88v) commissioned by King Alfonso X the Wise of Castile under the title "Acedrex de los Quatro Tiempos". Unlike Indian Chaturaji which was played in teams of two, each participant plays strictly for themselves in a four-way free-for-all, likely inspired by oriental influences such as Al-Biruni\'s 1030 accounts.',
+            leftBoxTitle: 'The Four Seasons, Elements & Humors',
+            leftBoxDesc: 'Every side represents a season, element, and bodily humor: Green represents Spring, Air, and Blood; Red represents Summer, Fire, and Choler; Black represents Autumn, Earth, and Melancholy; and White represents Winter, Water, and Phlegm. Play starts with Green and progresses in the cyclic order of the seasons.',
+            rightBoxTitle: 'The Board & "El Mundo" Tables Game',
+            rightBoxDesc: 'Played on an 8x8 board with pieces placed in the four corners (enabling frontal clashes) and central diagonal lines in an "X" that served as a visual guide for pawn movement. Alfonso\'s codex pairs this chess with a four-handed circular Tables (backgammon) variant titled "El Mundo" (The World) using the same four colors.',
         },
     },
 };

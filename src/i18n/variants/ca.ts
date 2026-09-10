@@ -31,6 +31,12 @@ export const variantMeta_ca: Record<string, VariantMetaI18n> = {
         tag: 'Tauler 12x12',
         desc: 'El gran joc d\'escacs reial d\'Alfons X el Savi amb Aanques, Unicorns, Lleons, Girafes i Cocodrils.',
     },
+    four_seasons: {
+        title: 'Escacs de les Quatre Estacions',
+        origin: 'Segle XIII • Castella (Alfons X)',
+        tag: '4 Jugadors',
+        desc: 'L\'obra mestra medieval per a 4 jugadors del rei Alfons X el Savi, que representa les estacions, humors corporals i elements en un tauler de 8x8.',
+    },
     tamerlane: {
         title: 'Escacs de Tamerlà',
         origin: 'Segle XIV • Imperi Timúrida',
@@ -469,6 +475,66 @@ export const variantCodex_ca: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'El primer testimoni detallat va ser documentat cap al 1030 dC pel polímata persa Al-Biruni al seu Kitab al-Hind (Llibre de l\'Índia). Posteriorment va aparèixer en textos sànscrits com el Tithitattva de Raghunandana (segles XV-XVI), descrivint quatre exèrcits (Vermell, Verd, Groc, Blau) que disputaven apostes al tauler Ashtāpada de 8x8 amb daus.',
             rightBoxTitle: 'La Refutada Teoria de Cox-Forbes',
             rightBoxDesc: 'Al segle XIX, Hiram Cox i Duncan Forbes van formular la cèlebre teoria que els escacs amb daus per a 4 jugadors eren l\'ancestre primigeni de tots els escacs. El 1913, l\'historiador H.J.R. Murray i investigadors moderns com Jean-Louis Cazaux van refutar totalment aquesta hipòtesi, demostrant que el Chaturanga per a 2 jugadors va néixer primer (c. segle VI) i la versió per a 4 jugadors va sorgir més tard (segles X-XI).',
+        },
+    },
+    four_seasons: {
+        name: 'Escacs de les Quatre Estacions (Acedrex de los cuatro tiempos)',
+        rules: {
+            intro: 'Els Escacs de les Quatre Estacions es juguen en un tauler de 8x8 caselles per 4 jugadors: Verd (Primavera), Vermell (Estiu), Negre (Tardor) i Blanc (Hivern). El torn rota en sentit antihorari (Verd → Vermell → Negre → Blanc). És un joc de tots contra tots. En fer escac i mat a un Rei rival, el seu exèrcit complet és annexionat pel vencedor. L\'últim jugador dempeus guanya la partida!',
+            bullets: [
+                {
+                    title: 'El Rei:',
+                    desc: 'Mou una casella en qualsevol direcció (ortogonal o diagonal). Si un Rei rep escac i mat, és retirat del tauler i el jugador que ha fet el mat pren el control total de totes les peces supervivents d\'aquell exèrcit.',
+                    pieceName: 'FourSeasonsKing',
+                },
+                {
+                    title: 'El General:',
+                    desc: 'Mou exactament una casella en diagonal en qualsevol direcció.',
+                    pieceName: 'FourSeasonsGeneral',
+                },
+                {
+                    title: 'La Torre:',
+                    desc: 'Mou horitzontalment o verticalment a través de qualsevol nombre de caselles desocupades, idèntica a la Torre moderna.',
+                    pieceName: 'FourSeasonsRook',
+                },
+                {
+                    title: 'El Cavall:',
+                    desc: 'Mou en forma de "L" (dues caselles en una direcció i una en perpendicular), saltant sobre qualsevol peça intermèdia.',
+                    pieceName: 'FourSeasonsKnight',
+                },
+                {
+                    title: 'L\'Alfil:',
+                    desc: 'Salta exactament dues caselles en diagonal, sobrevolant qualsevol peça intermèdia a la casella de salt.',
+                    pieceName: 'FourSeasonsBishop',
+                },
+                {
+                    title: 'El Peó:',
+                    desc: 'Avança una casella al llarg de la trajectòria assignada al seu quadrant i captura una casella en diagonal endavant. En assolir la vora final corresponent al final de la seva marxa, corona immediatament en un General.',
+                    pieceName: 'FourSeasonsPawn',
+                },
+                {
+                    title: 'Escac i Mat i Annexió d\'Exèrcits:',
+                    desc: 'En fer escac i mat al Rei d\'un oponent, el seu Rei queda eliminat i heretes la totalitat del seu exèrcit supervivent, podent moure les seves peces en els teus torns!',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Ofegat:',
+                    desc: 'Si un jugador no té moviments legals en el seu torn i el seu rei no està en escac, queda ofegat. Totes les peces del jugador ofegat són retirades del tauler.',
+                },
+                {
+                    title: 'El Dau de 6 Cares (d6):',
+                    desc: 'En jugar amb la regla històrica de daus, es llança un d6 a cada torn: 1 = Peó, 2 = Alfil, 3 = Cavall, 4 = Torre, 5 = General, 6 = Rei. Si la peça obtinguda no té moviments legals, es perd el torn.',
+                    iconType: 'dices',
+                },
+            ],
+            proTip: 'Consell estratègic: Concentra els teus atacs en els Reis vulnerables per fer-los mat i annexionar els seus exèrcits! Comandar múltiples exèrcits et donarà una superioritat numèrica aclaparadora.',
+        },
+        history: {
+            intro: 'Documentat el 1283 al "Libro de los Juegos" (fol. 88v) encarregat pel rei Alfons X el Savi de Castella sota el títol "Acedrex de los Quatro Tiempos". A diferència del Chaturaji indi on es jugava per parelles aliades, aquí és un tots contra tots individual entre quatre participants, probablement inspirat per influències orientals com les descripcions d\'Al-Biruni el 1030.',
+            leftBoxTitle: 'Les Quatre Estacions, Elements i Humors',
+            leftBoxDesc: 'Cada bàndol encarna una estació, element i humor corporal: Verd representa la Primavera, l\'Aire i la Sang; Vermell l\'Estiu, el Foc i la Còlera; Negre la Tardor, la Terra i la Melancolia; i Blanc l\'Hivern, l\'Aigua i la Flema. La partida comença amb el Verd i avança en l\'ordre natural de les estacions.',
+            rightBoxTitle: 'El Tauler i el Joc "El Mundo"',
+            rightBoxDesc: 'Es disputa en un tauler de 8x8 amb les peces situades a les quatre cantonades (permetent xocs frontals) i diagonals centrals en forma d\'"X" que servien de guia visual per a l\'avanç dels peons. El manuscrit associa a més aquesta variant a un joc de taules circular per a 4 jugadors anomenat "El Mundo" amb els mateixos quatre colors.',
         },
     },
 };

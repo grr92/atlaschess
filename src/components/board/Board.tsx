@@ -62,6 +62,23 @@ export const Board = () => {
                     gridTemplateRows: `repeat(${board.rows}, minmax(0, 1fr))`
                 }}
             >
+                {/* Four Seasons Chess central 'X' diagonals (Alfonso X manuscript) */}
+                {currentVariantId === 'four_seasons' && (
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none z-[5]" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <defs>
+                            <clipPath id="fourSeasonsDiagonalsClip">
+                                <rect x="25" y="25" width="50" height="50" />
+                            </clipPath>
+                        </defs>
+                        <g clipPath="url(#fourSeasonsDiagonalsClip)">
+                            {/* Diagonal crossing light/white squares (c6 to f3) in dark tile color (#D18B47) */}
+                            <line x1="25" y1="25" x2="75" y2="75" stroke="#D18B47" strokeWidth="1.4" strokeLinecap="square" />
+                            {/* Diagonal crossing dark/black squares (c3 to f6) in light tile color (#ffce9e) */}
+                            <line x1="25" y1="75" x2="75" y2="25" stroke="#ffce9e" strokeWidth="1.4" strokeLinecap="square" />
+                        </g>
+                    </svg>
+                )}
+
                 {yIndices.map((y, visualRowIdx) =>
                     xIndices.map((x) => {
                         const piece = board.getPieceAt(x, y);

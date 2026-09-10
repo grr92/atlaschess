@@ -27,7 +27,9 @@ export type PieceName =
     // Courier Chess
     | 'CourierKing' | 'Courier' | 'CourierBishop' | 'CourierQueen' | 'Schleich' | 'Sage' | 'CourierPawn'
     // Chaturaji (Four Kings)
-    | 'ChaturajiKing' | 'ChaturajiElephant' | 'ChaturajiHorse' | 'ChaturajiBoat' | 'ChaturajiPawn';
+    | 'ChaturajiKing' | 'ChaturajiElephant' | 'ChaturajiHorse' | 'ChaturajiBoat' | 'ChaturajiPawn'
+    // Four Seasons Chess (Acedrex de los Cuatro Tiempos)
+    | 'FourSeasonsKing' | 'FourSeasonsGeneral' | 'FourSeasonsRook' | 'FourSeasonsKnight' | 'FourSeasonsBishop' | 'FourSeasonsPawn';
 
 import type { Piece } from '../core/pieces/Piece.ts';
 

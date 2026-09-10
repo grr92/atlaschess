@@ -93,7 +93,15 @@ export const PIECE_REGISTRY: Record<PieceName, PieceMetadata> = {
     ChaturajiElephant: { name: 'ChaturajiElephant', displayName: 'Elephant', value: 500, sortOrder: 4, svgChar: 'e', diceNumber: 4 },
     ChaturajiHorse: { name: 'ChaturajiHorse', displayName: 'Horse', value: 320, sortOrder: 8, svgChar: 'n', diceNumber: 3 },
     ChaturajiBoat: { name: 'ChaturajiBoat', displayName: 'Boat', value: 200, sortOrder: 10, svgChar: 's', diceNumber: 2 },
-    ChaturajiPawn: { name: 'ChaturajiPawn', displayName: 'Pawn', value: 100, sortOrder: 13, svgChar: 'p', diceNumber: 5 }
+    ChaturajiPawn: { name: 'ChaturajiPawn', displayName: 'Pawn', value: 100, sortOrder: 13, svgChar: 'p', diceNumber: 5 },
+
+    // Four Seasons Chess (Acedrex de los Cuatro Tiempos)
+    FourSeasonsKing: { name: 'FourSeasonsKing', displayName: 'King', value: 10000, sortOrder: 0, svgChar: 'k', diceNumber: 6 },
+    FourSeasonsGeneral: { name: 'FourSeasonsGeneral', displayName: 'General', value: 200, sortOrder: 11, svgChar: 'q', diceNumber: 5 },
+    FourSeasonsRook: { name: 'FourSeasonsRook', displayName: 'Rook', value: 500, sortOrder: 4, svgChar: 'r', diceNumber: 4 },
+    FourSeasonsKnight: { name: 'FourSeasonsKnight', displayName: 'Knight', value: 320, sortOrder: 8, svgChar: 'n', diceNumber: 3 },
+    FourSeasonsBishop: { name: 'FourSeasonsBishop', displayName: 'Bishop', value: 150, sortOrder: 10, svgChar: 'b', diceNumber: 2 },
+    FourSeasonsPawn: { name: 'FourSeasonsPawn', displayName: 'Pawn', value: 100, sortOrder: 13, svgChar: 'p', diceNumber: 1 }
 };
 
 export const getPieceMetadata = (name: string): PieceMetadata | undefined => {

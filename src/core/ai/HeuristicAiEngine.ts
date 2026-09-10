@@ -145,7 +145,7 @@ export class HeuristicAiEngine {
         let maxDepth = 3;
         if (difficulty === 'easy') maxDepth = 1;
         else if (difficulty === 'medium') maxDepth = 2;
-        else maxDepth = (engine.variant.name === 'Chaturaji' ? 2 : 3);
+        else maxDepth = (engine.variant.name === 'Chaturaji' || engine.variant.name === 'Four Seasons Chess' ? 2 : 3);
 
         let bestMove = allMoves[0];
         let bestScore = -Infinity;
@@ -204,6 +204,10 @@ export class HeuristicAiEngine {
                 blue: 'green'
             };
             return PARTNER_MAP[c1] === c2;
+        }
+        if (engine.variant.name === 'Four Seasons Chess' && 'getControlledColors' in engine) {
+            const controlled = (engine as any).getControlledColors(c1);
+            return controlled.includes(c2);
         }
         return false;
     }

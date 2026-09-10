@@ -172,7 +172,6 @@ You are free to share and adapt the material for non-commercial purposes, as lon
 - Historical:
   - ~~Senterej~~ (not implemented due to differing rule sets)
   - ~~Short assize~~ (not implemented due to lack of evidence)
-  - 4 seasons chess (4 players)
 
 - Regional:
   - Xiangqi (China)

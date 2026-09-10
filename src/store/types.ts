@@ -22,6 +22,9 @@ export interface GameSliceState {
     availableDiceValues: number[];
     isMuted: boolean;
     language: AppLanguage;
+    initialCustomPieces?: any[] | null;
+    initialCustomTurn?: PieceColor | null;
+    initialAnnexedArmies?: any | null;
 }
 
 export interface GameSliceActions {

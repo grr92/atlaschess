@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { ClassicChessEngine } from '../../src/core/engine/ClassicChessEngine';
 import { ClassicChess } from '../../src/core/variants/ClassicChess';
-import { King, Rook, Queen, Knight, Pawn } from '../../src/core/pieces/piecesIndex';
+import { King, Rook, Queen, Pawn } from '../../src/core/pieces/piecesIndex';
 
 describe('ClassicChessEngine', () => {
     it('should initialize standard chess setup with 20 legal opening moves for White', () => {
