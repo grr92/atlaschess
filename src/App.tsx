@@ -15,6 +15,7 @@ import { VariantInfoModal } from "./components/modals/VariantInfoModal";
 import { SettingsModal } from "./components/modals/SettingsModal";
 import { D8DiceWidget } from "./components/board/D8DiceWidget";
 import { ChaturajiEngine } from "./core/engine/ChaturajiEngine";
+import { FourSeasonsEngine } from "./core/engine/FourSeasonsEngine";
 import { useTranslation } from './i18n';
 
 export const App = () => {
@@ -80,6 +81,16 @@ export const App = () => {
 
     const getGameStateLabel = () => {
         if (gameState === 'check') return t.gameplay.check;
+        if (currentVariantId === 'four_seasons' && engine instanceof FourSeasonsEngine) {
+            if (gameState === 'checkmate') {
+                if (engine.winnerColor) {
+                    const winnerName = getPlayerColorName(engine.winnerColor);
+                    return `🏆 ${winnerName}`;
+                }
+                return t.gameplay.checkmate;
+            }
+            if (gameState === 'draw') return t.gameplay.draw;
+        }
         if (currentVariantId === 'chaturaji' && engine instanceof ChaturajiEngine) {
             if (gameState === 'checkmate' || gameState === 'draw') {
                 const match = engine.getMatchWinner();
@@ -199,6 +210,19 @@ export const App = () => {
                                             <span className="text-xs uppercase font-bold tracking-wider text-atlas-titleText">
                                                 {getPlayerColorName(currentTurn)}
                                             </span>
+                                            {currentVariantId === 'four_seasons' && engine instanceof FourSeasonsEngine && engine.annexedArmies[currentTurn as FourSeasonsColor]?.length > 1 && (
+                                                <div className="flex items-center gap-1 bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 rounded text-[10px] text-amber-300 font-bold" title="Armies commanded by active player">
+                                                    <span>+{engine.annexedArmies[currentTurn as FourSeasonsColor].filter(c => c !== currentTurn).length}</span>
+                                                    <div className="flex items-center -space-x-1 ml-0.5">
+                                                        {engine.annexedArmies[currentTurn as FourSeasonsColor]
+                                                            .filter(c => c !== currentTurn)
+                                                            .map(c => (
+                                                                <div key={c} className={`w-2.5 h-2.5 rounded-full ${getPlayerColorDot(c)} ring-1 ring-slate-900`} title={getPlayerColorName(c)} />
+                                                            ))
+                                                        }
+                                                    </div>
+                                                </div>
+                                            )}
                                             {gameMode === 'vs_ai' && (
                                                 <span className="text-[10px] px-1.5 py-0.2 bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold rounded">
                                                     {currentTurn === playerColor ? t.gameplay.turnYou : t.gameplay.turnAi}

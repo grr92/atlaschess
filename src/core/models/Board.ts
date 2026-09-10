@@ -77,6 +77,14 @@ export class Board {
         return pieces;
     }
 
+    clone(): Board {
+        const cloned = new Board(this.cols, this.rows);
+        for (const piece of this.getAllPieces()) {
+            cloned.setPiece(piece.clone(), piece.position.x, piece.position.y);
+        }
+        return cloned;
+    }
+
     isOutOfBounds(x: number, y: number): boolean {
         return x < 0 || x >= this.cols || y < 0 || y >= this.rows;
     }

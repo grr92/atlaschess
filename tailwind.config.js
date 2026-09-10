@@ -18,8 +18,8 @@ export default {
           goldHover: '#e5c05b',  // Antique gold hover
           normalText: '#94a3b8', // Subtle slate text
           titleText: '#f8fafc',  // Crisp white/ivory text
-          boardDark: '#b58863',  // Dark board tile
-          boardLight: '#f0d9b5'  // Light board tile
+          boardDark: '#D18B47',  // Dark board tile
+          boardLight: '#ffce9e'  // Light board tile
         }
       }
     },

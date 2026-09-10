@@ -27,15 +27,19 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
     const variantDef = VariantRegistry.get(variantId);
     const supportsDice = !!variantDef?.supportsDiceRule;
     const isChaturaji = variantId === 'chaturaji';
+    const isFourSeasons = variantId === 'four_seasons';
+    const isFourPlayer = isChaturaji || isFourSeasons;
 
     const [mode, setMode] = useState<GameMode>('vs_ai');
-    const [colorOption, setColorOption] = useState<string>(isChaturaji ? 'red' : 'white');
+    const [colorOption, setColorOption] = useState<string>(isFourSeasons ? 'green' : (isChaturaji ? 'red' : 'white'));
     const [difficulty, setDifficulty] = useState<AiDifficulty>('medium');
     const [useDiceRule, setUseDiceRule] = useState<boolean>(false);
 
     useEffect(() => {
         if (!isOpen) return;
-        if (isChaturaji && (colorOption === 'white' || colorOption === 'black')) {
+        if (isFourSeasons && (colorOption === 'yellow' || colorOption === 'blue')) {
+            setColorOption('green');
+        } else if (isChaturaji && (colorOption === 'white' || colorOption === 'black')) {
             setColorOption('red');
         }
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -49,13 +53,20 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, onClose, isChaturaji, colorOption]);
+    }, [isOpen, onClose, isChaturaji, isFourSeasons, colorOption]);
 
     if (!isOpen) return null;
 
     const handleStart = () => {
         let chosenColor: PieceColor = 'white';
-        if (isChaturaji) {
+        if (isFourSeasons) {
+            if (colorOption === 'random') {
+                const colors: PieceColor[] = ['green', 'red', 'black', 'white'];
+                chosenColor = colors[Math.floor(Math.random() * colors.length)];
+            } else {
+                chosenColor = colorOption as PieceColor;
+            }
+        } else if (isChaturaji) {
             if (colorOption === 'random') {
                 const colors: PieceColor[] = ['red', 'green', 'yellow', 'blue'];
                 chosenColor = colors[Math.floor(Math.random() * colors.length)];
@@ -130,10 +141,10 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                             <Users className={`w-7 h-7 ${mode === 'pvp' ? 'text-amber-400' : 'text-slate-400'}`} />
                             <div className="text-center">
                                 <span className="font-bold text-sm block">
-                                    {isChaturaji ? t.gameSetup.pvp4Players : t.gameSetup.pvp}
+                                    {isFourPlayer ? t.gameSetup.pvp4Players : t.gameSetup.pvp}
                                 </span>
                                 <span className="text-[11px] opacity-60">
-                                    {isChaturaji ? t.gameSetup.pvp4PlayersSub : t.gameSetup.pvpSub}
+                                    {isFourPlayer ? t.gameSetup.pvp4PlayersSub : t.gameSetup.pvpSub}
                                 </span>
                             </div>
                         </button>
@@ -175,10 +186,10 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                                 <Dices className="w-5 h-5 text-amber-400 flex-shrink-0" />
                                 <div className="text-left">
                                     <div className="font-extrabold text-xs">
-                                        {isChaturaji ? t.gameSetup.diceRuleChaturaji : t.gameSetup.diceRule}
+                                        {isFourSeasons ? t.gameSetup.diceRuleFourSeasons : (isChaturaji ? t.gameSetup.diceRuleChaturaji : t.gameSetup.diceRule)}
                                     </div>
                                     <div className="text-[10px] text-slate-400 font-normal">
-                                        {isChaturaji ? t.gameSetup.diceRuleChaturajiSub : t.gameSetup.diceRuleSub}
+                                        {isFourSeasons ? t.gameSetup.diceRuleFourSeasonsSub : (isChaturaji ? t.gameSetup.diceRuleChaturajiSub : t.gameSetup.diceRuleSub)}
                                     </div>
                                 </div>
                             </button>
@@ -194,7 +205,74 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                             <label className="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-2.5">
                                 {t.gameSetup.playAs}
                             </label>
-                            {isChaturaji ? (
+                            {isFourSeasons ? (
+                                <div className="grid grid-cols-5 gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => setColorOption('green')}
+                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
+                                            colorOption === 'green'
+                                                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-md ring-2 ring-emerald-500'
+                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
+                                        }`}
+                                    >
+                                        <div className="w-3.5 h-3.5 rounded-full bg-emerald-500 shadow-sm" />
+                                        {t.common.green}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setColorOption('red')}
+                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
+                                            colorOption === 'red'
+                                                ? 'bg-red-500/20 border-red-500 text-red-300 shadow-md ring-2 ring-red-500'
+                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
+                                        }`}
+                                    >
+                                        <div className="w-3.5 h-3.5 rounded-full bg-red-500 shadow-sm" />
+                                        {t.common.red}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setColorOption('black')}
+                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
+                                            colorOption === 'black'
+                                                ? 'bg-slate-950 text-white border-slate-600 shadow-md ring-2 ring-slate-400'
+                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
+                                        }`}
+                                    >
+                                        <div className="w-3.5 h-3.5 rounded-full bg-slate-950 border border-slate-500 shadow-sm" />
+                                        {t.common.black}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setColorOption('white')}
+                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
+                                            colorOption === 'white'
+                                                ? 'bg-white/20 border-white text-white shadow-md ring-2 ring-white'
+                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
+                                        }`}
+                                    >
+                                        <div className="w-3.5 h-3.5 rounded-full bg-white shadow-sm" />
+                                        {t.common.white}
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() => setColorOption('random')}
+                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
+                                            colorOption === 'random'
+                                                ? 'bg-amber-500/20 border-amber-500 text-amber-300 shadow-md ring-2 ring-amber-500'
+                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
+                                        }`}
+                                    >
+                                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                                        {t.common.random}
+                                    </button>
+                                </div>
+                            ) : isChaturaji ? (
                                 <div className="grid grid-cols-5 gap-2">
                                     <button
                                         type="button"

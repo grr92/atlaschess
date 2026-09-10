@@ -25,6 +25,7 @@ export const D8DiceWidget: React.FC = () => {
     if (!useDiceRule) return null;
 
     const isChaturaji = currentVariantId === 'chaturaji';
+    const isFourSeasons = currentVariantId === 'four_seasons';
     const activeController = engine ? engine.getActiveController() : currentTurn;
     const isPlayerTurn = gameMode !== 'vs_ai' || activeController === playerColor;
     const canPass = isChaturaji && isPlayerTurn && !isAiThinking && !isRollingDice && (gameState === 'playing' || gameState === 'check');
@@ -32,7 +33,20 @@ export const D8DiceWidget: React.FC = () => {
     const pieceImgs: string[] = [];
     let displayName: string | null = null;
 
-    if (isChaturaji) {
+    if (isFourSeasons) {
+        const FOUR_SEASONS_PIECES: Record<number, string> = {
+            1: 'FourSeasonsPawn',
+            2: 'FourSeasonsBishop',
+            3: 'FourSeasonsKnight',
+            4: 'FourSeasonsRook',
+            5: 'FourSeasonsGeneral',
+            6: 'FourSeasonsKing'
+        };
+        const pieceName = currentDiceRoll ? FOUR_SEASONS_PIECES[currentDiceRoll] : null;
+        const img = pieceName ? getPieceImage({ name: pieceName, color: currentTurn } as any) : null;
+        if (img) pieceImgs.push(img);
+        displayName = pieceName ? getPieceName(pieceName) : null;
+    } else if (isChaturaji) {
         if (currentDiceRoll === 1 || currentDiceRoll === 5) {
             const kingImg = getPieceImage({ name: 'ChaturajiKing', color: currentTurn } as any);
             const pawnImg = getPieceImage({ name: 'ChaturajiPawn', color: currentTurn } as any);
@@ -59,14 +73,25 @@ export const D8DiceWidget: React.FC = () => {
         displayName = pieceName ? getPieceName(pieceName) : null;
     }
 
-    const titleLabel = isChaturaji ? t.gameplay.diceThrownChaturaji : t.gameplay.diceThrown;
+    const titleLabel = isFourSeasons
+        ? t.gameplay.diceThrownFourSeasons
+        : isChaturaji
+        ? t.gameplay.diceThrownChaturaji
+        : t.gameplay.diceThrown;
 
     return (
         <div className="flex items-center gap-2 bg-atlas-surface/90 border border-amber-500/40 rounded-xl px-2.5 py-1 shadow-lg backdrop-blur-md flex-shrink-0">
             {/* Animated die visual */}
             <div className={`relative flex items-center justify-center w-8 h-8 transition-transform flex-shrink-0 ${isRollingDice ? 'animate-spin' : ''}`}>
                 <svg viewBox="0 0 100 100" className="w-full h-full drop-shadow-md">
-                    {isChaturaji ? (
+                    {isFourSeasons ? (
+                        <>
+                            <rect x="10" y="10" width="80" height="80" rx="16" fill="#78350f" stroke="#f59e0b" strokeWidth="4" />
+                            <text x="50" y="66" textAnchor="middle" fontSize="42" fontWeight="900" fill="#fef3c7">
+                                {isRollingDice ? '?' : (currentDiceRoll || '?')}
+                            </text>
+                        </>
+                    ) : isChaturaji ? (
                         <>
                             <polygon points="50,10 90,85 10,85" fill="#78350f" stroke="#f59e0b" strokeWidth="3" />
                             <line x1="50" y1="10" x2="50" y2="85" stroke="#f59e0b" strokeWidth="2" opacity="0.6" />

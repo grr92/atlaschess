@@ -3,9 +3,11 @@ import type { Position, PieceColor, InterceptionDecision } from '../../types';
 import type { BaseEngine } from '../../core/engine/BaseEngine';
 import { TamerlaneEngine } from '../../core/engine/TamerlaneEngine';
 import { ChaturajiEngine } from '../../core/engine/ChaturajiEngine';
+import { FourSeasonsEngine } from '../../core/engine/FourSeasonsEngine';
 import { VariantRegistry } from '../../core/variants/variantRegistry';
-import { getAvailableDiceNumbers, isPieceAllowedByDice } from '../../utils/diceMapper';
+import { getAvailableDiceNumbers, isPieceAllowedByDice, hasLegalMovesForDiceRoll } from '../../utils/diceMapper';
 import { soundManager } from '../../utils/soundManager';
+import { populateCustomPieces } from '../../utils/customPiecesLoader';
 
 export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (set, get) => ({
     engine: null,
@@ -23,6 +25,9 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
     availableDiceValues: [],
     isMuted: soundManager.getMuted(),
     language: (typeof window !== 'undefined' && (localStorage.getItem('atlas_language') as any)) || 'en',
+    initialCustomPieces: null,
+    initialCustomTurn: null,
+    initialAnnexedArmies: null,
 
     initGame: (variantId = 'classic', mode, playerColor, difficulty, useDiceRule = false) => {
         const engine = VariantRegistry.createEngine(variantId);
@@ -33,8 +38,10 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
         const activeDifficulty = difficulty !== undefined ? difficulty : get().aiDifficulty;
         const activeDiceRule = variantDef?.supportsDiceRule ? !!useDiceRule : false;
 
-        if (activeDiceRule && engine instanceof ChaturajiEngine) {
-            engine.useDiceRule = true;
+        if (activeDiceRule) {
+            if (engine instanceof ChaturajiEngine || engine instanceof FourSeasonsEngine) {
+                engine.useDiceRule = true;
+            }
         }
 
         set({
@@ -56,6 +63,9 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             currentDiceRoll: null,
             isRollingDice: false,
             availableDiceValues: [],
+            initialCustomPieces: null,
+            initialCustomTurn: null,
+            initialAnnexedArmies: null,
         });
 
         // If dice rules are active, roll the opening die
@@ -95,6 +105,38 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
                 currentDiceRoll: chosenRoll,
                 isRollingDice: false
             });
+
+            // Four Seasons Chess: If no piece matching the rolled die has legal moves, the turn is lost
+            if (currentVariantId === 'four_seasons') {
+                const currentEng = get().engine;
+                if (currentEng instanceof FourSeasonsEngine && currentEng.state !== 'checkmate' && currentEng.state !== 'draw') {
+                    const hasMoves = hasLegalMovesForDiceRoll(currentEng, chosenRoll, currentVariantId);
+                    if (!hasMoves) {
+                        setTimeout(() => {
+                            const activeEng = get().engine;
+                            if (activeEng instanceof FourSeasonsEngine && activeEng.state !== 'checkmate' && activeEng.state !== 'draw') {
+                                activeEng.rotateTurn();
+                                set({
+                                    currentTurn: activeEng.currentTurn,
+                                    gameState: activeEng.state,
+                                    selectedPosition: null,
+                                    legalMoves: [],
+                                });
+                                get().rollDiceForCurrentTurn();
+
+                                if (get().gameMode === 'vs_ai') {
+                                    const nextCtrl = activeEng.getActiveController();
+                                    if (nextCtrl !== get().playerColor) {
+                                        setTimeout(() => {
+                                            get().triggerAiMove();
+                                        }, 850);
+                                    }
+                                }
+                            }
+                        }, 900);
+                    }
+                }
+            }
         }, 700);
     },
 
@@ -225,7 +267,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
     },
 
     undoMove: () => {
-        const { history, currentVariantId, gameMode, playerColor, isAiThinking, useDiceRule } = get();
+        const { history, currentVariantId, gameMode, playerColor, isAiThinking, useDiceRule, initialCustomPieces, initialCustomTurn, initialAnnexedArmies } = get();
 
         // If history is empty or AI is currently calculating, do not undo
         if (history.length === 0 || isAiThinking) return;
@@ -235,7 +277,10 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
         if (gameMode === 'vs_ai') {
             // Replay history on a temporary simulation engine to track who controlled each move
             const simEngine = VariantRegistry.createEngine(currentVariantId);
-            if (useDiceRule && simEngine instanceof ChaturajiEngine) {
+            if (initialCustomPieces) {
+                populateCustomPieces(simEngine, initialCustomPieces, initialCustomTurn || undefined, initialAnnexedArmies);
+            }
+            if (useDiceRule && (simEngine instanceof ChaturajiEngine || simEngine instanceof FourSeasonsEngine)) {
                 simEngine.useDiceRule = true;
             }
 
@@ -294,7 +339,10 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
 
         // Create a clean engine instance for replay
         const engine = VariantRegistry.createEngine(currentVariantId);
-        if (useDiceRule && engine instanceof ChaturajiEngine) {
+        if (initialCustomPieces) {
+            populateCustomPieces(engine, initialCustomPieces, initialCustomTurn || undefined, initialAnnexedArmies);
+        }
+        if (useDiceRule && (engine instanceof ChaturajiEngine || engine instanceof FourSeasonsEngine)) {
             engine.useDiceRule = true;
         }
 

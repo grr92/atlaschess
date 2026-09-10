@@ -2,9 +2,7 @@ import type { StoreSlice, AiSliceState, AiSliceActions } from '../types';
 import type { Position } from '../../types';
 import { historyToUciMoves, uciToMove } from '../../utils/uciNotation';
 import { HeuristicAiEngine } from '../../core/ai/HeuristicAiEngine';
-import { TamerlaneEngine } from '../../core/engine/TamerlaneEngine';
-import { ChaturajiEngine } from '../../core/engine/ChaturajiEngine';
-import { DICE_PIECE_MAP, CHATURAJI_DICE_PIECE_MAP } from '../../utils/diceMapper';
+import { DICE_PIECE_MAP, CHATURAJI_DICE_PIECE_MAP, FOUR_SEASONS_DICE_PIECE_MAP } from '../../utils/diceMapper';
 import { soundManager } from '../../utils/soundManager';
 
 export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, get) => ({
@@ -21,6 +19,7 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
         if (!engine || gameState === 'checkmate' || gameState === 'draw') return;
 
         const isChaturaji = currentVariantId === 'chaturaji';
+        const isFourSeasons = currentVariantId === 'four_seasons';
         const activeController = engine.getActiveController();
 
         if (gameMode !== 'vs_ai' || activeController === playerColor) return;
@@ -41,7 +40,9 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
 
             let allowedPieces: string | string[] | undefined = undefined;
             if (useDiceRule && currentDiceRoll) {
-                if (isChaturaji) {
+                if (isFourSeasons) {
+                    allowedPieces = FOUR_SEASONS_DICE_PIECE_MAP[currentDiceRoll];
+                } else if (isChaturaji) {
                     const normalizedRoll = currentDiceRoll === 5 ? 1 : (currentDiceRoll === 6 ? 4 : currentDiceRoll);
                     allowedPieces = CHATURAJI_DICE_PIECE_MAP[normalizedRoll];
                 } else {
@@ -49,8 +50,8 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                 }
             }
 
-            // 1. If playing Chaturaji or with Dice Rule or Tamerlane, use Native Heuristic AI
-            if (isChaturaji || currentVariantId === 'tamerlane' || (useDiceRule && currentDiceRoll)) {
+            // 1. If playing Chaturaji, Four Seasons, or with Dice Rule or Tamerlane, use Native Heuristic AI
+            if (isChaturaji || isFourSeasons || currentVariantId === 'tamerlane' || (useDiceRule && currentDiceRoll)) {
                 const aiMove = HeuristicAiEngine.findBestMove(engine, aiDifficulty, allowedPieces);
                 if (aiMove) {
                     executed = engine.executeMove(aiMove.from, aiMove.to, aiMove.promotionPiece);

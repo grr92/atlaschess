@@ -69,13 +69,13 @@ export const VariantsCatalog = () => {
             >
                 <button
                     onClick={() => handleSelectVariant(variant)}
-                    className="flex-1 text-left p-5 transition-transform duration-200"
+                    className="flex-1 text-left p-5 transition-transform duration-200 min-w-0"
                 >
-                    <div className="flex items-center justify-between gap-2 mb-1.5">
-                        <h4 className="font-extrabold text-xl text-atlas-titleText group-hover/card:text-amber-400 transition-colors">
+                    <div className="flex items-start justify-between gap-3 mb-1.5">
+                        <h4 className="font-extrabold text-lg md:text-xl text-atlas-titleText group-hover/card:text-amber-400 transition-colors leading-snug">
                             {meta.title}
                         </h4>
-                        <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300">
+                        <span className="text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 whitespace-nowrap shrink-0 mt-0.5">
                             {meta.tag}
                         </span>
                     </div>

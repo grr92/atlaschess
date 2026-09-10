@@ -61,3 +61,11 @@ export * from './chaturaji/ChaturajiHorse';
 export * from './chaturaji/ChaturajiBoat';
 export * from './chaturaji/ChaturajiPawn';
 
+// Four Seasons Chess
+export * from './four_seasons/FourSeasonsKing';
+export * from './four_seasons/FourSeasonsGeneral';
+export * from './four_seasons/FourSeasonsRook';
+export * from './four_seasons/FourSeasonsKnight';
+export * from './four_seasons/FourSeasonsBishop';
+export * from './four_seasons/FourSeasonsPawn';
+

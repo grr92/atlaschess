@@ -35,11 +35,11 @@ export const getPieceImage = (piece: Piece | null): string | null => {
             break;
         case 'red':
             colorChar = 'r';
-            folderPrefix = 'chaturaji/';
+            folderPrefix = isChaturajiPiece ? 'chaturaji/' : '';
             break;
         case 'green':
             colorChar = 'g';
-            folderPrefix = 'chaturaji/';
+            folderPrefix = isChaturajiPiece ? 'chaturaji/' : '';
             break;
         case 'yellow':
             colorChar = 'y';
@@ -54,10 +54,12 @@ export const getPieceImage = (piece: Piece | null): string | null => {
     }
 
     const fileName = `Chess_${pieceChar}${colorChar}t45.svg`;
-    const key = `../assets/pieces/${folderPrefix}${fileName}`;
+    const primaryKey = `../assets/pieces/${folderPrefix}${fileName}`;
+    const directKey = `../assets/pieces/${fileName}`;
+    const fourSeasonsKey = `../assets/pieces/fourSeasons/${fileName}`;
+    const chaturajiKey = `../assets/pieces/chaturaji/${fileName}`;
 
-    // Retrieve the exact URL from the pre-loaded dictionary
-    return svgAssets[key] || null;
+    return svgAssets[primaryKey] || svgAssets[directKey] || svgAssets[fourSeasonsKey] || svgAssets[chaturajiKey] || null;
 };
 
 export const getPawnBadgeIcon = (pawnType: string, color: string): string | null => {

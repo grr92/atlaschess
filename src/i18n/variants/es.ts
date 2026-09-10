@@ -31,6 +31,12 @@ export const variantMeta_es: Record<string, VariantMetaI18n> = {
         tag: 'Tablero 12x12',
         desc: 'El gran ajedrez real de Alfonso X el Sabio con Aancas, Unicornios, Leones, Jirafas y Cocodrilos.',
     },
+    four_seasons: {
+        title: 'Ajedrez de las Cuatro Estaciones',
+        origin: 'Siglo XIII • Castilla (Alfonso X)',
+        tag: '4 Jugadores',
+        desc: 'La obra maestra medieval para 4 jugadores del rey Alfonso X el Sabio, que representa las estaciones, humores corporales y elementos en un tablero de 8x8.',
+    },
     tamerlane: {
         title: 'Ajedrez de Tamerlán',
         origin: 'Siglo XIV • Imperio Timúrida',
@@ -469,6 +475,66 @@ export const variantCodex_es: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'El primer testimonio detallado fue documentado hacia 1030 d.C. por el polímata persa Al-Biruni en su Kitab al-Hind (Libro de la India). Posteriormente apareció en textos sánscritos como el Tithitattva de Raghunandana (siglos XV-XVI), describiendo cuatro ejércitos (Rojo, Verde, Amarillo, Azul) que disputaban apuestas en el tablero Ashtāpada de 8x8 con dados.',
             rightBoxTitle: 'La Refutada Teoría de Cox-Forbes',
             rightBoxDesc: 'En el siglo XIX, Hiram Cox y Duncan Forbes formularon la célebre teoría de que el ajedrez con dados para 4 jugadores era el ancestro primigenio de todos los ajedreces. En 1913, el historiador H.J.R. Murray e investigadores modernos como Jean-Louis Cazaux refutaron totalmente esta hipótesis, demostrando que el Chaturanga para 2 jugadores nació primero (c. siglo VI) y la versión para 4 jugadores surgió más tarde (siglos X-XI).',
+        },
+    },
+    four_seasons: {
+        name: 'Ajedrez de las Cuatro Estaciones (Acedrex de los cuatro tiempos)',
+        rules: {
+            intro: 'El Ajedrez de las Cuatro Estaciones se juega en un tablero de 8x8 casillas por 4 jugadores: Verde (Primavera), Rojo (Verano), Negro (Otoño) y Blanco (Invierno). El turno rota en sentido antihorario (Verde → Rojo → Negro → Blanco). Es un juego de todos contra todos. Al dar jaque mate a un Rey rival, su ejército completo es anexionado por el vencedor. ¡El último jugador en pie gana la partida!',
+            bullets: [
+                {
+                    title: 'El Rey:',
+                    desc: 'Mueve una casilla en cualquier dirección (ortogonal o diagonal). Si un Rey recibe jaque mate, es retirado del tablero y el jugador que propinó el mate toma el control total de todas las piezas supervivientes de ese ejército.',
+                    pieceName: 'FourSeasonsKing',
+                },
+                {
+                    title: 'El General:',
+                    desc: 'Mueve exactamente una casilla en diagonal en cualquier dirección.',
+                    pieceName: 'FourSeasonsGeneral',
+                },
+                {
+                    title: 'La Torre:',
+                    desc: 'Mueve horizontal o verticalmente a través de cualquier número de casillas desocupadas, idéntica a la Torre moderna.',
+                    pieceName: 'FourSeasonsRook',
+                },
+                {
+                    title: 'El Caballo:',
+                    desc: 'Mueve en forma de "L" (dos casillas en una dirección y una en perpendicular), saltando sobre cualquier pieza intermedia.',
+                    pieceName: 'FourSeasonsKnight',
+                },
+                {
+                    title: 'El Alfil:',
+                    desc: 'Salta exactamente dos casillas en diagonal, sobrevolando cualquier pieza intermedia en la casilla de salto.',
+                    pieceName: 'FourSeasonsBishop',
+                },
+                {
+                    title: 'El Peón:',
+                    desc: 'Avanza una casilla a lo largo de la trayectoria asignada a su cuadrante y captura una casilla en diagonal hacia adelante. Al alcanzar el borde final correspondiente al final de su marcha, corona inmediatamente en un General.',
+                    pieceName: 'FourSeasonsPawn',
+                },
+                {
+                    title: 'Jaque Mate y Anexión de Ejércitos:',
+                    desc: '¡Al dar jaque mate al Rey de un oponente, su Rey queda eliminado y heredas la totalidad de su ejército superviviente, pudiendo mover sus piezas en tus turnos!',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Ahogado:',
+                    desc: 'Si un jugador no tiene movimientos legales en su turno y su rey no está en jaque, queda ahogado. Todas las piezas del jugador ahogado son retiradas del tablero.',
+                },
+                {
+                    title: 'El Dado de 6 Caras (d6):',
+                    desc: 'Al jugar con la regla histórica de dados, se tira un d6 en cada turno: 1 = Peón, 2 = Alfil, 3 = Caballo, 4 = Torre, 5 = General, 6 = Rey. Si la pieza obtenida no tiene movimientos legales, se pierde el turno.',
+                    iconType: 'dices',
+                },
+            ],
+            proTip: 'Consejo estratégico: ¡Concentra tus ataques en los Reyes vulnerables para darles mate y anexionar sus ejércitos! Comandar múltiples ejércitos te dará una superioridad numérica arrolladora.',
+        },
+        history: {
+            intro: 'Documentado en 1283 en el "Libro de los Juegos" (fol. 88v) mandado realizar por el rey Alfonso X el Sabio de Castilla bajo el título "Acedrex de los Quatro Tiempos". A diferencia del Chaturaji indio donde se jugaba por parejas aliadas, aquí es un todos contra todos individual entre cuatro participantes, probablemente inspirado por influencias orientales como las descripciones de Al-Biruni en 1030.',
+            leftBoxTitle: 'Las Cuatro Estaciones, Elementos y Humores',
+            leftBoxDesc: 'Cada bando encarna una estación, elemento y humor corporal: Verde representa la Primavera, el Aire y la Sangre; Rojo el Verano, el Fuego y la Cólera; Negro el Otoño, la Tierra y la Melancolía; y Blanco el Invierno, el Agua y la Flema. El juego inicia con el Verde y progresa en el orden natural de las estaciones.',
+            rightBoxTitle: 'El Tablero y el Juego "El Mundo"',
+            rightBoxDesc: 'Se disputa en un tablero de 8x8 con las piezas situadas en las cuatro esquinas (permitiendo choques frontales) y diagonales centrales en forma de "X" que servían de guía visual para el avance de los peones. El manuscrito asocia además esta variante a un juego de tablas circular para 4 jugadores llamado "El Mundo" con los mismos cuatro colores.',
         },
     },
 };

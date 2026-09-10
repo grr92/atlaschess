@@ -6,6 +6,7 @@ import { GrantAcedrexEngine } from '../engine/GrantAcedrexEngine';
 import { TamerlaneEngine } from '../engine/TamerlaneEngine';
 import { CourierEngine } from '../engine/CourierEngine';
 import { ChaturajiEngine } from '../engine/ChaturajiEngine';
+import { FourSeasonsEngine } from '../engine/FourSeasonsEngine';
 
 import { ClassicChess } from './ClassicChess';
 import { Chaturanga } from './Chaturanga';
@@ -14,6 +15,7 @@ import { GrantAcedrex } from './GrantAcedrex';
 import { TamerlaneChess } from './TamerlaneChess';
 import { CourierChess } from './CourierChess';
 import { Chaturaji } from './Chaturaji';
+import { FourSeasonsChess } from './FourSeasonsChess';
 
 export type VariantCategory = 'standard' | 'historical' | 'regional';
 
@@ -132,6 +134,18 @@ VariantRegistry.register({
 });
 
 VariantRegistry.register({
+    id: 'four_seasons',
+    title: 'Four Seasons Chess',
+    category: 'historical',
+    origin: '13th Century • Castile (Alfonso X)',
+    tag: '4 Players',
+    desc: 'Four seasons battle in a medieval tournament of elements with army annexation, Alfil leapers, Alferza generals, and D6 dice.',
+    supportsDiceRule: true,
+    tileSize: 'standard',
+    createEngine: () => new FourSeasonsEngine(new FourSeasonsChess())
+});
+
+VariantRegistry.register({
     id: 'tamerlane',
     title: 'Tamerlane Chess',
     category: 'historical',
@@ -141,5 +155,6 @@ VariantRegistry.register({
     tileSize: 'compact',
     createEngine: () => new TamerlaneEngine(new TamerlaneChess())
 });
+
 
 
