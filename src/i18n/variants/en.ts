@@ -49,6 +49,12 @@ export const variantMeta_en: Record<string, VariantMetaI18n> = {
         tag: '4 Players',
         desc: 'Four-player Chaturanga (often called Chaturaji) on an 8x8 Ashtāpada with Boat Triumphs, thrones, pawn promotions, and stakes.',
     },
+    xiangqi: {
+        title: 'Xiangqi',
+        origin: 'Southern Song Dynasty • China',
+        tag: '9x10 Board',
+        desc: 'A strategy board game for two players representing a battle between two armies, played on the intersections of a 9x10 grid with Cannons, the River, and the Palace.',
+    },
 };
 
 export const variantCodex_en: Record<string, VariantCodexI18n> = {
@@ -535,6 +541,67 @@ export const variantCodex_en: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'Every side represents a season, element, and bodily humor: Green represents Spring, Air, and Blood; Red represents Summer, Fire, and Choler; Black represents Autumn, Earth, and Melancholy; and White represents Winter, Water, and Phlegm. Play starts with Green and progresses in the cyclic order of the seasons.',
             rightBoxTitle: 'The Board & "El Mundo" Tables Game',
             rightBoxDesc: 'Played on an 8x8 board with pieces placed in the four corners (enabling frontal clashes) and central diagonal lines in an "X" that served as a visual guide for pawn movement. Alfonso\'s codex pairs this chess with a four-handed circular Tables (backgammon) variant titled "El Mundo" (The World) using the same four colors.',
+        },
+    },
+    xiangqi: {
+        name: 'Xiangqi',
+        rules: {
+            intro: 'Xiangqi is played on a board nine lines wide and ten lines long, where pieces are placed on the intersections (points). Dividing the two opposing sides between the fifth and sixth ranks is the River. Two 3x3 zones demarcated by diagonal lines form the Palace. Red moves first. The primary object is to checkmate or stalemate the enemy general.',
+            bullets: [
+                {
+                    title: 'The General (King):',
+                    desc: 'Moves and captures one point orthogonally and cannot leave the Palace. The two opposing generals cannot face each other directly across an open file with no intervening pieces (the flying general rule).',
+                    pieceName: 'XiangqiGeneral',
+                },
+                {
+                    title: 'The Advisor (Guard / Counsellor):',
+                    desc: 'Moves and captures one point diagonally and cannot leave the Palace.',
+                    pieceName: 'XiangqiAdvisor',
+                },
+                {
+                    title: 'The Elephant (Minister):',
+                    desc: 'Moves and captures exactly two points diagonally and cannot jump over an intervening piece (blocking the elephant\'s eye). Elephants cannot cross the River.',
+                    pieceName: 'XiangqiElephant',
+                },
+                {
+                    title: 'The Horse (Knight):',
+                    desc: 'Moves one point orthogonally followed by one point diagonally outward. It does not jump: if an adjacent point in the orthogonal direction is occupied, the horse is blocked (blocking the horse\'s leg).',
+                    pieceName: 'XiangqiHorse',
+                },
+                {
+                    title: 'The Chariot (Rook):',
+                    desc: 'Moves and captures any distance along straight orthogonal lines through unoccupied points.',
+                    pieceName: 'XiangqiChariot',
+                },
+                {
+                    title: 'The Cannon:',
+                    desc: 'Moves like a chariot through unoccupied points. To capture, it must jump over exactly one intervening piece (the screen) of either color.',
+                    pieceName: 'XiangqiCannon',
+                },
+                {
+                    title: 'The Soldier (Pawn):',
+                    desc: 'Moves and captures one point forward. After crossing the River, it can also move and capture one point horizontally (left or right). It cannot move backward and does not promote.',
+                    pieceName: 'XiangqiSoldier',
+                },
+                {
+                    title: 'The Flying General Rule:',
+                    desc: 'The two generals may not face each other along the same open file without intermediate pieces. A move that exposes the generals to each other is illegal.',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Victory & Stalemate:',
+                    desc: 'A player wins by checkmate or by stalemating the opposing general (leaving the opponent with no legal moves).',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Pro tip: Deploy your chariots quickly, control open files, and coordinate cannons with screens while preventing horses from being blocked.',
+        },
+        history: {
+            intro: 'A game called xiangqi was mentioned in the 1st-century-BC text Shuo Yuan dating to the Warring States period, and Emperor Wu of Northern Zhou described the game xiangxi in AD 569. The earliest description of the current game\'s rules appears in the story "Cén Shùn" in the collection Xuanguai lu, written by Niu Sengru during the Tang dynasty. The game has had its modern form since the Southern Song dynasty.',
+            leftBoxTitle: 'Etymology',
+            leftBoxDesc: 'The name xiangqi is generally interpreted literally as "elephant chess" (xiàng = elephant, qí = chess/board game). However, xiàng can also mean ivory, a figure or representation, or celestial phenomena. Historian H. J. R. Murray suggested "the Figure Game" as a probable early interpretation before pieces were distinguished by written characters.',
+            rightBoxTitle: 'Origins & Spread',
+            rightBoxDesc: 'According to Murray and the predominant opinion among chess historians, present-day xiangqi developed from Indian chaturanga. An alternative hypothesis favored by some Chinese historians suggests xiangqi arose in China during the Warring States period and spread westwards. Korean janggi also developed directly from xiangqi.',
         },
     },
 };

@@ -49,6 +49,12 @@ export const variantMeta_ca: Record<string, VariantMetaI18n> = {
         tag: '4 Jugadors',
         desc: 'El Chaturanga per a 4 jugadors (conegut popularment com a Chaturaji) en un tauler Ashtāpada de 8x8 amb Triomf de la Barca, trons, promocions i apostes.',
     },
+    xiangqi: {
+        title: 'Xiangqi',
+        origin: 'Dinastia Song del Sud • Xina',
+        tag: 'Tauler 9x10',
+        desc: 'Joc de tauler d\'estratègia per a dos jugadors que representa una batalla entre dos exèrcits, jugat sobre les interseccions d\'una quadrícula de 9x10 amb Canons, el Riu i el Palau.',
+    },
 };
 
 export const variantCodex_ca: Record<string, VariantCodexI18n> = {
@@ -535,6 +541,67 @@ export const variantCodex_ca: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'Cada bàndol encarna una estació, element i humor corporal: Verd representa la Primavera, l\'Aire i la Sang; Vermell l\'Estiu, el Foc i la Còlera; Negre la Tardor, la Terra i la Melancolia; i Blanc l\'Hivern, l\'Aigua i la Flema. La partida comença amb el Verd i avança en l\'ordre natural de les estacions.',
             rightBoxTitle: 'El Tauler i el Joc "El Mundo"',
             rightBoxDesc: 'Es disputa en un tauler de 8x8 amb les peces situades a les quatre cantonades (permetent xocs frontals) i diagonals centrals en forma d\'"X" que servien de guia visual per a l\'avanç dels peons. El manuscrit associa a més aquesta variant a un joc de taules circular per a 4 jugadors anomenat "El Mundo" amb els mateixos quatre colors.',
+        },
+    },
+    xiangqi: {
+        name: 'Xiangqi',
+        rules: {
+            intro: 'El Xiangqi es juga en un tauler de nou línies d\'amplada per deu de llargada, on les peces se situen a les interseccions (punts). Dividint els dos bàndols oposats entre les files cinquena i sisena es troba el Riu. Dues zones de 3x3 delimitades per línies diagonals formen el Palau. Les vermelles mouen primer. L\'objectiu principal és fer escac i mat o ofegar el general enemic.',
+            bullets: [
+                {
+                    title: 'El General (Rei):',
+                    desc: 'Mou i captura un punt ortogonalment i no pot sortir del Palau. Els dos generals oposats no poden quedar enfrontats directament al llarg d\'una columna oberta sense peces intermèdies (regla del general volador).',
+                    pieceName: 'XiangqiGeneral',
+                },
+                {
+                    title: 'El Conseller (Guàrdia / Oficial):',
+                    desc: 'Mou i captura un punt diagonalment i no pot sortir del Palau.',
+                    pieceName: 'XiangqiAdvisor',
+                },
+                {
+                    title: 'L\'Elefant (Ministre):',
+                    desc: 'Mou i captura exactament dos punts en diagonal i no pot saltar per sobre d\'una peça intermèdia (bloqueig de l\'ull de l\'elefant). Els elefants no poden creuar el Riu.',
+                    pieceName: 'XiangqiElephant',
+                },
+                {
+                    title: 'El Cavall (Cavaller):',
+                    desc: 'Mou un punt ortogonal seguit d\'un punt diagonal cap enfora. No salta: si el punt adjacent en la direcció ortogonal està ocupat, el cavall queda bloquejat (bloqueig de la pota del cavall).',
+                    pieceName: 'XiangqiHorse',
+                },
+                {
+                    title: 'El Carro (Torre):',
+                    desc: 'Mou i captura qualsevol distància al llarg de línies rectes ortogonals a través de punts desocupats.',
+                    pieceName: 'XiangqiChariot',
+                },
+                {
+                    title: 'El Canó:',
+                    desc: 'Mou com un carro a través de punts desocupats. Per capturar, ha de saltar sobre exactament una peça intermèdia (la pantalla o plataforma) de qualsevol color.',
+                    pieceName: 'XiangqiCannon',
+                },
+                {
+                    title: 'El Soldat (Peó):',
+                    desc: 'Mou i captura un punt cap endavant. Després de creuar el Riu, també pot moure i capturar un punt horitzontalment (esquerra o dreta). No pot retrocedir i no corona.',
+                    pieceName: 'XiangqiSoldier',
+                },
+                {
+                    title: 'Regla del General Volador:',
+                    desc: 'Els dos generals no poden quedar enfrontats a la mateixa columna oberta sense peces intermèdies. Un moviment que exposi els dos generals directament entre si és il·legal.',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Victòria i Ofegat:',
+                    desc: 'Un jugador guanya fent escac i mat o ofegant el general contrari (deixant l\'oponent sense moviments legals).',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Consell pro: Desenvolupa els teus carros ràpidament, controla columnes obertes i coordina els canons amb pantalles evitant que els cavalls quedin bloquejats.',
+        },
+        history: {
+            intro: 'Un joc anomenat xiangqi va ser esmentat al text del segle I aC Shuo Yuan remuntant-se al període dels Regnes Combatents, i l\'emperador Wu de Zhou del Nord va descriure el joc xiangxi l\'any 569 dC. La descripció més primerenca de les regles del joc actual apareix al relat "Cén Shùn" a la col·lecció Xuanguai lu, escrita per Niu Sengru durant la dinastia Tang. El joc té la seva forma moderna des de la dinastia Song del Sud.',
+            leftBoxTitle: 'Etimologia',
+            leftBoxDesc: 'El nom xiangqi s\'interpreta generalment de forma literal com a "escacs d\'elefant" (xiàng = elefant, qí = escacs/joc de tauler). Tanmateix, xiàng també pot significar marfil, figura o representació, o fenomen celeste. L\'historiador H. J. R. Murray va suggerir "el Joc de les Figures" com una interpretació primerenca probable abans que les peces es distingissin per caràcters escrits.',
+            rightBoxTitle: 'Orígens i Difusió',
+            rightBoxDesc: 'Segons Murray i l\'opinió predominant entre els historiadors dels escacs, el xiangqi actual descendeix del chaturanga indi. Una hipòtesi alternativa defensada per alguns historiadors xinesos suggereix que el xiangqi va sorgir a la Xina durant el període dels Regnes Combatents i es va difondre cap a l\'oest. El janggi coreà també prové directament del xiangqi.',
         },
     },
 };

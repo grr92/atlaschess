@@ -3,6 +3,7 @@ import { useNavStore } from './store/useNavStore';
 import { useGameStore } from './store/useGameStore';
 import { MainMenu } from './components/menu/MainMenu';
 import { Board } from './components/board/Board';
+import { XiangqiBoard } from './components/board/XiangqiBoard';
 import { VariantsCatalog } from "./components/ui/VariantCatalog";
 import { MoveHistory } from './components/board/MoveHistory';
 import { CapturedPieces } from './components/board/CapturedPieces';
@@ -16,6 +17,7 @@ import { SettingsModal } from "./components/modals/SettingsModal";
 import { D8DiceWidget } from "./components/board/D8DiceWidget";
 import { ChaturajiEngine } from "./core/engine/ChaturajiEngine";
 import { FourSeasonsEngine, type FourSeasonsColor } from "./core/engine/FourSeasonsEngine";
+import { VariantRegistry } from "./core/variants/variantRegistry";
 import { useTranslation } from './i18n';
 
 export const App = () => {
@@ -36,7 +38,9 @@ export const App = () => {
         playerColor,
         isAiThinking,
         isMuted,
-        toggleMute
+        toggleMute,
+        xiangqiPieceStyle,
+        setXiangqiPieceStyle
     } = useGameStore();
 
     // state to control the confirmation pop-ups
@@ -78,6 +82,7 @@ export const App = () => {
     };
 
     const currentVariantMeta = getVariantMeta(currentVariantId);
+    const currentVariantDef = VariantRegistry.get(currentVariantId);
 
     const getGameStateLabel = () => {
         if (gameState === 'check') return t.gameplay.check;
@@ -194,8 +199,16 @@ export const App = () => {
 
                             <div className="flex justify-between items-center h-14 pb-2 px-2 w-full gap-2">
                                 <h2 className="text-atlas-titleText text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2 capitalize flex-shrink-0 whitespace-nowrap">
-                                    {currentVariantMeta.title}
+                                    {currentVariantMeta?.title || currentVariantId}
                                 </h2>
+                                {currentVariantDef?.hasPieceStyleToggle && (
+                                    <button 
+                                        onClick={() => setXiangqiPieceStyle(xiangqiPieceStyle === 'text' ? 'icon' : 'text')}
+                                        className="ml-2 px-3 py-1 text-xs font-bold uppercase tracking-wider bg-atlas-surface/80 border border-white/20 rounded hover:bg-white/10 transition-colors"
+                                    >
+                                        {xiangqiPieceStyle === 'text' ? t.gameplay.xiangqiIconPieces : t.gameplay.xiangqiTextPieces}
+                                    </button>
+                                )}
                                 <div className="flex items-center gap-2 flex-shrink-0">
                                     <D8DiceWidget />
                                     <div className="flex items-center gap-2.5 bg-atlas-surface/80 px-3 py-1.5 rounded-full border border-white/10 shadow-md backdrop-blur-md flex-shrink-0">
@@ -242,7 +255,7 @@ export const App = () => {
                             </div>
                         </div>
 
-                        <Board />
+                        {currentVariantDef?.boardType === 'xiangqi' ? <XiangqiBoard /> : <Board />}
 
                         </div>
 

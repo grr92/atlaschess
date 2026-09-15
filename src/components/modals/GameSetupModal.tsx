@@ -26,21 +26,23 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
     const { t } = useTranslation();
     const variantDef = VariantRegistry.get(variantId);
     const supportsDice = !!variantDef?.supportsDiceRule;
-    const isChaturaji = variantId === 'chaturaji';
     const isFourSeasons = variantId === 'four_seasons';
-    const isFourPlayer = isChaturaji || isFourSeasons;
+    const isChaturaji = variantId === 'chaturaji';
+    const availableColors: PieceColor[] = (variantDef?.playerColors && variantDef.playerColors.length > 0)
+        ? variantDef.playerColors
+        : ['white', 'black'];
+    const defaultColor: PieceColor = variantDef?.defaultPlayerColor ?? availableColors[0];
+    const isFourPlayer = availableColors.length === 4;
 
     const [mode, setMode] = useState<GameMode>('vs_ai');
-    const [colorOption, setColorOption] = useState<string>(isFourSeasons ? 'green' : (isChaturaji ? 'red' : 'white'));
+    const [colorOption, setColorOption] = useState<string>(defaultColor);
     const [difficulty, setDifficulty] = useState<AiDifficulty>('medium');
     const [useDiceRule, setUseDiceRule] = useState<boolean>(false);
 
     useEffect(() => {
         if (!isOpen) return;
-        if (isFourSeasons && (colorOption === 'yellow' || colorOption === 'blue')) {
-            setColorOption('green');
-        } else if (isChaturaji && (colorOption === 'white' || colorOption === 'black')) {
-            setColorOption('red');
+        if (colorOption !== 'random' && !availableColors.includes(colorOption as PieceColor)) {
+            setColorOption(defaultColor);
         }
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
@@ -53,32 +55,16 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, onClose, isChaturaji, isFourSeasons, colorOption]);
+    }, [isOpen, onClose, colorOption, availableColors, defaultColor]);
 
     if (!isOpen) return null;
 
     const handleStart = () => {
-        let chosenColor: PieceColor = 'white';
-        if (isFourSeasons) {
-            if (colorOption === 'random') {
-                const colors: PieceColor[] = ['green', 'red', 'black', 'white'];
-                chosenColor = colors[Math.floor(Math.random() * colors.length)];
-            } else {
-                chosenColor = colorOption as PieceColor;
-            }
-        } else if (isChaturaji) {
-            if (colorOption === 'random') {
-                const colors: PieceColor[] = ['red', 'green', 'yellow', 'blue'];
-                chosenColor = colors[Math.floor(Math.random() * colors.length)];
-            } else {
-                chosenColor = colorOption as PieceColor;
-            }
+        let chosenColor: PieceColor;
+        if (colorOption === 'random') {
+            chosenColor = availableColors[Math.floor(Math.random() * availableColors.length)];
         } else {
-            if (colorOption === 'random') {
-                chosenColor = Math.random() < 0.5 ? 'white' : 'black';
-            } else {
-                chosenColor = colorOption as PieceColor;
-            }
+            chosenColor = colorOption as PieceColor;
         }
 
         soundManager.playUiClick();
@@ -205,182 +191,105 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                             <label className="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-2.5">
                                 {t.gameSetup.playAs}
                             </label>
-                            {isFourSeasons ? (
-                                <div className="grid grid-cols-5 gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => setColorOption('green')}
-                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
-                                            colorOption === 'green'
-                                                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-md ring-2 ring-emerald-500'
-                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
-                                        }`}
-                                    >
-                                        <div className="w-3.5 h-3.5 rounded-full bg-emerald-500 shadow-sm" />
-                                        {t.common.green}
-                                    </button>
+                            <div className={`grid ${isFourPlayer ? 'grid-cols-5 gap-2' : 'grid-cols-3 gap-2.5'}`}>
+                                {(isFourPlayer
+                                    ? [...availableColors, 'random' as const]
+                                    : [availableColors[0], 'random' as const, availableColors[1]]
+                                ).map((item) => {
+                                    const isSelected = colorOption === item;
+                                    if (item === 'random') {
+                                        return (
+                                            <button
+                                                key="random"
+                                                type="button"
+                                                onClick={() => setColorOption('random')}
+                                                className={`${
+                                                    isFourPlayer
+                                                        ? 'py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px]'
+                                                        : 'py-2.5 px-3 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs'
+                                                } transition-all ${
+                                                    isSelected
+                                                        ? 'bg-amber-500/20 border-amber-500 text-amber-300 shadow-md ring-2 ring-amber-500'
+                                                        : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
+                                                }`}
+                                            >
+                                                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                                                {t.common.random}
+                                            </button>
+                                        );
+                                    }
 
-                                    <button
-                                        type="button"
-                                        onClick={() => setColorOption('red')}
-                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
-                                            colorOption === 'red'
-                                                ? 'bg-red-500/20 border-red-500 text-red-300 shadow-md ring-2 ring-red-500'
-                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
-                                        }`}
-                                    >
-                                        <div className="w-3.5 h-3.5 rounded-full bg-red-500 shadow-sm" />
-                                        {t.common.red}
-                                    </button>
+                                    const getColorConfig = (col: PieceColor) => {
+                                        switch (col) {
+                                            case 'green':
+                                                return {
+                                                    dot: 'bg-emerald-500 shadow-sm',
+                                                    btn: isSelected
+                                                        ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-md ring-2 ring-emerald-500'
+                                                        : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30',
+                                                    name: t.common.green,
+                                                };
+                                            case 'red':
+                                                return {
+                                                    dot: 'bg-red-500 shadow-sm ring-1 ring-red-600',
+                                                    btn: isSelected
+                                                        ? 'bg-red-500/20 border-red-500 text-red-300 shadow-md ring-2 ring-red-500'
+                                                        : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30',
+                                                    name: t.common.red,
+                                                };
+                                            case 'black':
+                                                return {
+                                                    dot: 'bg-slate-950 border border-slate-500 shadow-sm',
+                                                    btn: isSelected
+                                                        ? 'bg-slate-950 text-white border-slate-600 shadow-md ring-2 ring-slate-400'
+                                                        : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30',
+                                                    name: t.common.black,
+                                                };
+                                            case 'white':
+                                                return {
+                                                    dot: 'bg-white ring-1 ring-slate-400 shadow-sm',
+                                                    btn: isSelected
+                                                        ? 'bg-white text-slate-950 border-white shadow-md ring-2 ring-white'
+                                                        : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30',
+                                                    name: t.common.white,
+                                                };
+                                            case 'yellow':
+                                                return {
+                                                    dot: 'bg-amber-400 shadow-sm',
+                                                    btn: isSelected
+                                                        ? 'bg-amber-400/20 border-amber-400 text-amber-300 shadow-md ring-2 ring-amber-400'
+                                                        : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30',
+                                                    name: t.common.yellow,
+                                                };
+                                            case 'blue':
+                                                return {
+                                                    dot: 'bg-sky-500 shadow-sm',
+                                                    btn: isSelected
+                                                        ? 'bg-sky-500/20 border-sky-500 text-sky-300 shadow-md ring-2 ring-sky-500'
+                                                        : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30',
+                                                    name: t.common.blue,
+                                                };
+                                        }
+                                    };
 
-                                    <button
-                                        type="button"
-                                        onClick={() => setColorOption('black')}
-                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
-                                            colorOption === 'black'
-                                                ? 'bg-slate-950 text-white border-slate-600 shadow-md ring-2 ring-slate-400'
-                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
-                                        }`}
-                                    >
-                                        <div className="w-3.5 h-3.5 rounded-full bg-slate-950 border border-slate-500 shadow-sm" />
-                                        {t.common.black}
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => setColorOption('white')}
-                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
-                                            colorOption === 'white'
-                                                ? 'bg-white/20 border-white text-white shadow-md ring-2 ring-white'
-                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
-                                        }`}
-                                    >
-                                        <div className="w-3.5 h-3.5 rounded-full bg-white shadow-sm" />
-                                        {t.common.white}
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => setColorOption('random')}
-                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
-                                            colorOption === 'random'
-                                                ? 'bg-amber-500/20 border-amber-500 text-amber-300 shadow-md ring-2 ring-amber-500'
-                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
-                                        }`}
-                                    >
-                                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                                        {t.common.random}
-                                    </button>
-                                </div>
-                            ) : isChaturaji ? (
-                                <div className="grid grid-cols-5 gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => setColorOption('red')}
-                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
-                                            colorOption === 'red'
-                                                ? 'bg-red-500/20 border-red-500 text-red-300 shadow-md ring-2 ring-red-500'
-                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
-                                        }`}
-                                    >
-                                        <div className="w-3.5 h-3.5 rounded-full bg-red-500 shadow-sm" />
-                                        {t.common.red}
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => setColorOption('green')}
-                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
-                                            colorOption === 'green'
-                                                ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-md ring-2 ring-emerald-500'
-                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
-                                        }`}
-                                    >
-                                        <div className="w-3.5 h-3.5 rounded-full bg-emerald-500 shadow-sm" />
-                                        {t.common.green}
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => setColorOption('yellow')}
-                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
-                                            colorOption === 'yellow'
-                                                ? 'bg-amber-400/20 border-amber-400 text-amber-300 shadow-md ring-2 ring-amber-400'
-                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
-                                        }`}
-                                    >
-                                        <div className="w-3.5 h-3.5 rounded-full bg-amber-400 shadow-sm" />
-                                        {t.common.yellow}
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => setColorOption('blue')}
-                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
-                                            colorOption === 'blue'
-                                                ? 'bg-sky-500/20 border-sky-500 text-sky-300 shadow-md ring-2 ring-sky-500'
-                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
-                                        }`}
-                                    >
-                                        <div className="w-3.5 h-3.5 rounded-full bg-sky-500 shadow-sm" />
-                                        {t.common.blue}
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => setColorOption('random')}
-                                        className={`py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px] transition-all ${
-                                            colorOption === 'random'
-                                                ? 'bg-amber-500/20 border-amber-500 text-amber-300 shadow-md ring-2 ring-amber-500'
-                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
-                                        }`}
-                                    >
-                                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                                        {t.common.random}
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-3 gap-2.5">
-                                    <button
-                                        type="button"
-                                        onClick={() => setColorOption('white')}
-                                        className={`py-2.5 px-3 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs transition-all ${
-                                            colorOption === 'white'
-                                                ? 'bg-white text-slate-950 border-white shadow-md'
-                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
-                                        }`}
-                                    >
-                                        <div className="w-3.5 h-3.5 rounded-full bg-white ring-1 ring-slate-400" />
-                                        {t.common.white}
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => setColorOption('random')}
-                                        className={`py-2.5 px-3 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs transition-all ${
-                                            colorOption === 'random'
-                                                ? 'bg-amber-500/20 border-amber-500 text-amber-300 shadow-md'
-                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
-                                        }`}
-                                    >
-                                        <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                                        {t.common.random}
-                                    </button>
-
-                                    <button
-                                        type="button"
-                                        onClick={() => setColorOption('black')}
-                                        className={`py-2.5 px-3 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs transition-all ${
-                                            colorOption === 'black'
-                                                ? 'bg-slate-950 text-white border-slate-600 shadow-md'
-                                                : 'bg-slate-900/40 border-white/10 text-slate-300 hover:border-white/30'
-                                        }`}
-                                    >
-                                        <div className="w-3.5 h-3.5 rounded-full bg-slate-950 border border-white/50" />
-                                        {t.common.black}
-                                    </button>
-                                </div>
-                            )}
+                                    const { dot, btn, name } = getColorConfig(item);
+                                    return (
+                                        <button
+                                            key={item}
+                                            type="button"
+                                            onClick={() => setColorOption(item)}
+                                            className={`${
+                                                isFourPlayer
+                                                    ? 'py-2 px-1 rounded-xl border flex flex-col items-center justify-center gap-1 font-bold text-[11px]'
+                                                    : 'py-2.5 px-3 rounded-xl border flex items-center justify-center gap-2 font-bold text-xs'
+                                            } transition-all ${btn}`}
+                                        >
+                                            <div className={`w-3.5 h-3.5 rounded-full ${dot}`} />
+                                            {name}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
 
                         {/* Difficulty Level */}

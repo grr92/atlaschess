@@ -4,7 +4,7 @@
 
 Welcome to **Atlas Chess**, a chess application built with modern web technologies.
 
-This is my very first software project outside my CS studies and it has been developed with the assistance of AI. My primary intention behind this project is deeply cultural: I wanted to create a platform that allows people to easily play lost historical chess variants that are otherwise nearly impossible to experience today. Furthermore, I aim to preserve and provide access to various regional chess variants from around the world, saving you a trip across the globe just to play a unique game.
+This is my very first software project outside my CS studies, and it has been developed with the assistance of AI. My primary intention behind this project is deeply cultural: I wanted to create a platform that allows people to easily play lost historical chess variants that are otherwise nearly impossible to experience today. Furthermore, I aim to preserve and provide access to various regional chess variants from around the world, saving you a trip across the globe just to play a unique game.
 
 ## Features
 
@@ -180,5 +180,4 @@ You are free to share and adapt the material for non-commercial purposes, as lon
   - Janggi (Korea)
   - Ouk Chatrang (Cambodia)
   - Sittuyin (Myanmar)
-  - Shatar (Mongolia)
-  - Hiashatar (Mongolia)
+  - ~~Shatar (Mongolia)~~ (Shatar is just chess in Mongolia. Not implemented due to lack of solid evidence regarding pre-chess old rules)

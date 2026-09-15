@@ -101,7 +101,16 @@ export const PIECE_REGISTRY: Record<PieceName, PieceMetadata> = {
     FourSeasonsRook: { name: 'FourSeasonsRook', displayName: 'Rook', value: 500, sortOrder: 4, svgChar: 'r', diceNumber: 4 },
     FourSeasonsKnight: { name: 'FourSeasonsKnight', displayName: 'Knight', value: 320, sortOrder: 8, svgChar: 'n', diceNumber: 3 },
     FourSeasonsBishop: { name: 'FourSeasonsBishop', displayName: 'Bishop', value: 150, sortOrder: 10, svgChar: 'b', diceNumber: 2 },
-    FourSeasonsPawn: { name: 'FourSeasonsPawn', displayName: 'Pawn', value: 100, sortOrder: 13, svgChar: 'p', diceNumber: 1 }
+    FourSeasonsPawn: { name: 'FourSeasonsPawn', displayName: 'Pawn', value: 100, sortOrder: 13, svgChar: 'p', diceNumber: 1 },
+
+    // Xiangqi
+    XiangqiGeneral: { name: 'XiangqiGeneral', displayName: 'General', value: 10000, sortOrder: 0, svgChar: 'k' },
+    XiangqiAdvisor: { name: 'XiangqiAdvisor', displayName: 'Advisor', value: 200, sortOrder: 11, svgChar: 'a' },
+    XiangqiElephant: { name: 'XiangqiElephant', displayName: 'Elephant', value: 250, sortOrder: 10, svgChar: 'e' },
+    XiangqiHorse: { name: 'XiangqiHorse', displayName: 'Horse', value: 400, sortOrder: 8, svgChar: 'n' },
+    XiangqiChariot: { name: 'XiangqiChariot', displayName: 'Chariot', value: 900, sortOrder: 4, svgChar: 'r' },
+    XiangqiCannon: { name: 'XiangqiCannon', displayName: 'Cannon', value: 450, sortOrder: 5, svgChar: 'c' },
+    XiangqiSoldier: { name: 'XiangqiSoldier', displayName: 'Soldier', value: 100, sortOrder: 13, svgChar: 'p' }
 };
 
 export const getPieceMetadata = (name: string): PieceMetadata | undefined => {

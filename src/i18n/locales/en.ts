@@ -31,7 +31,7 @@ export const en: Translations = {
         chessVariants: 'Chess variants',
         loadGame: 'Load game',
         settings: 'Settings',
-        versionInfo: 'Version 0.10.0 • Powered by Fairy-Stockfish & Heuristic AI',
+        versionInfo: 'Version 0.11.0 • Powered by Fairy-Stockfish & Heuristic AI',
         techStack: 'Built with React + TypeScript + Zustand + Tailwind CSS',
         invalidSaveFile: 'This save file is invalid or corrupted.',
     },
@@ -135,6 +135,8 @@ export const en: Translations = {
             settings: 'Settings',
             info: 'Variant Rules & History',
         },
+        xiangqiIconPieces: 'Icon Pieces',
+        xiangqiTextPieces: 'Text Pieces',
     },
     variantCodex: {
         codexReference: 'Codex & Rules Reference',

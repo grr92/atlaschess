@@ -49,6 +49,12 @@ export const variantMeta_es: Record<string, VariantMetaI18n> = {
         tag: '4 Jugadores',
         desc: 'El Chaturanga para 4 jugadores (conocido popularmente como Chaturaji) en un tablero Ashtāpada de 8x8 con Triunfo del Barco, tronos, promociones y apuestas.',
     },
+    xiangqi: {
+        title: 'Xiangqi',
+        origin: 'Dinastía Song del Sur • China',
+        tag: 'Tablero 9x10',
+        desc: 'Juego de tablero de estrategia para dos jugadores que representa una batalla entre dos ejércitos, jugado sobre las intersecciones de una cuadrícula de 9x10 con Cañones, el Río y el Palacio.',
+    },
 };
 
 export const variantCodex_es: Record<string, VariantCodexI18n> = {
@@ -535,6 +541,67 @@ export const variantCodex_es: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'Cada bando encarna una estación, elemento y humor corporal: Verde representa la Primavera, el Aire y la Sangre; Rojo el Verano, el Fuego y la Cólera; Negro el Otoño, la Tierra y la Melancolía; y Blanco el Invierno, el Agua y la Flema. El juego inicia con el Verde y progresa en el orden natural de las estaciones.',
             rightBoxTitle: 'El Tablero y el Juego "El Mundo"',
             rightBoxDesc: 'Se disputa en un tablero de 8x8 con las piezas situadas en las cuatro esquinas (permitiendo choques frontales) y diagonales centrales en forma de "X" que servían de guía visual para el avance de los peones. El manuscrito asocia además esta variante a un juego de tablas circular para 4 jugadores llamado "El Mundo" con los mismos cuatro colores.',
+        },
+    },
+    xiangqi: {
+        name: 'Xiangqi',
+        rules: {
+            intro: 'El Xiangqi se juega en un tablero de nueve líneas de ancho por diez de largo, donde las piezas se sitúan en las intersecciones (puntos). Dividiendo los dos bandos opuestos entre las filas quinta y sexta se encuentra el Río. Dos zonas de 3x3 delimitadas por líneas diagonales forman el Palacio. Las rojas mueven primero. El objetivo principal es dar jaque mate o ahogar al general enemigo.',
+            bullets: [
+                {
+                    title: 'El General (Rey):',
+                    desc: 'Mueve y captura un punto ortogonalmente y no puede salir del Palacio. Los dos generales opuestos no pueden quedar enfrentados directamente a lo largo de una columna abierta sin piezas intermedias (regla del general volador).',
+                    pieceName: 'XiangqiGeneral',
+                },
+                {
+                    title: 'El Consejero (Guardia / Oficial):',
+                    desc: 'Mueve y captura un punto diagonalmente y no puede salir del Palacio.',
+                    pieceName: 'XiangqiAdvisor',
+                },
+                {
+                    title: 'El Elefante (Ministro):',
+                    desc: 'Mueve y captura exactamente dos puntos en diagonal y no puede saltar por encima de una pieza intermedia (bloqueo del ojo del elefante). Los elefantes no pueden cruzar el Río.',
+                    pieceName: 'XiangqiElephant',
+                },
+                {
+                    title: 'El Caballo (Caballero):',
+                    desc: 'Mueve un punto ortogonal seguido de un punto diagonal hacia afuera. No salta: si el punto adyacente en la dirección ortogonal está ocupado, el caballo queda bloqueado (bloqueo de la pata del caballo).',
+                    pieceName: 'XiangqiHorse',
+                },
+                {
+                    title: 'El Carro (Torre):',
+                    desc: 'Mueve y captura cualquier distancia a lo largo de líneas rectas ortogonales a través de puntos desocupados.',
+                    pieceName: 'XiangqiChariot',
+                },
+                {
+                    title: 'El Cañón:',
+                    desc: 'Mueve como un carro a través de puntos desocupados. Para capturar, debe saltar sobre exactamente una pieza intermedia (la pantalla o plataforma) de cualquier color.',
+                    pieceName: 'XiangqiCannon',
+                },
+                {
+                    title: 'El Soldado (Peón):',
+                    desc: 'Mueve y captura un punto hacia adelante. Tras cruzar el Río, también puede mover y capturar un punto horizontalmente (izquierda o derecha). No puede retroceder y no promociona.',
+                    pieceName: 'XiangqiSoldier',
+                },
+                {
+                    title: 'Regla del General Volador:',
+                    desc: 'Los dos generales no pueden quedar enfrentados en la misma columna abierta sin piezas intermedias. Un movimiento que exponga a los dos generales directamente entre sí es ilegal.',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Victoria y Ahogado:',
+                    desc: 'Un jugador gana dando jaque mate o ahogando al general contrario (dejando al oponente sin movimientos legales).',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Consejo pro: Desarrolla tus carros rápidamente, controla columnas abiertas y coordina los cañones con pantallas evitando que los caballos queden bloqueados.',
+        },
+        history: {
+            intro: 'Un juego llamado xiangqi fue mencionado en el texto del siglo I a.C. Shuo Yuan remontándose al período de los Reinos Combatientes, y el emperador Wu de Zhou del Norte describió el juego xiangxi en el año 569 d.C. La descripción más temprana de las reglas del juego actual aparece en el relato "Cén Shùn" en la colección Xuanguai lu, escrita por Niu Sengru durante la dinastía Tang. El juego tiene su forma moderna desde la dinastía Song del Sur.',
+            leftBoxTitle: 'Etimología',
+            leftBoxDesc: 'El nombre xiangqi se interpreta generalmente de forma literal como "ajedrez de elefante" (xiàng = elefante, qí = ajedrez/juego de tablero). Sin embargo, xiàng también puede significar marfil, figura o representación, o fenómeno celeste. El historiador H. J. R. Murray sugirió "el Juego de las Figuras" como una interpretación temprana probable antes de que las piezas se distinguieran por caracteres escritos.',
+            rightBoxTitle: 'Orígenes y Difusión',
+            rightBoxDesc: 'Según Murray y la opinión predominante entre los historiadores del ajedrez, el xiangqi actual desciende del chaturanga indio. Una hipótesis alternativa defendida por algunos historiadores chinos sugiere que el xiangqi surgió en China durante el período de los Reinos Combatientes y se difundió hacia el oeste. El janggi coreano también procede directamente del xiangqi.',
         },
     },
 };

@@ -69,3 +69,11 @@ export * from './four_seasons/FourSeasonsKnight';
 export * from './four_seasons/FourSeasonsBishop';
 export * from './four_seasons/FourSeasonsPawn';
 
+// Xiangqi
+export * from './xiangqi/XiangqiGeneral';
+export * from './xiangqi/XiangqiAdvisor';
+export * from './xiangqi/XiangqiElephant';
+export * from './xiangqi/XiangqiHorse';
+export * from './xiangqi/XiangqiChariot';
+export * from './xiangqi/XiangqiCannon';
+export * from './xiangqi/XiangqiSoldier';

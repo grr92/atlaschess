@@ -1,4 +1,5 @@
 import type { BaseEngine } from '../engine/BaseEngine';
+import type { PieceColor } from '../../types';
 import { ClassicChessEngine } from '../engine/ClassicChessEngine';
 import { ChaturangaEngine } from '../engine/ChaturangaEngine';
 import { ShatranjEngine } from '../engine/ShatranjEngine';
@@ -16,6 +17,8 @@ import { TamerlaneChess } from './TamerlaneChess';
 import { CourierChess } from './CourierChess';
 import { Chaturaji } from './Chaturaji';
 import { FourSeasonsChess } from './FourSeasonsChess';
+import { Xiangqi } from './Xiangqi';
+import { XiangqiEngine } from '../engine/XiangqiEngine';
 
 export type VariantCategory = 'standard' | 'historical' | 'regional';
 
@@ -25,9 +28,12 @@ export interface VariantDefinition {
     category: VariantCategory;
     origin: string;
     tag: string;
-    desc: string;
     supportsDiceRule?: boolean;
     tileSize?: 'standard' | 'compact' | 'small';
+    boardType?: 'grid' | 'xiangqi';
+    playerColors?: PieceColor[];
+    defaultPlayerColor?: PieceColor;
+    hasPieceStyleToggle?: boolean;
     createEngine: () => BaseEngine;
 }
 
@@ -71,8 +77,9 @@ VariantRegistry.register({
     category: 'standard',
     origin: '15th Century • Europe',
     tag: 'Standard',
-    desc: 'The worldwide recognized modern rules with castling, en passant, and the queen.',
     tileSize: 'standard',
+    playerColors: ['white', 'black'],
+    defaultPlayerColor: 'white',
     createEngine: () => new ClassicChessEngine(new ClassicChess())
 });
 
@@ -82,8 +89,9 @@ VariantRegistry.register({
     category: 'historical',
     origin: '6th Century • India',
     tag: 'The Origin',
-    desc: 'The ancient four-division ancestor of chess played on an 8x8 uncheckered Ashtāpada.',
     tileSize: 'standard',
+    playerColors: ['white', 'black'],
+    defaultPlayerColor: 'white',
     createEngine: () => new ChaturangaEngine(new Chaturanga())
 });
 
@@ -93,8 +101,9 @@ VariantRegistry.register({
     category: 'historical',
     origin: '7th Century • Persia',
     tag: 'Golden Age',
-    desc: 'The strategic jewel of the Silk Road. Ferz moves 1 diagonal, Pil leaps 2, and bare king wins.',
     tileSize: 'standard',
+    playerColors: ['white', 'black'],
+    defaultPlayerColor: 'white',
     createEngine: () => new ShatranjEngine(new Shatranj())
 });
 
@@ -104,9 +113,10 @@ VariantRegistry.register({
     category: 'historical',
     origin: '10th-11th Century • India',
     tag: '4 Players',
-    desc: 'Four kings battle on an 8x8 Ashtāpada with Boat Triumphs, Thrones (Sinhasana), pawn promotions, and stakes.',
     supportsDiceRule: true,
     tileSize: 'standard',
+    playerColors: ['red', 'green', 'yellow', 'blue'],
+    defaultPlayerColor: 'red',
     createEngine: () => new ChaturajiEngine(new Chaturaji())
 });
 
@@ -116,8 +126,9 @@ VariantRegistry.register({
     category: 'historical',
     origin: '12th Century • Germany',
     tag: '12x8 Board',
-    desc: 'The medieval German masterpiece with Couriers, Sage, Schleich, and modern diagonal power.',
     tileSize: 'compact',
+    playerColors: ['white', 'black'],
+    defaultPlayerColor: 'white',
     createEngine: () => new CourierEngine(new CourierChess())
 });
 
@@ -127,9 +138,10 @@ VariantRegistry.register({
     category: 'historical',
     origin: '13th Century • Castile (Alfonso X)',
     tag: '12x12 Board',
-    desc: 'The grand royal chess of Alfonso the Wise with Aancas, Unicorns, Lions, Giraffes, and Crocodiles.',
     supportsDiceRule: true,
     tileSize: 'small',
+    playerColors: ['white', 'black'],
+    defaultPlayerColor: 'white',
     createEngine: () => new GrantAcedrexEngine(new GrantAcedrex())
 });
 
@@ -139,9 +151,10 @@ VariantRegistry.register({
     category: 'historical',
     origin: '13th Century • Castile (Alfonso X)',
     tag: '4 Players',
-    desc: 'Four seasons battle in a medieval tournament of elements with army annexation, Alfil leapers, Alferza generals, and D6 dice.',
     supportsDiceRule: true,
     tileSize: 'standard',
+    playerColors: ['green', 'red', 'black', 'white'],
+    defaultPlayerColor: 'green',
     createEngine: () => new FourSeasonsEngine(new FourSeasonsChess())
 });
 
@@ -151,10 +164,26 @@ VariantRegistry.register({
     category: 'historical',
     origin: '14th Century • Timurid Empire',
     tag: '112 Squares',
-    desc: 'Timur\'s grand chess with Giraffes, Camels, War Engines, 11 unique pawns, and royal Citadels.',
     tileSize: 'compact',
+    playerColors: ['white', 'black'],
+    defaultPlayerColor: 'white',
     createEngine: () => new TamerlaneEngine(new TamerlaneChess())
 });
+
+VariantRegistry.register({
+    id: 'xiangqi',
+    title: 'Xiangqi',
+    category: 'regional',
+    origin: 'Southern Song Dynasty • China',
+    tag: '9x10 Board',
+    tileSize: 'compact',
+    boardType: 'xiangqi',
+    playerColors: ['red', 'black'],
+    defaultPlayerColor: 'red',
+    hasPieceStyleToggle: true,
+    createEngine: () => new XiangqiEngine(new Xiangqi())
+});
+
 
 
 

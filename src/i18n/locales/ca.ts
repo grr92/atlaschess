@@ -31,7 +31,7 @@ export const ca: Translations = {
         chessVariants: 'Variants d\'escacs',
         loadGame: 'Carregar partida',
         settings: 'Configuració',
-        versionInfo: 'Versió 0.10.0 • Desenvolupat amb Fairy-Stockfish i IA Heurística',
+        versionInfo: 'Versió 0.11.0 • Desenvolupat amb Fairy-Stockfish i IA Heurística',
         techStack: 'Creat amb React + TypeScript + Zustand + Tailwind CSS',
         invalidSaveFile: 'Aquest fitxer de partida desada no és vàlid o està malmès.',
     },
@@ -135,6 +135,8 @@ export const ca: Translations = {
             settings: 'Configuració',
             info: 'Regles i Història de la variant',
         },
+        xiangqiIconPieces: 'Peces amb icones',
+        xiangqiTextPieces: 'Peces de text',
     },
     variantCodex: {
         codexReference: 'Còdex i Referència de Regles',

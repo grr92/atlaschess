@@ -25,6 +25,7 @@ export interface GameSliceState {
     initialCustomPieces?: any[] | null;
     initialCustomTurn?: PieceColor | null;
     initialAnnexedArmies?: any | null;
+    xiangqiPieceStyle: 'text' | 'icon';
 }
 
 export interface GameSliceActions {
@@ -44,6 +45,7 @@ export interface GameSliceActions {
     rollDiceForCurrentTurn: (engineOverride?: BaseEngine, turnOverride?: PieceColor) => void;
     toggleMute: () => void;
     setLanguage: (lang: AppLanguage) => void;
+    setXiangqiPieceStyle: (style: 'text' | 'icon') => void;
 }
 
 export interface AiSliceState {

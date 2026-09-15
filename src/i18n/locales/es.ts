@@ -31,7 +31,7 @@ export const es: Translations = {
         chessVariants: 'Variantes de ajedrez',
         loadGame: 'Cargar partida',
         settings: 'Ajustes',
-        versionInfo: 'Versión 0.10.0 • Desarrollado con Fairy-Stockfish e IA Heurística',
+        versionInfo: 'Versión 0.11.0 • Desarrollado con Fairy-Stockfish e IA Heurística',
         techStack: 'Creado con React + TypeScript + Zustand + Tailwind CSS',
         invalidSaveFile: 'Este archivo de guardado es inválido o está corrupto.',
     },
@@ -135,6 +135,8 @@ export const es: Translations = {
             settings: 'Ajustes',
             info: 'Reglas e Historia de la variante',
         },
+        xiangqiIconPieces: 'Piezas con iconos',
+        xiangqiTextPieces: 'Piezas de texto',
     },
     variantCodex: {
         codexReference: 'Códice y Referencia de Reglas',

@@ -1,5 +1,6 @@
 import { Piece } from '../core/pieces/piecesIndex';
 import { getPieceSvgChar } from '../core/pieces/pieceRegistry';
+import { getXiangqiPieceImage, type XiangqiPieceStyle } from './xiangqiPieceMapper';
 
 // Vite creates a dictionary mapping all processed paths:
 // Keys are formatted like: '../assets/pieces/Chess_elt45.svg' or '../assets/pieces/chaturaji/Chess_krt45.svg'
@@ -16,8 +17,12 @@ if (typeof window !== 'undefined') {
     });
 }
 
-export const getPieceImage = (piece: Piece | null): string | null => {
+export const getPieceImage = (piece: Piece | null, xiangqiStyle: XiangqiPieceStyle = 'text'): string | null => {
     if (!piece) return null;
+
+    if (piece.name.startsWith('Xiangqi')) {
+        return getXiangqiPieceImage(piece, xiangqiStyle);
+    }
 
     const pieceChar = getPieceSvgChar(piece.name);
     if (!pieceChar) return null;

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, BookOpen, History, Sparkles, Scroll, Compass, Dices } from 'lucide-react';
 import { getPieceImage } from '../../utils/pieceMapper';
+import { getXiangqiPieceImage } from '../../utils/xiangqiPieceMapper';
 import { soundManager } from '../../utils/soundManager';
 import { CloseButton } from '../ui/CloseButton';
 import { useTranslation } from '../../i18n';
@@ -37,6 +38,12 @@ export const VariantInfoModal = ({ variantId, onClose }: VariantInfoModalProps) 
 
     const renderBulletIcon = (bullet: CodexBullet) => {
         if (bullet.pieceName) {
+            if (variantId === 'xiangqi' || bullet.pieceName.startsWith('Xiangqi')) {
+                const imgUrl = getXiangqiPieceImage({ name: bullet.pieceName, color: 'red' } as any, 'text');
+                if (imgUrl) {
+                    return <img src={imgUrl} alt={bullet.pieceName} className="w-5 h-5 object-contain -mt-1" />;
+                }
+            }
             const isChaturaji = variantId === 'chaturaji' || bullet.pieceName.startsWith('Chaturaji');
             const color = isChaturaji ? 'red' : 'white';
             const imgUrl = getPieceImage({ name: bullet.pieceName, color } as any);

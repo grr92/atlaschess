@@ -4,6 +4,7 @@ import { getPieceValue, getPieceSortOrder } from '../../core/pieces/pieceRegistr
 import { ChaturajiEngine, type ChaturajiColor } from '../../core/engine/ChaturajiEngine';
 import { FourSeasonsEngine, type FourSeasonsColor } from '../../core/engine/FourSeasonsEngine';
 import { useTranslation } from '../../i18n';
+import { VariantRegistry } from '../../core/variants/variantRegistry';
 
 const CHATURAJI_PLAYERS: { color: ChaturajiColor; labelKey: 'red' | 'green' | 'yellow' | 'blue'; bgDot: string }[] = [
     { color: 'red', labelKey: 'red', bgDot: 'bg-red-500' },
@@ -25,6 +26,8 @@ export const CapturedPieces = () => {
     const history = useGameStore(state => state.history);
     const gameMode = useGameStore(state => state.gameMode);
     const playerColor = useGameStore(state => state.playerColor);
+    const currentVariantId = useGameStore(state => state.currentVariantId);
+    const xiangqiPieceStyle = useGameStore(state => state.xiangqiPieceStyle);
 
     // 4-Player Four Seasons layout
     if (engine instanceof FourSeasonsEngine) {
@@ -159,49 +162,56 @@ export const CapturedPieces = () => {
     }
 
     // 2-Player Standard layout
-    const isFlipped = gameMode === 'vs_ai' && playerColor === 'black';
+    const variantDef = VariantRegistry.get(currentVariantId);
+    const [player1Color, player2Color] = (variantDef?.playerColors && variantDef.playerColors.length === 2)
+        ? variantDef.playerColors
+        : ['white', 'black'];
+    const isFlipped = gameMode === 'vs_ai' && playerColor === player2Color;
 
-    // Pieces captured by white
-    const whiteCaptures = history
-        .filter(m => m.piece?.color === 'white' && m.capturedPiece)
+    // Pieces captured by Player 1
+    const player1Captures = history
+        .filter(m => (m.piece?.color === player1Color || (!variantDef?.playerColors && m.piece?.color === 'white')) && m.capturedPiece)
         .map(m => m.capturedPiece!);
 
-    // Pieces captured by black
-    const blackCaptures = history
-        .filter(m => m.piece?.color === 'black' && m.capturedPiece)
+    // Pieces captured by Player 2
+    const player2Captures = history
+        .filter(m => m.piece?.color === player2Color && m.capturedPiece)
         .map(m => m.capturedPiece!);
 
     // Score calculations using centralized piece registry (normalized to 1 pawn = 1.0)
-    const whiteScore = whiteCaptures.reduce((acc, p) => acc + (getPieceValue(p.name) / 100), 0);
-    const blackScore = blackCaptures.reduce((acc, p) => acc + (getPieceValue(p.name) / 100), 0);
+    const player1Score = player1Captures.reduce((acc, p) => acc + (getPieceValue(p.name) / 100), 0);
+    const player2Score = player2Captures.reduce((acc, p) => acc + (getPieceValue(p.name) / 100), 0);
 
-    const whiteAdvantage = whiteScore - blackScore;
-    const blackAdvantage = blackScore - whiteScore;
+    const player1Advantage = player1Score - player2Score;
+    const player2Advantage = player2Score - player1Score;
 
     // Sorting of captured pieces by their predefined registry sort order
-    const sortedWhiteCaptures = [...whiteCaptures].sort((a, b) => getPieceSortOrder(a.name) - getPieceSortOrder(b.name));
-    const sortedBlackCaptures = [...blackCaptures].sort((a, b) => getPieceSortOrder(a.name) - getPieceSortOrder(b.name));
+    const sortedPlayer1Captures = [...player1Captures].sort((a, b) => getPieceSortOrder(a.name) - getPieceSortOrder(b.name));
+    const sortedPlayer2Captures = [...player2Captures].sort((a, b) => getPieceSortOrder(a.name) - getPieceSortOrder(b.name));
 
-    const totalCaptures = sortedWhiteCaptures.length + sortedBlackCaptures.length;
+    const totalCaptures = sortedPlayer1Captures.length + sortedPlayer2Captures.length;
 
     // Determine top and bottom rows based on board orientation
-    const topCaptures = isFlipped ? sortedWhiteCaptures : sortedBlackCaptures;
-    const topAdvantage = isFlipped ? whiteAdvantage : blackAdvantage;
-    const bottomCaptures = isFlipped ? sortedBlackCaptures : sortedWhiteCaptures;
-    const bottomAdvantage = isFlipped ? blackAdvantage : whiteAdvantage;
+    const topCaptures = isFlipped ? sortedPlayer1Captures : sortedPlayer2Captures;
+    const topAdvantage = isFlipped ? player1Advantage : player2Advantage;
+    const bottomCaptures = isFlipped ? sortedPlayer2Captures : sortedPlayer1Captures;
+    const bottomAdvantage = isFlipped ? player2Advantage : player1Advantage;
 
     // Helper function to render a player's capture row
     const renderRow = (pieces: any[], advantage: number) => (
         <div className="flex items-center justify-between min-h-[1.5rem]">
             <div className="flex flex-wrap gap-y-1 items-center flex-1 pr-2">
-                {pieces.map((p, i) => (
-                    <img
-                        key={`${p.id}-${i}`}
-                        src={getPieceImage(p)!}
-                        alt={p.name}
-                        className={`w-5 h-5 md:w-6 md:h-6 opacity-90 drop-shadow-md ${i > 0 ? '-ml-2' : ''}`}
-                    />
-                ))}
+                {pieces.map((p, i) => {
+                    const imgSrc = getPieceImage(p, xiangqiPieceStyle);
+                    return (
+                        <img
+                            key={`${p.id}-${i}`}
+                            src={imgSrc!}
+                            alt={p.name}
+                            className={`w-5 h-5 md:w-6 md:h-6 opacity-90 drop-shadow-md ${i > 0 ? '-ml-2' : ''}`}
+                        />
+                    );
+                })}
             </div>
             {advantage > 0 && (
                 <span className="text-xs md:text-sm font-bold whitespace-nowrap flex-shrink-0 text-atlas-normalText">

@@ -1,4 +1,5 @@
 import { useGameStore } from '../store/useGameStore';
+import { VariantRegistry } from '../core/variants/variantRegistry';
 import type { AppLanguage } from '../store/types';
 import type { Translations, VariantMetaI18n, VariantCodexI18n } from './types';
 
@@ -76,6 +77,13 @@ const pieceNamesMap: Record<AppLanguage, Record<string, string>> = {
         Elephant: 'Elephant',
         Horse: 'Horse',
         Boat: 'Boat',
+        XiangqiGeneral: 'General',
+        XiangqiAdvisor: 'Advisor',
+        XiangqiElephant: 'Elephant',
+        XiangqiHorse: 'Horse',
+        XiangqiChariot: 'Chariot',
+        XiangqiCannon: 'Cannon',
+        XiangqiSoldier: 'Soldier',
     },
     es: {
         King: 'Rey',
@@ -108,6 +116,13 @@ const pieceNamesMap: Record<AppLanguage, Record<string, string>> = {
         Elephant: 'Elefante',
         Horse: 'Caballo',
         Boat: 'Barco',
+        XiangqiGeneral: 'General',
+        XiangqiAdvisor: 'Consejero',
+        XiangqiElephant: 'Elefante',
+        XiangqiHorse: 'Caballo',
+        XiangqiChariot: 'Carro',
+        XiangqiCannon: 'Cañón',
+        XiangqiSoldier: 'Soldado',
     },
     ca: {
         King: 'Rei',
@@ -140,6 +155,13 @@ const pieceNamesMap: Record<AppLanguage, Record<string, string>> = {
         Elephant: 'Elefant',
         Horse: 'Cavall',
         Boat: 'Vaixell',
+        XiangqiGeneral: 'General',
+        XiangqiAdvisor: 'Conseller',
+        XiangqiElephant: 'Elefant',
+        XiangqiHorse: 'Cavall',
+        XiangqiChariot: 'Carro',
+        XiangqiCannon: 'Canó',
+        XiangqiSoldier: 'Soldat',
     },
 };
 
@@ -151,7 +173,7 @@ export const useTranslation = () => {
     const getVariantMeta = (variantId: string): VariantMetaI18n => {
         const metas = variantMetaMap[language] || variantMeta_en;
         return metas[variantId] || variantMeta_en[variantId] || {
-            title: variantId,
+            title: VariantRegistry.getTitle(variantId),
             origin: '',
             tag: '',
             desc: '',

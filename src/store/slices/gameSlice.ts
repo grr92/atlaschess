@@ -28,6 +28,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
     initialCustomPieces: null,
     initialCustomTurn: null,
     initialAnnexedArmies: null,
+    xiangqiPieceStyle: 'text',
 
     initGame: (variantId = 'classic', mode, playerColor, difficulty, useDiceRule = false) => {
         const engine = VariantRegistry.createEngine(variantId);
@@ -623,5 +624,9 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             } catch {}
         }
         set({ language: lang });
+    },
+
+    setXiangqiPieceStyle: (style) => {
+        set({ xiangqiPieceStyle: style });
     }
 });

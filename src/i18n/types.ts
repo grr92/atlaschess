@@ -133,6 +133,8 @@ export interface Translations {
             settings: string;
             info: string;
         };
+        xiangqiIconPieces: string;
+        xiangqiTextPieces: string;
     };
     variantCodex: {
         codexReference: string;
