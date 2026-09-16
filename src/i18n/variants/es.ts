@@ -55,6 +55,12 @@ export const variantMeta_es: Record<string, VariantMetaI18n> = {
         tag: 'Tablero 9x10',
         desc: 'Juego de tablero de estrategia para dos jugadores que representa una batalla entre dos ejércitos, jugado sobre las intersecciones de una cuadrícula de 9x10 con Cañones, el Río y el Palacio.',
     },
+    janggi: {
+        title: 'Janggi',
+        origin: 'Península de Corea',
+        tag: 'Tablero 9x10',
+        desc: 'Juego de estrategia coreano derivado del xiangqi, jugado en las 90 intersecciones de un tablero de 9×10 sin río. Destaca por sus formaciones iniciales configurables, cañones saltadores, elefantes de largo alcance y diagonales de palacio.',
+    },
 };
 
 export const variantCodex_es: Record<string, VariantCodexI18n> = {
@@ -602,6 +608,72 @@ export const variantCodex_es: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'El nombre xiangqi se interpreta generalmente de forma literal como "ajedrez de elefante" (xiàng = elefante, qí = ajedrez/juego de tablero). Sin embargo, xiàng también puede significar marfil, figura o representación, o fenómeno celeste. El historiador H. J. R. Murray sugirió "el Juego de las Figuras" como una interpretación temprana probable antes de que las piezas se distinguieran por caracteres escritos.',
             rightBoxTitle: 'Orígenes y Difusión',
             rightBoxDesc: 'Según Murray y la opinión predominante entre los historiadores del ajedrez, el xiangqi actual desciende del chaturanga indio. Una hipótesis alternativa defendida por algunos historiadores chinos sugiere que el xiangqi surgió en China durante el período de los Reinos Combatientes y se difundió hacia el oeste. El janggi coreano también procede directamente del xiangqi.',
+        },
+    },
+    janggi: {
+        name: 'Janggi',
+        rules: {
+            intro: 'El Janggi (coreano: 장기), a veces llamado ajedrez coreano, es un juego de tablero de estrategia popular en la península de Corea. Derivado del xiangqi (ajedrez chino), se juega en las 90 intersecciones de un tablero de 9×10 sin río central. Las piezas azules (Cho) mueven primero. El objetivo del juego es dar jaque mate al general adversario (weh-tong).',
+            bullets: [
+                {
+                    title: 'Disposición inicial y formaciones a elegir:',
+                    desc: 'Antes de comenzar la partida, cada jugador puede intercambiar las posiciones de sus caballos y elefantes adyacentes. Esto da lugar a cuatro disposiciones iniciales posibles que reciben su nombre de la posición de los elefantes: Formación de Elefantes Interiores (la clásica por defecto), Formación de Elefantes Exteriores, Formación de Elefante Izquierdo y Formación de Elefante Derecho.',
+                    iconType: 'check',
+                },
+                {
+                    title: 'El General (Janggun / Gung):',
+                    desc: 'Comienza en la intersección central del palacio. Mueve un paso por turno a lo largo de las líneas marcadas dentro del palacio de 3×3 (nueve puntos) y no puede salir de él bajo ninguna circunstancia. La partida se pierde cuando el general recibe jaque mate.',
+                    pieceName: 'JanggiGeneral',
+                },
+                {
+                    title: 'Los Guardias (Sa):',
+                    desc: 'Dos oficiales civiles que comienzan a izquierda y derecha del general en la primera fila. Mueven un paso por turno siguiendo las líneas marcadas dentro del palacio. No pueden abandonar el palacio y son valiosos para proteger al general.',
+                    pieceName: 'JanggiGuard',
+                },
+                {
+                    title: 'El Caballo (Ma):',
+                    desc: 'Mueve un paso ortogonal seguido de un paso diagonal hacia afuera, sin saltar. Queda bloqueado si hay una pieza en su paso ortogonal inicial. Puede intercambiar su posición con un elefante adyacente en la disposición inicial.',
+                    pieceName: 'JanggiHorse',
+                },
+                {
+                    title: 'El Elefante (Sang):',
+                    desc: 'Mueve un punto ortogonal seguido de dos puntos diagonales hacia afuera, alcanzando la esquina opuesta de un rectángulo de 2×3. Queda bloqueado por piezas intermedias a lo largo de su trayectoria. Al no haber río, los elefantes pueden cruzar todo el tablero con fines ofensivos.',
+                    pieceName: 'JanggiElephant',
+                },
+                {
+                    title: 'El Carro (Cha):',
+                    desc: 'Mueve y captura cualquier distancia en línea recta ortogonal, ya sea horizontal o verticalmente. Además, puede desplazarse en línea recta por las diagonales del interior de ambos palacios. Comienza en las esquinas y es la pieza más poderosa del juego.',
+                    pieceName: 'JanggiChariot',
+                },
+                {
+                    title: 'El Cañón (Po):',
+                    desc: 'Tanto para mover como para capturar, debe saltar obligatoriamente sobre exactamente una pieza intermedia (aliada o enemiga) en línea horizontal o vertical. Un cañón no puede saltar sobre otro cañón ni capturar un cañón adversario. También puede desplazarse por las diagonales del palacio si hay una pieza en el centro.',
+                    pieceName: 'JanggiCannon',
+                },
+                {
+                    title: 'El Soldado (Byeong / Jol):',
+                    desc: 'Cinco soldados por bando (Byeong para el rojo, Jol para el azul). Mueven y capturan un punto hacia adelante o hacia los lados. No promocionan; al llegar al fondo del tablero solo pueden desplazarse lateralmente. En el palacio enemigo, pueden avanzar también en diagonal hacia adelante por sus líneas marcadas.',
+                    pieceName: 'JanggiSoldier',
+                },
+                {
+                    title: 'Pasar turno (Han-soo-shim) y ausencia de ahogado:',
+                    desc: 'Un jugador puede pasar su turno voluntariamente (han-soo-shim) siempre que su general no esté en jaque. El ahogado no supone una derrota: el jugador sin movimientos legales simplemente debe pasar. Si ambos jugadores pasan consecutivamente, la partida termina en tablas.',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Bikjang (Generales enfrentados):',
+                    desc: 'Un jugador puede mover su general para que quede enfrentado directamente al general rival en la misma columna o fila sin piezas intermedias. El oponente puede entonces aceptar las tablas de inmediato o realizar un movimiento que rompa el enfrentamiento.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Consejo profesional: Aprovecha la posibilidad de elegir la formación inicial de caballos y elefantes para adaptar tu apertura. Recuerda que los cañones no pueden mover sin una pieza sobre la que saltar y explota las diagonales del palacio con tus carros.',
+        },
+        history: {
+            intro: 'El Janggi es una variante de ajedrez originaria de la península de Corea, desarrollada a partir del xiangqi chino. Aunque comparten el tablero de 9×10 y la colocación sobre intersecciones, el janggi eliminó el río divisorio, requirió que los cañones salten también al desplazarse y otorgó a los elefantes plena movilidad por todo el tablero.',
+            leftBoxTitle: 'Contienda Chu–Han',
+            leftBoxDesc: 'Los generales representan a los estados rivales de Han (漢, bando rojo) y Chu (楚, bando azul), que lucharon por el poder tras la caída de la dinastía Qin. Las piezas rojas están escritas con caligrafía regular (kaishu), mientras que las azules emplean caligrafía cursiva (caoshu).',
+            rightBoxTitle: 'Cultura popular',
+            rightBoxDesc: 'En Corea del Sur, el janggi es un deporte mental tradicional y un pasatiempo muy extendido. Aficionados de todas las edades se reúnen durante todo el año en parques urbanos para disputar partidas amistosas y analizar posiciones tácticas.',
         },
     },
 };

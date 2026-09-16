@@ -26,7 +26,7 @@ export const es: Translations = {
     menu: {
         titlePrefix: 'Atlas',
         titleHighlight: 'Chess',
-        subtitle: '¡Descubre la historia y las variantes regionales del ajedrez!',
+        subtitle: '¡Descubre las variantes históricas y regionales del ajedrez!',
         classicGame: 'Partida clásica',
         chessVariants: 'Variantes de ajedrez',
         loadGame: 'Cargar partida',
@@ -76,6 +76,13 @@ export const es: Translations = {
         master: 'Maestro',
         cancel: 'Cancelar',
         startMatch: 'Comenzar Partida',
+        pieceSetup: 'Formación de piezas',
+        player1Setup: 'Formación Azul',
+        player2Setup: 'Formación Roja',
+        innerElephant: 'Elefante Interior',
+        outerElephant: 'Elefante Exterior',
+        leftElephant: 'Elefante Izquierdo',
+        rightElephant: 'Elefante Derecho',
     },
     variantCatalog: {
         title: 'Catálogo de Variantes',
@@ -135,8 +142,8 @@ export const es: Translations = {
             settings: 'Ajustes',
             info: 'Reglas e Historia de la variante',
         },
-        xiangqiIconPieces: 'Piezas con iconos',
-        xiangqiTextPieces: 'Piezas de texto',
+        iconPieces: 'Piezas con iconos',
+        textPieces: 'Piezas de texto',
     },
     variantCodex: {
         codexReference: 'Códice y Referencia de Reglas',

@@ -31,7 +31,9 @@ export type PieceName =
     // Four Seasons Chess (Acedrex de los Cuatro Tiempos)
     | 'FourSeasonsKing' | 'FourSeasonsGeneral' | 'FourSeasonsRook' | 'FourSeasonsKnight' | 'FourSeasonsBishop' | 'FourSeasonsPawn'
     // Xiangqi
-    | 'XiangqiGeneral' | 'XiangqiAdvisor' | 'XiangqiElephant' | 'XiangqiHorse' | 'XiangqiChariot' | 'XiangqiCannon' | 'XiangqiSoldier';
+    | 'XiangqiGeneral' | 'XiangqiAdvisor' | 'XiangqiElephant' | 'XiangqiHorse' | 'XiangqiChariot' | 'XiangqiCannon' | 'XiangqiSoldier'
+    // Janggi
+    | 'JanggiGeneral' | 'JanggiGuard' | 'JanggiElephant' | 'JanggiHorse' | 'JanggiChariot' | 'JanggiCannon' | 'JanggiSoldier';
 
 import type { Piece } from '../core/pieces/Piece.ts';
 

@@ -55,6 +55,12 @@ export const variantMeta_en: Record<string, VariantMetaI18n> = {
         tag: '9x10 Board',
         desc: 'A strategy board game for two players representing a battle between two armies, played on the intersections of a 9x10 grid with Cannons, the River, and the Palace.',
     },
+    janggi: {
+        title: 'Janggi',
+        origin: 'Korean Peninsula',
+        tag: '9x10 Board',
+        desc: 'Korean strategy board game derived from xiangqi, played on the 90 intersections of a 9×10 board without a river. Features customizable starting setups, jumping cannons, wide-ranging elephants, and palace diagonals.',
+    },
 };
 
 export const variantCodex_en: Record<string, VariantCodexI18n> = {
@@ -602,6 +608,72 @@ export const variantCodex_en: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'The name xiangqi is generally interpreted literally as "elephant chess" (xiàng = elephant, qí = chess/board game). However, xiàng can also mean ivory, a figure or representation, or celestial phenomena. Historian H. J. R. Murray suggested "the Figure Game" as a probable early interpretation before pieces were distinguished by written characters.',
             rightBoxTitle: 'Origins & Spread',
             rightBoxDesc: 'According to Murray and the predominant opinion among chess historians, present-day xiangqi developed from Indian chaturanga. An alternative hypothesis favored by some Chinese historians suggests xiangqi arose in China during the Warring States period and spread westwards. Korean janggi also developed directly from xiangqi.',
+        },
+    },
+    janggi: {
+        name: 'Janggi',
+        rules: {
+            intro: 'Janggi (Korean: 장기), sometimes called Korean chess, is a strategy board game popular on the Korean Peninsula. Derived from xiangqi (Chinese chess), it is played on the 90 intersections of a 9×10 board without a central river. Blue (Cho) moves first. The objective of the game is to checkmate the opposing general (weh-tong).',
+            bullets: [
+                {
+                    title: 'Initial Setup & Custom Formations:',
+                    desc: 'Before the game begins, each player can transpose the positions of their adjacent Horses and Elephants. This gives rise to four possible starting setups named after the positions of the Elephants: Inner Elephant Setup (traditional default), Outer Elephant Setup, Left Elephant Setup, or Right Elephant Setup.',
+                    iconType: 'check',
+                },
+                {
+                    title: 'The General (Janggun / Gung):',
+                    desc: 'Starts on the central intersection of the palace. Moves one step per turn along marked lines within the 3×3 palace (nine points) and cannot leave the palace under any circumstances. When the general is checkmated, the game is lost.',
+                    pieceName: 'JanggiGeneral',
+                },
+                {
+                    title: 'The Guards (Sa):',
+                    desc: 'Two civilian government officials starting to the left and right of the general on the first rank. They move one step per turn along marked lines in the palace. They cannot leave the palace and are valuable for protecting the general.',
+                    pieceName: 'JanggiGuard',
+                },
+                {
+                    title: 'The Horse (Ma):',
+                    desc: 'Moves one step orthogonally followed by one step diagonally outward without jumping. If an intervening piece occupies its first orthogonal step, the horse is blocked from moving in that direction. Can be transposed with an adjacent elephant in the initial setup.',
+                    pieceName: 'JanggiHorse',
+                },
+                {
+                    title: 'The Elephant (Sang):',
+                    desc: 'Moves one point orthogonally followed by two points diagonally away, reaching the opposite corner of a 2×3 rectangle. Blocked by any intervening pieces along its path. Because there is no river, elephants can freely cross the entire board offensively.',
+                    pieceName: 'JanggiElephant',
+                },
+                {
+                    title: 'The Chariot (Cha):',
+                    desc: 'Moves and captures any distance in a straight line either horizontally or vertically. Additionally, it may move in a straight line along the diagonal lines inside either palace. Begins in the corners and is the most powerful piece.',
+                    pieceName: 'JanggiChariot',
+                },
+                {
+                    title: 'The Cannon (Po):',
+                    desc: 'Requires a jump over exactly one intervening piece (friendly or enemy) to both move and capture, horizontally or vertically. A cannon may not jump over another cannon, nor capture an opponent cannon. It can also travel along palace diagonals if an intervening piece occupies the palace centre.',
+                    pieceName: 'JanggiCannon',
+                },
+                {
+                    title: 'The Soldier (Byeong / Jol):',
+                    desc: 'Five soldiers per side (Byeong for Red, Jol for Blue). They move and capture one point straight forward or sideways. There is no promotion; at the board edge they move only sideways. They can also move one point diagonally forward along the diagonal lines of the enemy palace.',
+                    pieceName: 'JanggiSoldier',
+                },
+                {
+                    title: 'Passing (Han-soo-shim) & Stalemate:',
+                    desc: 'A player may voluntarily pass their turn (han-soo-shim) unless their general is in check. Stalemate does not end the game in a loss; a player with no legal moves is simply forced to pass. If both players pass consecutively, the game ends in a draw.',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Bikjang (Facing Generals):',
+                    desc: 'A player may move their general so that it faces the opposing general unobstructed across an open file or rank. The opponent can either declare a draw or make a move that breaks the face-off.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Pro tip: Choose your initial Elephant-Horse formation carefully to suit your opening plan. Remember that cannons must always jump over a piece to move, and utilize the palace diagonals to infiltrate with your chariots.',
+        },
+        history: {
+            intro: 'Janggi is a strategy board game native to the Korean Peninsula, derived from Chinese xiangqi. Both share a 9×10 board and line-intersection placement, but janggi eliminated the central river, required cannons to jump while moving, and gave elephants unrestricted access across the board.',
+            leftBoxTitle: 'Chu–Han Contention',
+            leftBoxDesc: 'The generals represent the rival Chinese states of Han (漢, red side) and Chu (楚, blue side) that fought for power after the fall of the Qin dynasty. Red pieces are inscribed with regular script characters, while blue pieces use cursive script.',
+            rightBoxTitle: 'Popular Culture',
+            rightBoxDesc: 'In South Korea, janggi is a traditional mind sport and widely enjoyed leisure game. Players often gather year-round in city parks to play casual matches and analyze tactical positions.',
         },
     },
 };

@@ -74,6 +74,13 @@ export interface Translations {
         master: string;
         cancel: string;
         startMatch: string;
+        pieceSetup: string;
+        player1Setup: string;
+        player2Setup: string;
+        innerElephant: string;
+        outerElephant: string;
+        leftElephant: string;
+        rightElephant: string;
     };
     variantCatalog: {
         title: string;
@@ -133,8 +140,8 @@ export interface Translations {
             settings: string;
             info: string;
         };
-        xiangqiIconPieces: string;
-        xiangqiTextPieces: string;
+        iconPieces: string;
+        textPieces: string;
     };
     variantCodex: {
         codexReference: string;

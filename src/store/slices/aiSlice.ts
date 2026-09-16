@@ -88,13 +88,18 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
 
                     const uciMoves = historyToUciMoves(engine.history, engine.board.rows);
                     const bestMoveStr = await window.electronAPI.engine.calculateMove({
+                        fen: (engine as any).initialFen,
                         moves: uciMoves,
                         movetime,
                         depth,
                         skillLevel
                     });
 
-                    if (bestMoveStr && bestMoveStr !== '(none)') {
+                    if (bestMoveStr === '0000') {
+                        if (typeof (engine as any).canPassTurn !== 'function' || (engine as any).canPassTurn()) {
+                            executed = engine.passTurn();
+                        }
+                    } else if (bestMoveStr && bestMoveStr !== '(none)') {
                         const parsed = uciToMove(bestMoveStr, engine.board.rows);
                         if (parsed) {
                             const piece = engine.board.getPieceAt(parsed.from.x, parsed.from.y);
@@ -116,6 +121,9 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                 const fallbackMove = HeuristicAiEngine.findBestMove(engine, aiDifficulty, allowedPieces);
                 if (fallbackMove) {
                     executed = engine.executeMove(fallbackMove.from, fallbackMove.to, fallbackMove.promotionPiece);
+                } else if (typeof (engine as any).canPassTurn === 'function' && (engine as any).canPassTurn()) {
+                    // In variants where passing is allowed or forced on stalemate (like Janggi)
+                    executed = engine.passTurn();
                 }
             }
 

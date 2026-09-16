@@ -110,7 +110,16 @@ export const PIECE_REGISTRY: Record<PieceName, PieceMetadata> = {
     XiangqiHorse: { name: 'XiangqiHorse', displayName: 'Horse', value: 400, sortOrder: 8, svgChar: 'n' },
     XiangqiChariot: { name: 'XiangqiChariot', displayName: 'Chariot', value: 900, sortOrder: 4, svgChar: 'r' },
     XiangqiCannon: { name: 'XiangqiCannon', displayName: 'Cannon', value: 450, sortOrder: 5, svgChar: 'c' },
-    XiangqiSoldier: { name: 'XiangqiSoldier', displayName: 'Soldier', value: 100, sortOrder: 13, svgChar: 'p' }
+    XiangqiSoldier: { name: 'XiangqiSoldier', displayName: 'Soldier', value: 100, sortOrder: 13, svgChar: 'p' },
+
+    // Janggi
+    JanggiGeneral: { name: 'JanggiGeneral', displayName: 'General', value: 10000, sortOrder: 0, svgChar: 'k' },
+    JanggiGuard: { name: 'JanggiGuard', displayName: 'Guard', value: 200, sortOrder: 11, svgChar: 'a' },
+    JanggiElephant: { name: 'JanggiElephant', displayName: 'Elephant', value: 300, sortOrder: 10, svgChar: 'e' },
+    JanggiHorse: { name: 'JanggiHorse', displayName: 'Horse', value: 400, sortOrder: 8, svgChar: 'n' },
+    JanggiChariot: { name: 'JanggiChariot', displayName: 'Chariot', value: 900, sortOrder: 4, svgChar: 'r' },
+    JanggiCannon: { name: 'JanggiCannon', displayName: 'Cannon', value: 500, sortOrder: 5, svgChar: 'c' },
+    JanggiSoldier: { name: 'JanggiSoldier', displayName: 'Soldier', value: 100, sortOrder: 13, svgChar: 'p' }
 };
 
 export const getPieceMetadata = (name: string): PieceMetadata | undefined => {

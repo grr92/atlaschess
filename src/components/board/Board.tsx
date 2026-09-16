@@ -164,7 +164,7 @@ export const Board = () => {
 
                                 {/* Selected square indicator */}
                                 {isSelected && (
-                                    <div className="absolute inset-0 bg-yellow-400/50 z-0" />
+                                    <div className="absolute inset-0 bg-yellow-400/50 animate-pulse z-0" />
                                 )}
 
                                 {/* Enemy threatened square highlight on hover */}
@@ -172,17 +172,19 @@ export const Board = () => {
                                     <div className="absolute inset-0 bg-red-500/25 ring-2 ring-inset ring-red-500/60 z-15 pointer-events-none transition-opacity" />
                                 )}
 
-                                {/* Render piece with smooth slide animation */}
+                                {/* Render piece with smooth slide animation and interactive hover */}
                                 {pieceImage && (
                                     <div
                                         key={`${piece?.id}-${engine.history.length}`}
-                                        className={`w-full h-full relative z-10 flex items-center justify-center ${isJustMoved ? 'animate-slide-piece' : ''}`}
+                                        className={`w-full h-full relative z-10 flex items-center justify-center transition-transform duration-150 ${
+                                            !isAiThinking ? 'hover:scale-110' : ''
+                                        } ${isSelected ? 'scale-110' : ''} ${isJustMoved ? 'animate-slide-piece' : ''}`}
                                         style={animStyle}
                                     >
                                         <img
                                             src={pieceImage}
                                             alt={piece?.name}
-                                            className={`w-full h-full object-contain select-none transition-transform ${isSelected ? 'scale-110' : ''}`}
+                                            className="w-full h-full object-contain select-none pointer-events-none"
                                         />
 
                                         {/* Shahzada (Prince) badge indicator */}
@@ -230,12 +232,12 @@ export const Board = () => {
                                     </div>
                                 )}
 
-                                {/* Legal move dots/indicators */}
+                                {/* Legal move dots/indicators (green dot for move, red ring for capture) */}
                                 {isLegalMove && (
                                     <div
-                                        className={`absolute z-20 rounded-full ${
+                                        className={`absolute z-20 rounded-full pointer-events-none ${
                                             piece
-                                                ? 'inset-0 border-4 border-emerald-500 bg-emerald-500/20'
+                                                ? 'inset-0.5 md:inset-1 border-4 border-red-500/80 bg-red-500/10'
                                                 : 'w-4 h-4 md:w-5 md:h-5 bg-emerald-500/80 shadow-md'
                                         }`}
                                     />

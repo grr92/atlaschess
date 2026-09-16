@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   width="101.55641"
+   height="101.54229"
+   id="svg2">
+  <defs
+     id="defs4" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0.77882178,-951.58797)"
+     id="layer1">
+    <path
+       d="M 164.65487,226.05741 100.26252,290.60054 9.0913701,290.70717 -55.451767,226.31483 -55.558394,135.14367 8.8339505,70.600536 100.0051,70.49391 l 64.54314,64.39234 z"
+       transform="matrix(0.45205247,0,0,0.45205247,25.341335,920.72126)"
+       id="path2991"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.42426538;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1" />
+    <g
+       id="text2985"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0d00b4;fill-opacity:1;stroke:none;font-family:Sans">
+      <path
+         d="m 25.25,979.48718 22.25,0 c -0.666696,-1.66662 -1.500028,-3.24995 -2.5,-4.75 l 4.75,-1.5 c 1.499967,1.83339 2.749966,3.91672 3.75,6.25 l 21.75,0 0,4.75 -50,0 0,-4.75 m 12.5,6 5.25,1.25 c -0.666691,2.16671 -1.583357,4.25004 -2.75,6.25 3.166641,2.1667 6.166638,4.6667 9,7.50002 l -3.5,4 c -2.500025,-2.8333 -5.083356,-5.24999 -7.75,-7.25002 -2.833351,4.33332 -5.833348,7.83332 -9,10.50002 l -3.5,-3.75 c 5.33332,-4.83332 9.41665,-10.99998 12.25,-18.50002 m 25,0 4.75,1 c -0.833382,2.66671 -1.833381,5.1667 -3,7.5 3.833283,2.50003 7.416613,5.33336 10.75,8.50002 l -3.5,3.75 c -3.000051,-3.1667 -6.250047,-5.9167 -9.75,-8.25002 -2.000042,3.16672 -4.25004,5.91672 -6.75,8.25002 l -3.25,-3.75 c 4.666628,-4.49999 8.249958,-10.16665 10.75,-17.00002 m -41,24.50002 26.25,0 0,-4.75 5,0 0,4.75 25.25,0 0,4.75 -25.25,0 0,16.75 -5,0 0,-16.75 -26.25,0 0,-4.75"
+         id="path4504"
+         style="font-size:64px;fill:#0d00b4" />
+    </g>
+    <g
+       id="text2985-2"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#b40000;fill-opacity:1;stroke:none;font-family:Sans" />
+  </g>
+</svg>

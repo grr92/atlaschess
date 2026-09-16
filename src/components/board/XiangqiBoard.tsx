@@ -9,7 +9,7 @@ export const XiangqiBoard = () => {
         selectedPosition,
         legalMoves,
         selectSquare,
-        xiangqiPieceStyle,
+        regionalPieceStyle,
         isAiThinking
     } = useGameStore();
 
@@ -90,7 +90,7 @@ export const XiangqiBoard = () => {
                         const isLegal = isLegalMove(x, y);
                         const selected = isSelected(x, y);
                         const isEnemyThreatened = hoveredEnemyMoves.some((m) => m.x === x && m.y === y);
-                        const img = getXiangqiPieceImage(piece, xiangqiPieceStyle);
+                        const img = getXiangqiPieceImage(piece, regionalPieceStyle);
                         
                         return (
                             <div
@@ -102,13 +102,13 @@ export const XiangqiBoard = () => {
                                     }
                                 }}
                                 onMouseLeave={() => setHoveredEnemyMoves([])}
-                                className={`absolute flex items-center justify-center rounded-full transition-transform ${!isAiThinking ? 'hover:scale-110' : ''} ${isAiThinking ? 'cursor-wait' : 'cursor-pointer'}`}
+                                className={`absolute flex items-center justify-center rounded-full transition-transform duration-150 ${selected ? 'scale-110' : (!isAiThinking ? 'hover:scale-110' : '')} ${isAiThinking ? 'cursor-wait' : 'cursor-pointer'}`}
                                 style={{
                                     left: padding + x * cellSize - cellSize / 2,
                                     top: padding + y * cellSize - cellSize / 2,
                                     width: cellSize,
                                     height: cellSize,
-                                    zIndex: piece ? 10 : 1
+                                    zIndex: selected ? 25 : (piece ? 10 : 1)
                                 }}
                             >
                                 {selected && <div className="absolute inset-0 bg-yellow-400/50 rounded-full animate-pulse z-0" />}
@@ -121,7 +121,7 @@ export const XiangqiBoard = () => {
                                     <img 
                                         src={img} 
                                         alt={piece?.name} 
-                                        className="w-12 h-12 relative z-10 drop-shadow-md"
+                                        className="w-12 h-12 relative z-10 drop-shadow-md pointer-events-none" 
                                         draggable={false}
                                     />
                                 )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Bot, Users, Play, Sparkles, Shield, Swords, Zap, Dices } from 'lucide-react';
 import type { PieceColor } from '../../types';
 import type { GameMode, AiDifficulty } from '../../store/useGameStore';
@@ -7,13 +7,14 @@ import { CloseButton } from '../ui/CloseButton';
 import { useTranslation } from '../../i18n';
 
 import { VariantRegistry } from '../../core/variants/variantRegistry';
+import { type JanggiSetupType, getRandomJanggiSetup } from '../../core/variants/janggi/janggiSetup';
 
 interface GameSetupModalProps {
     variantId: string;
     variantTitle?: string;
     isOpen: boolean;
     onClose: () => void;
-    onStartGame: (mode: GameMode, playerColor: PieceColor, difficulty: AiDifficulty, useDiceRule?: boolean) => void;
+    onStartGame: (mode: GameMode, playerColor: PieceColor, difficulty: AiDifficulty, useDiceRule?: boolean, variantOptions?: any) => void;
 }
 
 export const GameSetupModal: React.FC<GameSetupModalProps> = ({
@@ -28,9 +29,12 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
     const supportsDice = !!variantDef?.supportsDiceRule;
     const isFourSeasons = variantId === 'four_seasons';
     const isChaturaji = variantId === 'chaturaji';
-    const availableColors: PieceColor[] = (variantDef?.playerColors && variantDef.playerColors.length > 0)
-        ? variantDef.playerColors
-        : ['white', 'black'];
+    const isJanggi = variantId === 'janggi';
+    const availableColors: PieceColor[] = useMemo(() => {
+        return (variantDef?.playerColors && variantDef.playerColors.length > 0)
+            ? variantDef.playerColors
+            : ['white', 'black'];
+    }, [variantDef]);
     const defaultColor: PieceColor = variantDef?.defaultPlayerColor ?? availableColors[0];
     const isFourPlayer = availableColors.length === 4;
 
@@ -38,6 +42,16 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
     const [colorOption, setColorOption] = useState<string>(defaultColor);
     const [difficulty, setDifficulty] = useState<AiDifficulty>('medium');
     const [useDiceRule, setUseDiceRule] = useState<boolean>(false);
+    const [playerSetup, setPlayerSetup] = useState<JanggiSetupType>('inner');
+    const [blueSetup, setBlueSetup] = useState<JanggiSetupType>('inner');
+    const [redSetup, setRedSetup] = useState<JanggiSetupType>('inner');
+
+    const janggiSetupOptions: { id: JanggiSetupType; label: string }[] = [
+        { id: 'inner', label: t.gameSetup.innerElephant },
+        { id: 'outer', label: t.gameSetup.outerElephant },
+        { id: 'left', label: t.gameSetup.leftElephant },
+        { id: 'right', label: t.gameSetup.rightElephant },
+    ];
 
     useEffect(() => {
         if (!isOpen) return;
@@ -67,14 +81,28 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
             chosenColor = colorOption as PieceColor;
         }
 
+        let variantOptions: any = undefined;
+        if (isJanggi) {
+            if (mode === 'vs_ai') {
+                const aiSetup = getRandomJanggiSetup();
+                if (chosenColor === 'blue') {
+                    variantOptions = { blueSetup: playerSetup, redSetup: aiSetup };
+                } else {
+                    variantOptions = { blueSetup: aiSetup, redSetup: playerSetup };
+                }
+            } else {
+                variantOptions = { blueSetup, redSetup };
+            }
+        }
+
         soundManager.playUiClick();
-        onStartGame(mode, chosenColor, difficulty, supportsDice ? useDiceRule : false);
+        onStartGame(mode, chosenColor, difficulty, supportsDice ? useDiceRule : false, variantOptions);
         onClose();
     };
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-200">
-            <div className="bg-atlas-surface/95 border border-amber-500/40 rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl backdrop-blur-xl relative overflow-hidden">
+            <div className="bg-atlas-surface/95 border border-amber-500/40 rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl backdrop-blur-xl relative overflow-hidden max-h-[90vh] overflow-y-auto">
                 
                 {/* Background Ambient Glow */}
                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -338,6 +366,87 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
                                 </button>
                             </div>
                         </div>
+                    </div>
+                )}
+
+                {/* Janggi Piece Setup Section */}
+                {isJanggi && (
+                    <div className="mb-6">
+                        <label className="text-xs font-bold text-amber-400 uppercase tracking-wider block mb-2.5">
+                            {t.gameSetup.pieceSetup}
+                        </label>
+                        {mode === 'vs_ai' ? (
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                {janggiSetupOptions.map((opt) => {
+                                    const isSelected = playerSetup === opt.id;
+                                    return (
+                                        <button
+                                            key={opt.id}
+                                            type="button"
+                                            onClick={() => setPlayerSetup(opt.id)}
+                                            className={`p-2.5 rounded-xl border flex flex-col items-center justify-center text-center gap-1 font-bold text-xs transition-all ${
+                                                isSelected
+                                                    ? 'bg-amber-500/20 border-amber-500 text-amber-300 shadow-md ring-2 ring-amber-500'
+                                                    : 'bg-slate-900/40 border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-200'
+                                            }`}
+                                        >
+                                            <span>{opt.label}</span>
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div>
+                                    <span className="text-[11px] font-semibold text-sky-400 uppercase tracking-wider block mb-1.5">
+                                        {t.gameSetup.player1Setup}
+                                    </span>
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                        {janggiSetupOptions.map((opt) => {
+                                            const isSelected = blueSetup === opt.id;
+                                            return (
+                                                <button
+                                                    key={opt.id}
+                                                    type="button"
+                                                    onClick={() => setBlueSetup(opt.id)}
+                                                    className={`p-2 rounded-xl border flex flex-col items-center justify-center text-center gap-1 font-bold text-xs transition-all ${
+                                                        isSelected
+                                                            ? 'bg-sky-500/20 border-sky-500 text-sky-300 shadow-md ring-2 ring-sky-500'
+                                                            : 'bg-slate-900/40 border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-200'
+                                                    }`}
+                                                >
+                                                    <span>{opt.label}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                                <div>
+                                    <span className="text-[11px] font-semibold text-rose-400 uppercase tracking-wider block mb-1.5">
+                                        {t.gameSetup.player2Setup}
+                                    </span>
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                        {janggiSetupOptions.map((opt) => {
+                                            const isSelected = redSetup === opt.id;
+                                            return (
+                                                <button
+                                                    key={opt.id}
+                                                    type="button"
+                                                    onClick={() => setRedSetup(opt.id)}
+                                                    className={`p-2 rounded-xl border flex flex-col items-center justify-center text-center gap-1 font-bold text-xs transition-all ${
+                                                        isSelected
+                                                            ? 'bg-rose-500/20 border-rose-500 text-rose-300 shadow-md ring-2 ring-rose-500'
+                                                            : 'bg-slate-900/40 border-white/10 text-slate-400 hover:border-white/20 hover:text-slate-200'
+                                                    }`}
+                                                >
+                                                    <span>{opt.label}</span>
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 

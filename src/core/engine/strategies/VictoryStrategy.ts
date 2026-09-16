@@ -85,3 +85,34 @@ export class BareKingVictoryStrategy implements IVictoryStrategy {
         return inCheck ? 'check' : 'playing';
     }
 }
+
+export class JanggiVictoryStrategy implements IVictoryStrategy {
+    evaluateGameState(engine: BaseEngine): GameState {
+        // If game is already drawn (e.g. Bikjang or consecutive passes), preserve draw state
+        if (engine.state === 'draw') return 'draw';
+
+        let hasAnyLegalMove = false;
+        for (let y = 0; y < engine.board.rows; y++) {
+            for (let x = 0; x < engine.board.cols; x++) {
+                const p = engine.board.getPieceAt(x, y);
+                if (p && p.color === engine.currentTurn) {
+                    if (engine.getLegalMoves(p).length > 0) {
+                        hasAnyLegalMove = true;
+                        break;
+                    }
+                }
+            }
+            if (hasAnyLegalMove) break;
+        }
+
+        const inCheck = engine.isKingInCheck(engine.currentTurn);
+
+        if (!hasAnyLegalMove) {
+            // In Janggi, stalemate does NOT end the game; the player is simply forced to pass
+            return inCheck ? 'checkmate' : 'playing';
+        }
+
+        return inCheck ? 'check' : 'playing';
+    }
+}
+

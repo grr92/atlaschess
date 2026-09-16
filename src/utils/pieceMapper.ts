@@ -1,27 +1,22 @@
 import { Piece } from '../core/pieces/piecesIndex';
 import { getPieceSvgChar } from '../core/pieces/pieceRegistry';
-import { getXiangqiPieceImage, type XiangqiPieceStyle } from './xiangqiPieceMapper';
+import { pieceSvgAssets } from './pieceAssets';
+import { getXiangqiPieceImage } from './xiangqiPieceMapper';
+import { getJanggiPieceImage } from './janggiPieceMapper';
 
-// Vite creates a dictionary mapping all processed paths:
-// Keys are formatted like: '../assets/pieces/Chess_elt45.svg' or '../assets/pieces/chaturaji/Chess_krt45.svg'
-const svgAssets = import.meta.glob<string>('../assets/pieces/**/*.svg', {
-    eager: true,
-    import: 'default',
-});
+export type RegionalPieceStyle = 'text' | 'icon';
 
-// Force the browser to pre-load these exact URLs into the cache in order to prevent possible slow loads of the pieces
-if (typeof window !== 'undefined') {
-    Object.values(svgAssets).forEach((src) => {
-        const img = new Image();
-        img.src = src;
-    });
-}
+const svgAssets = pieceSvgAssets;
 
-export const getPieceImage = (piece: Piece | null, xiangqiStyle: XiangqiPieceStyle = 'text'): string | null => {
+export const getPieceImage = (piece: Piece | null, style: RegionalPieceStyle = 'text'): string | null => {
     if (!piece) return null;
 
     if (piece.name.startsWith('Xiangqi')) {
-        return getXiangqiPieceImage(piece, xiangqiStyle);
+        return getXiangqiPieceImage(piece, style);
+    }
+
+    if (piece.name.startsWith('Janggi')) {
+        return getJanggiPieceImage(piece, style);
     }
 
     const pieceChar = getPieceSvgChar(piece.name);

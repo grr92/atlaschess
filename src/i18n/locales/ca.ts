@@ -26,7 +26,7 @@ export const ca: Translations = {
     menu: {
         titlePrefix: 'Atlas',
         titleHighlight: 'Chess',
-        subtitle: 'Descobreix la història i les variants regionals dels escacs!',
+        subtitle: 'Descobreix les variants històriques i regionals dels escacs!',
         classicGame: 'Partida clàssica',
         chessVariants: 'Variants d\'escacs',
         loadGame: 'Carregar partida',
@@ -76,6 +76,13 @@ export const ca: Translations = {
         master: 'Mestre',
         cancel: 'Cancel·lar',
         startMatch: 'Començar Partida',
+        pieceSetup: 'Formació de peces',
+        player1Setup: 'Formació Blava',
+        player2Setup: 'Formació Vermella',
+        innerElephant: 'Elefant Interior',
+        outerElephant: 'Elefant Exterior',
+        leftElephant: 'Elefant Esquerre',
+        rightElephant: 'Elefant Dret',
     },
     variantCatalog: {
         title: 'Catàleg de Variants',
@@ -135,8 +142,8 @@ export const ca: Translations = {
             settings: 'Configuració',
             info: 'Regles i Història de la variant',
         },
-        xiangqiIconPieces: 'Peces amb icones',
-        xiangqiTextPieces: 'Peces de text',
+        iconPieces: 'Peces amb icones',
+        textPieces: 'Peces de text',
     },
     variantCodex: {
         codexReference: 'Còdex i Referència de Regles',

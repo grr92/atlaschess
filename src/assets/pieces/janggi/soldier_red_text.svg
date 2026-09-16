@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.1"
+   width="101.55641"
+   height="101.54229"
+   id="svg2">
+  <defs
+     id="defs4" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0.77882178,-951.58797)"
+     id="layer1">
+    <path
+       d="M 164.65487,226.05741 100.26252,290.60054 9.0913701,290.70717 -55.451767,226.31483 -55.558394,135.14367 8.8339505,70.600536 100.0051,70.49391 l 64.54314,64.39234 z"
+       transform="matrix(0.45205247,0,0,0.45205247,25.341335,920.72126)"
+       id="path2991"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:4.42426538;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1" />
+    <g
+       id="text2985"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#b40000;fill-opacity:1;stroke:none;font-family:Sans">
+      <path
+         d="m 67.375,974.36218 4.5,4.5 c -13.166708,2.33338 -24.833363,3.75004 -35,4.25 l 0,7.25 37.25,0 0,4.75 -12,0 0,14.00002 16.25,0 0,4.75 -56.75,0 0,-4.75 9.75,0 0,-30.25002 c 13.66664,-0.83328 25.666627,-2.33328 36,-4.5 m -30.5,34.75002 20.25,0 0,-14.00002 -20.25,0 0,14.00002 m 1.25,6.5 4.25,3.25 c -4.666686,4.5 -10.333348,8.3333 -17,11.5 l -3.75,-5 c 6.166657,-2.3333 11.666651,-5.5833 16.5,-9.75 m 22.5,0.25 c 5.999951,2.8333 11.583279,6.25 16.75,10.25 l -4,4.25 c -4.833384,-4.1667 -10.166712,-7.5833 -16,-10.25 l 3.25,-4.25"
+         id="path3946"
+         style="font-size:64px;fill:#b40000" />
+    </g>
+    <g
+       id="text2985-2"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#b40000;fill-opacity:1;stroke:none;font-family:Sans" />
+  </g>
+</svg>

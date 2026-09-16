@@ -111,8 +111,12 @@ export function uciToMove(
  */
 export function historyToUciMoves(history: Move[], totalRows: number = 8): string[] {
     return history
-        .filter((move) => !move.isPass && move.san !== 'pass' && move.from && move.from.x >= 0)
         .map((move) => {
+            if (move.isPass || move.san === 'pass') {
+                return '0000';
+            }
+            if (!move.from || move.from.x < 0) return null;
+
             let promoPiece: string | undefined = undefined;
             if (move.san?.includes('=Q')) promoPiece = 'Queen';
             else if (move.san?.includes('=R')) promoPiece = 'Rook';
@@ -121,5 +125,6 @@ export function historyToUciMoves(history: Move[], totalRows: number = 8): strin
             else if (move.san?.includes('=F')) promoPiece = 'Ferz';
 
             return moveToUci(move.from, move.to, promoPiece, totalRows);
-        });
+        })
+        .filter((m): m is string => m !== null);
 }

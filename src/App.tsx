@@ -4,11 +4,12 @@ import { useGameStore } from './store/useGameStore';
 import { MainMenu } from './components/menu/MainMenu';
 import { Board } from './components/board/Board';
 import { XiangqiBoard } from './components/board/XiangqiBoard';
+import { JanggiBoard } from './components/board/JanggiBoard';
 import { VariantsCatalog } from "./components/ui/VariantCatalog";
 import { MoveHistory } from './components/board/MoveHistory';
 import { CapturedPieces } from './components/board/CapturedPieces';
 import { ChaturajiStakesCounter } from './components/board/ChaturajiStakesCounter';
-import { Undo2, RefreshCcw, Save, Bot, Volume2, VolumeX, Settings } from 'lucide-react';
+import { Undo2, RefreshCcw, Save, Bot, Volume2, VolumeX, Settings, SkipForward } from 'lucide-react';
 import { BackButton } from "./components/ui/BackButton";
 import { GameTimer } from "./components/board/GameTimer";
 import { InfoButton } from "./components/ui/InfoButton";
@@ -19,6 +20,12 @@ import { ChaturajiEngine } from "./core/engine/ChaturajiEngine";
 import { FourSeasonsEngine, type FourSeasonsColor } from "./core/engine/FourSeasonsEngine";
 import { VariantRegistry } from "./core/variants/variantRegistry";
 import { useTranslation } from './i18n';
+
+const BOARD_COMPONENTS: Record<string, React.ComponentType> = {
+    grid: Board,
+    xiangqi: XiangqiBoard,
+    janggi: JanggiBoard,
+};
 
 export const App = () => {
     const { t, getVariantMeta } = useTranslation();
@@ -39,8 +46,10 @@ export const App = () => {
         isAiThinking,
         isMuted,
         toggleMute,
-        xiangqiPieceStyle,
-        setXiangqiPieceStyle
+        regionalPieceStyle,
+        setRegionalPieceStyle,
+        passTurn,
+        isRollingDice
     } = useGameStore();
 
     // state to control the confirmation pop-ups
@@ -83,6 +92,12 @@ export const App = () => {
 
     const currentVariantMeta = getVariantMeta(currentVariantId);
     const currentVariantDef = VariantRegistry.get(currentVariantId);
+    const ActiveBoard = BOARD_COMPONENTS[currentVariantDef?.boardType ?? 'grid'] ?? Board;
+
+    const togglePieceStyle = () => {
+        setRegionalPieceStyle(regionalPieceStyle === 'text' ? 'icon' : 'text');
+    };
+    const pieceStyleToggleLabel = regionalPieceStyle === 'text' ? t.gameplay.iconPieces : t.gameplay.textPieces;
 
     const getGameStateLabel = () => {
         if (gameState === 'check') return t.gameplay.check;
@@ -130,6 +145,17 @@ export const App = () => {
         const key = color as keyof typeof t.common;
         return t.common[key] || color;
     };
+
+    const activeController = engine ? engine.getActiveController() : currentTurn;
+    const isPlayerTurn = gameMode !== 'vs_ai' || activeController === playerColor;
+    const canPass = Boolean(
+        currentVariantDef?.supportsPassTurn &&
+        isPlayerTurn &&
+        !isAiThinking &&
+        !isRollingDice &&
+        (gameState === 'playing' || gameState === 'check') &&
+        (typeof (engine as any)?.canPassTurn === 'function' ? (engine as any).canPassTurn() : true)
+    );
 
     return (
         <main className="min-h-screen bg-gradient-to-b from-atlas-grad to-atlas-back to-[150px] text-atlas-titleText">
@@ -202,15 +228,25 @@ export const App = () => {
                                     {currentVariantMeta?.title || currentVariantId}
                                 </h2>
                                 {currentVariantDef?.hasPieceStyleToggle && (
-                                    <button 
-                                        onClick={() => setXiangqiPieceStyle(xiangqiPieceStyle === 'text' ? 'icon' : 'text')}
+                                    <button
+                                        onClick={togglePieceStyle}
                                         className="ml-2 px-3 py-1 text-xs font-bold uppercase tracking-wider bg-atlas-surface/80 border border-white/20 rounded hover:bg-white/10 transition-colors"
                                     >
-                                        {xiangqiPieceStyle === 'text' ? t.gameplay.xiangqiIconPieces : t.gameplay.xiangqiTextPieces}
+                                        {pieceStyleToggleLabel}
                                     </button>
                                 )}
                                 <div className="flex items-center gap-2 flex-shrink-0">
                                     <D8DiceWidget />
+                                    {canPass && (
+                                        <button
+                                            onClick={passTurn}
+                                            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold transition-all shadow-md active:scale-95 flex-shrink-0"
+                                            title={t.gameplay.passTurn}
+                                        >
+                                            <SkipForward className="w-3.5 h-3.5" />
+                                            <span>{t.gameplay.passTurn}</span>
+                                        </button>
+                                    )}
                                     <div className="flex items-center gap-2.5 bg-atlas-surface/80 px-3 py-1.5 rounded-full border border-white/10 shadow-md backdrop-blur-md flex-shrink-0">
                                     {isAiThinking ? (
                                         <div className="flex items-center gap-2 text-amber-400 font-bold text-xs animate-pulse">
@@ -255,7 +291,7 @@ export const App = () => {
                             </div>
                         </div>
 
-                        {currentVariantDef?.boardType === 'xiangqi' ? <XiangqiBoard /> : <Board />}
+                        <ActiveBoard />
 
                         </div>
 

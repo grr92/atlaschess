@@ -1,6 +1,5 @@
 import { describe, it, expect } from 'vitest';
 import { useGameStore } from '../../src/store/useGameStore';
-import { VariantRegistry } from '../../src/core/variants/variantRegistry';
 import { TamerlaneEngine } from '../../src/core/engine/TamerlaneEngine';
 import { ChaturajiEngine } from '../../src/core/engine/ChaturajiEngine';
 import { ClassicChessEngine } from '../../src/core/engine/ClassicChessEngine';

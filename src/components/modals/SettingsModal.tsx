@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { Settings, Volume2, VolumeX, Globe, Check } from 'lucide-react';
 import { useGameStore } from '../../store/useGameStore';
 import type { AppLanguage } from '../../store/types';
@@ -22,13 +22,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
     const { isMuted, toggleMute, language, setLanguage } = useGameStore();
     const { t } = useTranslation();
 
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         if (document.activeElement instanceof HTMLElement) {
             document.activeElement.blur();
         }
         soundManager.playUiClick();
         onClose();
-    };
+    }, [onClose]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -39,7 +39,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose })
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen]);
+    }, [isOpen, handleClose]);
 
     if (!isOpen) return null;
 

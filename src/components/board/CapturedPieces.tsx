@@ -27,7 +27,7 @@ export const CapturedPieces = () => {
     const gameMode = useGameStore(state => state.gameMode);
     const playerColor = useGameStore(state => state.playerColor);
     const currentVariantId = useGameStore(state => state.currentVariantId);
-    const xiangqiPieceStyle = useGameStore(state => state.xiangqiPieceStyle);
+    const regionalPieceStyle = useGameStore(state => state.regionalPieceStyle);
 
     // 4-Player Four Seasons layout
     if (engine instanceof FourSeasonsEngine) {
@@ -198,11 +198,13 @@ export const CapturedPieces = () => {
     const bottomAdvantage = isFlipped ? player2Advantage : player1Advantage;
 
     // Helper function to render a player's capture row
+    const pieceStyle = regionalPieceStyle;
+
     const renderRow = (pieces: any[], advantage: number) => (
         <div className="flex items-center justify-between min-h-[1.5rem]">
             <div className="flex flex-wrap gap-y-1 items-center flex-1 pr-2">
                 {pieces.map((p, i) => {
-                    const imgSrc = getPieceImage(p, xiangqiPieceStyle);
+                    const imgSrc = getPieceImage(p, pieceStyle);
                     return (
                         <img
                             key={`${p.id}-${i}`}

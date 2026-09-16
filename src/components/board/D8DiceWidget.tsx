@@ -2,7 +2,7 @@ import React from 'react';
 import { useGameStore } from '../../store/useGameStore';
 import { getPieceImage } from '../../utils/pieceMapper';
 import { DICE_PIECE_MAP } from '../../utils/diceMapper';
-import { Dices, SkipForward } from 'lucide-react';
+import { Dices } from 'lucide-react';
 import { useTranslation } from '../../i18n';
 
 export const D8DiceWidget: React.FC = () => {
@@ -13,22 +13,13 @@ export const D8DiceWidget: React.FC = () => {
         isRollingDice,
         currentTurn,
         currentVariantId,
-        subTurn,
-        engine,
-        gameMode,
-        playerColor,
-        isAiThinking,
-        passTurn,
-        gameState
+        subTurn
     } = useGameStore();
 
     if (!useDiceRule) return null;
 
     const isChaturaji = currentVariantId === 'chaturaji';
     const isFourSeasons = currentVariantId === 'four_seasons';
-    const activeController = engine ? engine.getActiveController() : currentTurn;
-    const isPlayerTurn = gameMode !== 'vs_ai' || activeController === playerColor;
-    const canPass = isChaturaji && isPlayerTurn && !isAiThinking && !isRollingDice && (gameState === 'playing' || gameState === 'check');
 
     const pieceImgs: string[] = [];
     let displayName: string | null = null;
@@ -133,20 +124,6 @@ export const D8DiceWidget: React.FC = () => {
                     </span>
                 </div>
             </div>
-
-            {/* Pass Turn Button */}
-            {canPass && (
-                <div className="pl-1 border-l border-white/10 ml-0.5 flex-shrink-0">
-                    <button
-                        onClick={() => passTurn()}
-                        className="bg-amber-500/15 hover:bg-amber-500/30 text-amber-300 hover:text-amber-200 border border-amber-500/40 px-2 py-1 rounded-lg font-bold text-xs flex items-center gap-1 transition-all shadow-sm hover:scale-105 active:scale-95 whitespace-nowrap"
-                        title={t.gameplay.passTurn}
-                    >
-                        <SkipForward className="w-3.5 h-3.5" />
-                        <span className="text-[11px]">{t.gameplay.passTurn}</span>
-                    </button>
-                </div>
-            )}
         </div>
     );
 };

@@ -28,10 +28,10 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
     initialCustomPieces: null,
     initialCustomTurn: null,
     initialAnnexedArmies: null,
-    xiangqiPieceStyle: 'text',
+    regionalPieceStyle: 'text',
 
-    initGame: (variantId = 'classic', mode, playerColor, difficulty, useDiceRule = false) => {
-        const engine = VariantRegistry.createEngine(variantId);
+    initGame: (variantId = 'classic', mode, playerColor, difficulty, useDiceRule = false, variantOptions?: any) => {
+        const engine = VariantRegistry.createEngine(variantId, variantOptions);
         const variantDef = VariantRegistry.get(variantId);
 
         const activeMode = mode !== undefined ? mode : get().gameMode;
@@ -263,21 +263,23 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
     },
 
     resetGame: () => {
-        const { currentVariantId, gameMode, playerColor, aiDifficulty, useDiceRule } = get();
-        get().initGame(currentVariantId, gameMode, playerColor, aiDifficulty, useDiceRule);
+        const { currentVariantId, gameMode, playerColor, aiDifficulty, useDiceRule, engine } = get();
+        const variantOptions = engine?.getVariantOptions();
+        get().initGame(currentVariantId, gameMode, playerColor, aiDifficulty, useDiceRule, variantOptions);
     },
 
     undoMove: () => {
-        const { history, currentVariantId, gameMode, playerColor, isAiThinking, useDiceRule, initialCustomPieces, initialCustomTurn, initialAnnexedArmies } = get();
+        const { history, currentVariantId, gameMode, playerColor, isAiThinking, useDiceRule, initialCustomPieces, initialCustomTurn, initialAnnexedArmies, engine: currentEngine } = get();
 
         // If history is empty or AI is currently calculating, do not undo
         if (history.length === 0 || isAiThinking) return;
 
         let newHistoryLength = history.length - 1;
+        const variantOptions = currentEngine?.getVariantOptions();
 
         if (gameMode === 'vs_ai') {
             // Replay history on a temporary simulation engine to track who controlled each move
-            const simEngine = VariantRegistry.createEngine(currentVariantId);
+            const simEngine = VariantRegistry.createEngine(currentVariantId, variantOptions);
             if (initialCustomPieces) {
                 populateCustomPieces(simEngine, initialCustomPieces, initialCustomTurn || undefined, initialAnnexedArmies);
             }
@@ -339,7 +341,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
         const originalTime = get().gameTime;
 
         // Create a clean engine instance for replay
-        const engine = VariantRegistry.createEngine(currentVariantId);
+        const engine = VariantRegistry.createEngine(currentVariantId, variantOptions);
         if (initialCustomPieces) {
             populateCustomPieces(engine, initialCustomPieces, initialCustomTurn || undefined, initialAnnexedArmies);
         }
@@ -407,7 +409,11 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
 
     passTurn: () => {
         const { engine, gameState, gameMode, playerColor, isAiThinking, useDiceRule, currentVariantId } = get();
-        if (!engine || currentVariantId !== 'chaturaji' || gameState === 'checkmate' || gameState === 'draw' || isAiThinking) return;
+        const variantDef = VariantRegistry.get(currentVariantId);
+        if (!engine || !variantDef?.supportsPassTurn || gameState === 'checkmate' || gameState === 'draw' || isAiThinking) return;
+
+        // If engine implements specific passing prerequisites (e.g. Janggi forbidding pass when in check)
+        if (typeof (engine as any).canPassTurn === 'function' && !(engine as any).canPassTurn()) return;
 
         // In vs_ai mode, only human player can manually trigger passTurn from UI
         const activeController = engine.getActiveController();
@@ -626,7 +632,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
         set({ language: lang });
     },
 
-    setXiangqiPieceStyle: (style) => {
-        set({ xiangqiPieceStyle: style });
+    setRegionalPieceStyle: (style) => {
+        set({ regionalPieceStyle: style });
     }
 });

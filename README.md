@@ -174,10 +174,8 @@ You are free to share and adapt the material for non-commercial purposes, as lon
   - ~~Short assize~~ (not implemented due to lack of evidence)
 
 - Regional:
-  - Xiangqi (China)
   - Shogi (Japan)
   - Makruk (Thailand)
-  - Janggi (Korea)
   - Ouk Chatrang (Cambodia)
   - Sittuyin (Myanmar)
   - ~~Shatar (Mongolia)~~ (Shatar is just chess in Mongolia. Not implemented due to lack of solid evidence regarding pre-chess old rules)

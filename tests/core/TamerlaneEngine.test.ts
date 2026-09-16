@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { TamerlaneEngine } from '../../src/core/engine/TamerlaneEngine';
 import { TamerlaneChess } from '../../src/core/variants/TamerlaneChess';
-import { Dabbaba, Jamal, Zurafa, Wazir, Rukh, Shah, Shahzada, AdventitiousShah, TamerlanePawn } from '../../src/core/pieces/piecesIndex';
+import { Dabbaba, Jamal, Wazir, Rukh, Shah, Shahzada, AdventitiousShah } from '../../src/core/pieces/piecesIndex';
 
 describe('TamerlaneEngine & Citadels', () => {
     it('should initialize 112-square board with 28 pieces per side', () => {

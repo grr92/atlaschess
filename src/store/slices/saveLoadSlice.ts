@@ -9,7 +9,7 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
     setGameTime: (fn) => set((state) => ({ gameTime: fn(state.gameTime) })),
 
     saveGame: () => {
-        const { currentVariantId, history, gameTime, gameMode, playerColor, aiDifficulty, useDiceRule, subTurn, currentDiceRoll } = get();
+        const { currentVariantId, history, gameTime, gameMode, playerColor, aiDifficulty, useDiceRule, subTurn, currentDiceRoll, engine } = get();
         if (history.length === 0) return;
 
         const saveData = {
@@ -22,7 +22,8 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
             aiDifficulty,
             useDiceRule: !!useDiceRule,
             subTurn: subTurn || 1,
-            currentDiceRoll: currentDiceRoll || null
+            currentDiceRoll: currentDiceRoll || null,
+            variantOptions: engine?.getVariantOptions() || undefined
         };
         const jsonString = JSON.stringify(saveData, null, 2);
 
@@ -60,8 +61,9 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
             const loadedColor = parsed.playerColor || 'white';
             const loadedDifficulty = parsed.aiDifficulty || 'medium';
             const loadedUseDiceRule = parsed.useDiceRule !== undefined ? !!parsed.useDiceRule : false;
+            const loadedVariantOptions = parsed.variantOptions ?? parsed.janggiSetups;
 
-            initGame(parsed.variantId, loadedMode, loadedColor, loadedDifficulty, loadedUseDiceRule);
+            initGame(parsed.variantId, loadedMode, loadedColor, loadedDifficulty, loadedUseDiceRule, loadedVariantOptions);
             const engine = get().engine;
             if (!engine) return false;
 

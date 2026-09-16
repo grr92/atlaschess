@@ -19,6 +19,8 @@ import { Chaturaji } from './Chaturaji';
 import { FourSeasonsChess } from './FourSeasonsChess';
 import { Xiangqi } from './Xiangqi';
 import { XiangqiEngine } from '../engine/XiangqiEngine';
+import { Janggi } from './Janggi';
+import { JanggiEngine } from '../engine/JanggiEngine';
 
 export type VariantCategory = 'standard' | 'historical' | 'regional';
 
@@ -29,12 +31,13 @@ export interface VariantDefinition {
     origin: string;
     tag: string;
     supportsDiceRule?: boolean;
+    supportsPassTurn?: boolean;
     tileSize?: 'standard' | 'compact' | 'small';
-    boardType?: 'grid' | 'xiangqi';
+    boardType?: 'grid' | 'xiangqi' | 'janggi';
     playerColors?: PieceColor[];
     defaultPlayerColor?: PieceColor;
     hasPieceStyleToggle?: boolean;
-    createEngine: () => BaseEngine;
+    createEngine: (options?: any) => BaseEngine;
 }
 
 export class VariantRegistry {
@@ -60,10 +63,10 @@ export class VariantRegistry {
         return this.variants.get(id)?.title ?? id;
     }
 
-    static createEngine(variantId: string): BaseEngine {
+    static createEngine(variantId: string, options?: any): BaseEngine {
         const variant = this.variants.get(variantId);
         if (variant) {
-            return variant.createEngine();
+            return variant.createEngine(options);
         }
         console.warn(`Variant '${variantId}' unknown in registry. Defaulting to Classic Chess.`);
         return new ClassicChessEngine(new ClassicChess());
@@ -114,6 +117,7 @@ VariantRegistry.register({
     origin: '10th-11th Century • India',
     tag: '4 Players',
     supportsDiceRule: true,
+    supportsPassTurn: true,
     tileSize: 'standard',
     playerColors: ['red', 'green', 'yellow', 'blue'],
     defaultPlayerColor: 'red',
@@ -183,7 +187,17 @@ VariantRegistry.register({
     hasPieceStyleToggle: true,
     createEngine: () => new XiangqiEngine(new Xiangqi())
 });
-
-
-
-
+VariantRegistry.register({
+    id: 'janggi',
+    title: 'Janggi',
+    category: 'regional',
+    origin: 'Joseon Dynasty • Korea',
+    tag: '9x10 Board',
+    tileSize: 'compact',
+    boardType: 'janggi',
+    playerColors: ['blue', 'red'],
+    defaultPlayerColor: 'blue',
+    hasPieceStyleToggle: true,
+    supportsPassTurn: true,
+    createEngine: (options?: any) => new JanggiEngine(new Janggi(options), options)
+});

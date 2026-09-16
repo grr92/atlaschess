@@ -20,6 +20,7 @@ export abstract class BaseEngine {
     protected checkStrategy?: ICheckStrategy;
     protected victoryStrategy?: IVictoryStrategy;
     protected evaluationStrategy?: IEvaluationStrategy;
+    variantOptions?: any;
 
     constructor(
         variant: GameVariant,
@@ -35,6 +36,10 @@ export abstract class BaseEngine {
         this.checkStrategy = checkStrategy;
         this.victoryStrategy = victoryStrategy;
         this.evaluationStrategy = evaluationStrategy;
+    }
+
+    getVariantOptions(): any {
+        return this.variantOptions;
     }
 
     getEvaluationStrategy(): IEvaluationStrategy {

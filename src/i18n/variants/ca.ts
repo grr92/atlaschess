@@ -55,6 +55,12 @@ export const variantMeta_ca: Record<string, VariantMetaI18n> = {
         tag: 'Tauler 9x10',
         desc: 'Joc de tauler d\'estratègia per a dos jugadors que representa una batalla entre dos exèrcits, jugat sobre les interseccions d\'una quadrícula de 9x10 amb Canons, el Riu i el Palau.',
     },
+    janggi: {
+        title: 'Janggi',
+        origin: 'Península de Corea',
+        tag: 'Tauler 9x10',
+        desc: 'Joc d\'estratègia coreà derivat del xiangqi, jugat a les 90 interseccions d\'un tauler de 9×10 sense riu. Destaca per les formacions inicials configurables, canons saltadors, elefants de llarg abast i diagonals de palau.',
+    },
 };
 
 export const variantCodex_ca: Record<string, VariantCodexI18n> = {
@@ -602,6 +608,72 @@ export const variantCodex_ca: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'El nom xiangqi s\'interpreta generalment de forma literal com a "escacs d\'elefant" (xiàng = elefant, qí = escacs/joc de tauler). Tanmateix, xiàng també pot significar marfil, figura o representació, o fenomen celeste. L\'historiador H. J. R. Murray va suggerir "el Joc de les Figures" com una interpretació primerenca probable abans que les peces es distingissin per caràcters escrits.',
             rightBoxTitle: 'Orígens i Difusió',
             rightBoxDesc: 'Segons Murray i l\'opinió predominant entre els historiadors dels escacs, el xiangqi actual descendeix del chaturanga indi. Una hipòtesi alternativa defensada per alguns historiadors xinesos suggereix que el xiangqi va sorgir a la Xina durant el període dels Regnes Combatents i es va difondre cap a l\'oest. El janggi coreà també prové directament del xiangqi.',
+        },
+    },
+    janggi: {
+        name: 'Janggi',
+        rules: {
+            intro: 'El Janggi (coreà: 장기), de vegades anomenat escacs coreans, és un joc de tauler d\'estratègia popular a la península de Corea. Derivat del xiangqi (escacs xinesos), es juga a les 90 interseccions d\'un tauler de 9×10 sense riu central. L\'equip blau (Cho) mou primer. L\'objectiu del joc és fer escac i mat al general adversari (weh-tong).',
+            bullets: [
+                {
+                    title: 'Disposició inicial i formacions a triar:',
+                    desc: 'Abans de començar la partida, cada jugador pot intercanviar les posicions dels seus cavalls i elefants adjacents. Això dona lloc a quatre disposicions inicials possibles que reben el seu nom de la posició dels elefants: Formació d\'Elefants Interiors (la clàssica per defecte), Formació d\'Elefants Exteriors, Formació d\'Elefant Esquerre i Formació d\'Elefant Dret.',
+                    iconType: 'check',
+                },
+                {
+                    title: 'El General (Janggun / Gung):',
+                    desc: 'Comença a la intersecció central del palau. Mou un pas per torn seguint les línies marcades dins del palau de 3×3 (nou punts) i no en pot sortir sota cap circumstància. La partida es perd quan el general rep escac i mat.',
+                    pieceName: 'JanggiGeneral',
+                },
+                {
+                    title: 'Els Guàrdies (Sa):',
+                    desc: 'Dos oficials civils que comencen a esquerra i dreta del general a la primera fila. Mouen un pas per torn seguint les línies marcades dins del palau. No poden abandonar el palau i són valuosos per protegir el general.',
+                    pieceName: 'JanggiGuard',
+                },
+                {
+                    title: 'El Cavall (Ma):',
+                    desc: 'Mou un pas ortogonal seguit d\'un pas diagonal cap enfora, sense saltar. Queda blocat si hi ha una peça al seu primer pas ortogonal. Pot intercanviar la posició amb un elefant adjacent a la disposició inicial.',
+                    pieceName: 'JanggiHorse',
+                },
+                {
+                    title: 'L\'Elefant (Sang):',
+                    desc: 'Mou un punt ortogonal seguit de dos punts diagonals cap enfora, assolint la cantonada oposada d\'un rectangle de 2×3. Queda blocat per peces intermèdies al llarg de la seva trajectòria. Com que no hi ha riu, els elefants poden creuar tot el tauler amb caràcter ofensiu.',
+                    pieceName: 'JanggiElephant',
+                },
+                {
+                    title: 'El Carro (Cha):',
+                    desc: 'Mou i captura a qualsevol distància en línia recta ortogonal, tant horitzontalment com verticalment. A més, es pot desplaçar en línia recta per les diagonals de l\'interior de qualsevol dels dos palaus. Comença a les cantonades i és la peça més poderosa del joc.',
+                    pieceName: 'JanggiChariot',
+                },
+                {
+                    title: 'El Canó (Po):',
+                    desc: 'Tant per moure com per capturar, ha de saltar obligatòriament sobre exactament una peça intermèdia (amiga o enemiga) en línia horitzontal o vertical. Un canó no pot saltar sobre un altre canó ni capturar un canó rival. També pot viatjar per les diagonals del palau si hi ha una peça al centre.',
+                    pieceName: 'JanggiCannon',
+                },
+                {
+                    title: 'El Soldat (Byeong / Jol):',
+                    desc: 'Cinc soldats per bàndol (Byeong per al vermell, Jol per al blau). Mouen i capturen un punt cap endavant o cap als costats. No promocionen; en arribar al fons del tauler només poden moure\'s lateralment. Al palau enemic, també poden avançar en diagonal cap endavant per les seves línies marcades.',
+                    pieceName: 'JanggiSoldier',
+                },
+                {
+                    title: 'Passar torn (Han-soo-shim) i absència d\'ofegat:',
+                    desc: 'Un jugador pot passar el seu torn voluntàriament (han-soo-shim) sempre que el seu general no estigui en escac. L\'ofegat no comporta una derrota: el jugador sense moviments legals simplement ha de passar. Si tots dos jugadors passen consecutivament, la partida acaba en taules.',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Bikjang (Generals enfrontats):',
+                    desc: 'Un jugador pot moure el seu general perquè quedi enfrontat directament al general rival a la mateixa columna o fila sense peces intermèdies. L\'oponent pot llavors reclamar taules immediatament o fer un moviment que trenqui la situació.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Consell professional: Aprofita la possibilitat de triar la formació inicial de cavalls i elefants per adaptar la teva obertura. Recorda que els canons no poden moure sense una peça sobre la qual saltar i explota les diagonals del palau amb els teus carros.',
+        },
+        history: {
+            intro: 'El Janggi és una variant d\'escacs originària de la península de Corea, desenvolupada a partir del xiangqi xinès. Tot i que comparteixen el tauler de 9×10 i la col·locació a les interseccions, el janggi va eliminar el riu divisori, va requerir que els canons saltin també en desplaçar-se i va atorgar als elefants plena mobilitat per tot el tauler.',
+            leftBoxTitle: 'Contesa Chu–Han',
+            leftBoxDesc: 'Els generals representen els estats rivals de Han (漢, bàndol vermell) i Chu (楚, bàndol blau), que van lluitar pel poder després de la caiguda de la dinastia Qin. Les peces vermelles estan escrites amb cal·ligrafia regular (kaishu), mentre que les blaves utilitzen cal·ligrafia cursiva (caoshu).',
+            rightBoxTitle: 'Cultura popular',
+            rightBoxDesc: 'A Corea del Sud, el janggi és un esport mental tradicional i un passatemps molt estès. Aficionats de totes les edats es reuneixen durant tot l\'any en parcs urbans per jugar partides amistoses i analitzar posicions tàctiques.',
         },
     },
 };

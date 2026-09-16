@@ -77,3 +77,13 @@ export * from './xiangqi/XiangqiHorse';
 export * from './xiangqi/XiangqiChariot';
 export * from './xiangqi/XiangqiCannon';
 export * from './xiangqi/XiangqiSoldier';
+
+// Janggi
+export * from './janggi/JanggiGeneral';
+export * from './janggi/JanggiGuard';
+export * from './janggi/JanggiElephant';
+export * from './janggi/JanggiHorse';
+export * from './janggi/JanggiChariot';
+export * from './janggi/JanggiCannon';
+export * from './janggi/JanggiSoldier';
+

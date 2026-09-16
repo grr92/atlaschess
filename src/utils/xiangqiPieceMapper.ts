@@ -1,16 +1,5 @@
 import { Piece } from '../core/pieces/piecesIndex';
-
-const svgAssets = import.meta.glob<string>('../assets/pieces/xiangqi/*.svg', {
-    eager: true,
-    import: 'default',
-});
-
-if (typeof window !== 'undefined') {
-    Object.values(svgAssets).forEach((src) => {
-        const img = new Image();
-        img.src = src;
-    });
-}
+import { pieceSvgAssets } from './pieceAssets';
 
 export type XiangqiPieceStyle = 'text' | 'icon';
 
@@ -32,5 +21,5 @@ export const getXiangqiPieceImage = (piece: Piece | null, style: XiangqiPieceSty
     const fileName = `${pieceName}_${piece.color}_${style}.svg`;
     const key = `../assets/pieces/xiangqi/${fileName}`;
 
-    return svgAssets[key] || null;
+    return pieceSvgAssets[key] || null;
 };

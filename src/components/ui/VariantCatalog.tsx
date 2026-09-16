@@ -47,9 +47,9 @@ export const VariantsCatalog = () => {
         setSetupVariant({ id: variant.id, title: meta.title });
     };
 
-    const handleStartVariantGame = (mode: GameMode, playerColor: PieceColor, difficulty: AiDifficulty, useDiceRule?: boolean) => {
+    const handleStartVariantGame = (mode: GameMode, playerColor: PieceColor, difficulty: AiDifficulty, useDiceRule?: boolean, variantOptions?: any) => {
         if (!setupVariant) return;
-        initGame(setupVariant.id, mode, playerColor, difficulty, useDiceRule);
+        initGame(setupVariant.id, mode, playerColor, difficulty, useDiceRule, variantOptions);
         setScreen('GAME');
     };
 

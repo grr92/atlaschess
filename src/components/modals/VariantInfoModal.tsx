@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { X, BookOpen, History, Sparkles, Scroll, Compass, Dices } from 'lucide-react';
 import { getPieceImage } from '../../utils/pieceMapper';
-import { getXiangqiPieceImage } from '../../utils/xiangqiPieceMapper';
+import { VariantRegistry } from '../../core/variants/variantRegistry';
 import { soundManager } from '../../utils/soundManager';
 import { CloseButton } from '../ui/CloseButton';
 import { useTranslation } from '../../i18n';
@@ -16,13 +16,13 @@ export const VariantInfoModal = ({ variantId, onClose }: VariantInfoModalProps) 
     const { t, getVariantCodex } = useTranslation();
     const [activeTab, setActiveTab] = useState<'howToPlay' | 'history'>('howToPlay');
 
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         if (document.activeElement instanceof HTMLElement) {
             document.activeElement.blur();
         }
         soundManager.playUiClick();
         onClose();
-    };
+    }, [onClose]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -32,20 +32,14 @@ export const VariantInfoModal = ({ variantId, onClose }: VariantInfoModalProps) 
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [onClose]);
+    }, [handleClose]);
 
     const data = getVariantCodex(variantId);
 
     const renderBulletIcon = (bullet: CodexBullet) => {
         if (bullet.pieceName) {
-            if (variantId === 'xiangqi' || bullet.pieceName.startsWith('Xiangqi')) {
-                const imgUrl = getXiangqiPieceImage({ name: bullet.pieceName, color: 'red' } as any, 'text');
-                if (imgUrl) {
-                    return <img src={imgUrl} alt={bullet.pieceName} className="w-5 h-5 object-contain -mt-1" />;
-                }
-            }
-            const isChaturaji = variantId === 'chaturaji' || bullet.pieceName.startsWith('Chaturaji');
-            const color = isChaturaji ? 'red' : 'white';
+            const variantDef = VariantRegistry.get(variantId);
+            const color = variantDef?.defaultPlayerColor ?? 'white';
             const imgUrl = getPieceImage({ name: bullet.pieceName, color } as any);
             if (imgUrl) {
                 return <img src={imgUrl} alt={bullet.pieceName} className="w-5 h-5 object-contain -mt-1" />;
