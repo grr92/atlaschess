@@ -21,6 +21,10 @@ import { Xiangqi } from './Xiangqi';
 import { XiangqiEngine } from '../engine/XiangqiEngine';
 import { Janggi } from './Janggi';
 import { JanggiEngine } from '../engine/JanggiEngine';
+import { Makruk } from './Makruk';
+import { MakrukEngine } from '../engine/MakrukEngine';
+import { OukChaktrang } from './OukChaktrang';
+import { OukChaktrangEngine } from '../engine/OukChaktrangEngine';
 
 export type VariantCategory = 'standard' | 'historical' | 'regional';
 
@@ -36,7 +40,9 @@ export interface VariantDefinition {
     boardType?: 'grid' | 'xiangqi' | 'janggi';
     playerColors?: PieceColor[];
     defaultPlayerColor?: PieceColor;
+    catalogPieceColor?: PieceColor;
     hasPieceStyleToggle?: boolean;
+    isMonochromeBoard?: boolean;
     createEngine: (options?: any) => BaseEngine;
 }
 
@@ -93,6 +99,7 @@ VariantRegistry.register({
     origin: '6th Century • India',
     tag: 'The Origin',
     tileSize: 'standard',
+    isMonochromeBoard: true,
     playerColors: ['white', 'black'],
     defaultPlayerColor: 'white',
     createEngine: () => new ChaturangaEngine(new Chaturanga())
@@ -105,6 +112,7 @@ VariantRegistry.register({
     origin: '7th Century • Persia',
     tag: 'Golden Age',
     tileSize: 'standard',
+    isMonochromeBoard: true,
     playerColors: ['white', 'black'],
     defaultPlayerColor: 'white',
     createEngine: () => new ShatranjEngine(new Shatranj())
@@ -119,6 +127,7 @@ VariantRegistry.register({
     supportsDiceRule: true,
     supportsPassTurn: true,
     tileSize: 'standard',
+    isMonochromeBoard: true,
     playerColors: ['red', 'green', 'yellow', 'blue'],
     defaultPlayerColor: 'red',
     createEngine: () => new ChaturajiEngine(new Chaturaji())
@@ -169,6 +178,7 @@ VariantRegistry.register({
     origin: '14th Century • Timurid Empire',
     tag: '112 Squares',
     tileSize: 'compact',
+    isMonochromeBoard: true,
     playerColors: ['white', 'black'],
     defaultPlayerColor: 'white',
     createEngine: () => new TamerlaneEngine(new TamerlaneChess())
@@ -201,3 +211,32 @@ VariantRegistry.register({
     supportsPassTurn: true,
     createEngine: (options?: any) => new JanggiEngine(new Janggi(options), options)
 });
+
+VariantRegistry.register({
+    id: 'makruk',
+    title: 'Makruk',
+    category: 'regional',
+    origin: 'Ayutthaya Kingdom • Thailand',
+    tag: '8x8 Board',
+    tileSize: 'standard',
+    isMonochromeBoard: true,
+    playerColors: ['white', 'black'],
+    defaultPlayerColor: 'white',
+    catalogPieceColor: 'black',
+    createEngine: (options?: any) => new MakrukEngine(new Makruk(), options)
+});
+
+VariantRegistry.register({
+    id: 'ouk_chaktrang',
+    title: 'Ouk Chaktrang',
+    category: 'regional',
+    origin: '12th Century • Khmer Empire (Cambodia)',
+    tag: '8x8 Board',
+    tileSize: 'standard',
+    isMonochromeBoard: true,
+    playerColors: ['white', 'black'],
+    defaultPlayerColor: 'white',
+    catalogPieceColor: 'black',
+    createEngine: (options?: any) => new OukChaktrangEngine(new OukChaktrang(), options)
+});
+

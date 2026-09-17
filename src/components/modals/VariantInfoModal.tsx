@@ -39,10 +39,17 @@ export const VariantInfoModal = ({ variantId, onClose }: VariantInfoModalProps) 
     const renderBulletIcon = (bullet: CodexBullet) => {
         if (bullet.pieceName) {
             const variantDef = VariantRegistry.get(variantId);
-            const color = variantDef?.defaultPlayerColor ?? 'white';
+            const color = variantDef?.catalogPieceColor ?? variantDef?.defaultPlayerColor ?? 'white';
             const imgUrl = getPieceImage({ name: bullet.pieceName, color } as any);
             if (imgUrl) {
-                return <img src={imgUrl} alt={bullet.pieceName} className="w-5 h-5 object-contain -mt-1" />;
+                const isDarkPiece = color === 'black';
+                return (
+                    <img
+                        src={imgUrl}
+                        alt={bullet.pieceName}
+                        className={`w-5 h-5 object-contain -mt-1 ${isDarkPiece ? 'drop-shadow-[0_0_1.5px_rgba(255,255,255,0.6)]' : ''}`}
+                    />
+                );
             }
         }
 

@@ -1,7 +1,6 @@
 // src/core/pieces/Piece.ts
-// src/core/pieces/Piece.ts
 import type {Move, PieceColor, Position} from '../../types';
-import { Board } from '../models/Board.ts';
+import { Board } from '../models/Board';
 
 export abstract class Piece {
     id: string;

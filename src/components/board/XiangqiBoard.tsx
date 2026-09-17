@@ -41,7 +41,7 @@ export const XiangqiBoard = () => {
     return (
         <div className="relative flex flex-col items-center justify-center p-4 bg-atlas-surface/30 rounded-3xl border border-white/5 shadow-2xl backdrop-blur-sm">
             <div 
-                className="relative bg-[#dca872] rounded-lg shadow-inner"
+                className="relative bg-atlas-boardWood rounded-lg shadow-inner"
                 style={{
                     width: boardWidth + padding * 2,
                     height: boardHeight + padding * 2

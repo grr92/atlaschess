@@ -16,6 +16,7 @@ import { InfoButton } from "./components/ui/InfoButton";
 import { VariantInfoModal } from "./components/modals/VariantInfoModal";
 import { SettingsModal } from "./components/modals/SettingsModal";
 import { D8DiceWidget } from "./components/board/D8DiceWidget";
+import { MakrukCountingWidget } from "./components/board/MakrukCountingWidget";
 import { ChaturajiEngine } from "./core/engine/ChaturajiEngine";
 import { FourSeasonsEngine, type FourSeasonsColor } from "./core/engine/FourSeasonsEngine";
 import { VariantRegistry } from "./core/variants/variantRegistry";
@@ -27,7 +28,7 @@ const BOARD_COMPONENTS: Record<string, React.ComponentType> = {
     janggi: JanggiBoard,
 };
 
-export const App = () => {
+const App = () => {
     const { t, getVariantMeta } = useTranslation();
     const currentScreen = useNavStore((state) => state.currentScreen);
     const setScreen = useNavStore((state) => state.setScreen);
@@ -237,6 +238,7 @@ export const App = () => {
                                 )}
                                 <div className="flex items-center gap-2 flex-shrink-0">
                                     <D8DiceWidget />
+                                    <MakrukCountingWidget />
                                     {canPass && (
                                         <button
                                             onClick={passTurn}

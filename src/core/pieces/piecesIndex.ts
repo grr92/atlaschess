@@ -87,3 +87,13 @@ export * from './janggi/JanggiChariot';
 export * from './janggi/JanggiCannon';
 export * from './janggi/JanggiSoldier';
 
+// Makruk (Thai Chess)
+export * from './makruk/Khun';
+export * from './makruk/Met';
+export * from './makruk/Khon';
+export * from './makruk/Ma';
+export * from './makruk/Ruea';
+export * from './makruk/Bia';
+export * from './makruk/Biangai';
+
+

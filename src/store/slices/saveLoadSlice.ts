@@ -1,7 +1,7 @@
 import type { StoreSlice, SaveLoadSliceState, SaveLoadSliceActions } from '../types';
-import { TamerlaneEngine } from '../../core/engine/TamerlaneEngine';
-import { ChaturajiEngine } from '../../core/engine/ChaturajiEngine';
+import { MakrukEngine } from '../../core/engine/MakrukEngine';
 import { populateCustomPieces } from '../../utils/customPiecesLoader';
+import { replayHistory } from '../../utils/historyReplayer';
 
 export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceActions> = (set, get) => ({
     gameTime: 0,
@@ -9,10 +9,10 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
     setGameTime: (fn) => set((state) => ({ gameTime: fn(state.gameTime) })),
 
     saveGame: () => {
-        const { currentVariantId, history, gameTime, gameMode, playerColor, aiDifficulty, useDiceRule, subTurn, currentDiceRoll, engine } = get();
-        if (history.length === 0) return;
+        const { currentVariantId, history, gameTime, gameMode, playerColor, aiDifficulty, useDiceRule, subTurn, currentDiceRoll, engine, initialCustomPieces, initialCustomTurn, initialAnnexedArmies } = get();
+        if (history.length === 0 && !initialCustomPieces) return;
 
-        const saveData = {
+        const saveData: any = {
             variantId: currentVariantId,
             history: history,
             time: gameTime,
@@ -25,6 +25,12 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
             currentDiceRoll: currentDiceRoll || null,
             variantOptions: engine?.getVariantOptions() || undefined
         };
+
+        if (initialCustomPieces) {
+            saveData.customPieces = initialCustomPieces;
+            saveData.currentTurn = initialCustomTurn || get().currentTurn;
+            saveData.annexedArmies = initialAnnexedArmies;
+        }
         const jsonString = JSON.stringify(saveData, null, 2);
 
         if (typeof document !== 'undefined') {
@@ -70,40 +76,13 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
             // Support direct custom board setup
             if (Array.isArray(parsed.customPieces)) {
                 populateCustomPieces(engine, parsed.customPieces, parsed.currentTurn, parsed.annexedArmies);
-            } else if (Array.isArray(parsed.history)) {
-                for (const move of parsed.history) {
-                    if (move.isPass || move.san === 'pass') {
-                        engine.passTurn();
-                        continue;
-                    }
+            }
+            if (Array.isArray(parsed.history)) {
+                replayHistory(engine, parsed.history);
+            }
 
-                    let promotionPiece: string | undefined = undefined;
-
-                    if (move.san?.includes('=Q')) promotionPiece = 'Queen';
-                    else if (move.san?.includes('=R')) promotionPiece = 'Rook';
-                    else if (move.san?.includes('=B')) promotionPiece = 'Bishop';
-                    else if (move.san?.includes('=N')) promotionPiece = 'Knight';
-                    else if (move.san?.includes('=F')) promotionPiece = 'Ferz';
-
-                    if (move.citadelSwappedRoyalId && engine instanceof TamerlaneEngine) {
-                        engine.executeCitadelSwap(move.from, move.to, move.citadelSwappedRoyalId);
-                    } else {
-                        engine.executeMove(move.from, move.to, promotionPiece);
-                    }
-
-                    if (move.crownedSuccessorId && engine instanceof TamerlaneEngine) {
-                        engine.crownSuccessor(move.crownedSuccessorId);
-                    }
-
-                    if (engine instanceof ChaturajiEngine) {
-                        if (move.rescuedKingPlacement) {
-                            engine.confirmKingRescue();
-                            engine.placeRescuedKing(move.rescuedKingPlacement.pos);
-                        } else if (move.rescuedKingDeclined || engine.pendingKingRescueChoice) {
-                            engine.declineKingRescue();
-                        }
-                    }
-                }
+            if (engine instanceof MakrukEngine && loadedVariantOptions) {
+                engine.restoreCountingState(loadedVariantOptions);
             }
 
             const loadedTime = typeof parsed.time === 'number' ? parsed.time : 0;
@@ -127,6 +106,7 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
                 initialCustomPieces: Array.isArray(parsed.customPieces) ? parsed.customPieces : null,
                 initialCustomTurn: Array.isArray(parsed.customPieces) ? (parsed.currentTurn || engine.currentTurn) : null,
                 initialAnnexedArmies: Array.isArray(parsed.customPieces) ? (parsed.annexedArmies || null) : null,
+                lastAction: 'load',
             });
 
             if (loadedUseDiceRule) {

@@ -18,7 +18,8 @@ export const Board = () => {
         initGame,
         isAiThinking,
         gameMode,
-        playerColor
+        playerColor,
+        lastAction
     } = useGameStore();
 
     const [hoveredEnemyMoves, setHoveredEnemyMoves] = useState<Position[]>([]);
@@ -90,7 +91,7 @@ export const Board = () => {
                         }
 
                         const isLight = (x + y) % 2 === 0;
-                        const isMonochrome = currentVariantId === 'chaturanga' || currentVariantId === 'shatranj' || currentVariantId === 'tamerlane' || currentVariantId === 'chaturaji';
+                        const isMonochrome = Boolean(variantDef?.isMonochromeBoard);
                         const bgImage = getSquareBackground(x, y, currentVariantId);
                         const pieceImage = getPieceImage(piece);
 
@@ -114,9 +115,9 @@ export const Board = () => {
                         const textColor = (isLight || isMonochrome) ? 'text-atlas-boardDark' : 'text-atlas-boardLight';
                         const monochromeBorder = isMonochrome ? 'ring-1 ring-inset ring-black/20' : '';
 
-                        // Track the last move to trigger CSS slide transition
+                        // Track the last move to trigger CSS slide transition only on forward moves
                         const lastMove = engine.history.length > 0 ? engine.history[engine.history.length - 1] : null;
-                        const isJustMoved = Boolean(piece && lastMove && lastMove.to.x === x && lastMove.to.y === y);
+                        const isJustMoved = Boolean(lastAction === 'move' && piece && lastMove && lastMove.to.x === x && lastMove.to.y === y);
 
                         let animStyle: React.CSSProperties | undefined = undefined;
                         if (isJustMoved && lastMove) {

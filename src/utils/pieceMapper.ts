@@ -3,6 +3,7 @@ import { getPieceSvgChar } from '../core/pieces/pieceRegistry';
 import { pieceSvgAssets } from './pieceAssets';
 import { getXiangqiPieceImage } from './xiangqiPieceMapper';
 import { getJanggiPieceImage } from './janggiPieceMapper';
+import { getMakrukPieceImage } from './makrukPieceMapper';
 
 export type RegionalPieceStyle = 'text' | 'icon';
 
@@ -17,6 +18,10 @@ export const getPieceImage = (piece: Piece | null, style: RegionalPieceStyle = '
 
     if (piece.name.startsWith('Janggi')) {
         return getJanggiPieceImage(piece, style);
+    }
+
+    if (['Khun', 'Met', 'Khon', 'Ma', 'Ruea', 'Bia', 'Biangai'].includes(piece.name)) {
+        return getMakrukPieceImage(piece);
     }
 
     const pieceChar = getPieceSvgChar(piece.name);
@@ -102,7 +107,7 @@ export const getSquareBackground = (x: number, y: number, variantId: string): st
         ];
         isMarked = markedSquares.includes(`${x},${y}`);
         colorChar = 'l';
-    } else if (variantId === 'shatranj' || variantId === 'tamerlane' || variantId === 'chaturaji') {
+    } else if (variantId === 'shatranj' || variantId === 'tamerlane' || variantId === 'chaturaji' || variantId === 'makruk' || variantId === 'ouk_chaktrang') {
         // Those games use the uncheckered monochrome board without the X's
         isMarked = false;
         colorChar = 'l';

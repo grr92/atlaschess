@@ -26,6 +26,7 @@ export interface GameSliceState {
     initialCustomTurn?: PieceColor | null;
     initialAnnexedArmies?: any | null;
     regionalPieceStyle: 'text' | 'icon';
+    lastAction: 'move' | 'undo' | 'load' | null;
 }
 
 export interface GameSliceActions {
@@ -47,6 +48,7 @@ export interface GameSliceActions {
     toggleMute: () => void;
     setLanguage: (lang: AppLanguage) => void;
     setRegionalPieceStyle: (style: 'text' | 'icon') => void;
+    toggleMakrukCounting: () => void;
 }
 
 export interface AiSliceState {

@@ -1,6 +1,6 @@
 import { BaseEngine, type PreMoveInterception, type PostMoveInterception } from './BaseEngine';
 import type { Position, PieceColor, Move } from '../../types';
-import { Piece } from '../pieces/Piece.ts';
+import { Piece } from '../pieces/Piece';
 import { Board } from '../models/Board';
 import type { GameVariant } from '../variants/GameVariant';
 import {

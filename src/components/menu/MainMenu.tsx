@@ -3,7 +3,7 @@ import { ChessKnight, Globe, Save, Volume2, VolumeX, Settings } from 'lucide-rea
 import { useNavStore } from '../../store/useNavStore';
 import { useGameStore, type GameMode, type AiDifficulty } from '../../store/useGameStore';
 import { VerticalFusionLogo } from "../logos/VerticalFusionLogo";
-import { MenuButton } from "../ui/MenuButton.tsx";
+import { MenuButton } from "../ui/MenuButton";
 import { GameSetupModal } from "../modals/GameSetupModal";
 import { SettingsModal } from "../modals/SettingsModal";
 import type { PieceColor } from '../../types';

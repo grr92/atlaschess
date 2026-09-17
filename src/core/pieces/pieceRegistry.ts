@@ -119,7 +119,16 @@ export const PIECE_REGISTRY: Record<PieceName, PieceMetadata> = {
     JanggiHorse: { name: 'JanggiHorse', displayName: 'Horse', value: 400, sortOrder: 8, svgChar: 'n' },
     JanggiChariot: { name: 'JanggiChariot', displayName: 'Chariot', value: 900, sortOrder: 4, svgChar: 'r' },
     JanggiCannon: { name: 'JanggiCannon', displayName: 'Cannon', value: 500, sortOrder: 5, svgChar: 'c' },
-    JanggiSoldier: { name: 'JanggiSoldier', displayName: 'Soldier', value: 100, sortOrder: 13, svgChar: 'p' }
+    JanggiSoldier: { name: 'JanggiSoldier', displayName: 'Soldier', value: 100, sortOrder: 13, svgChar: 'p' },
+
+    // Makruk (Thai Chess)
+    Khun: { name: 'Khun', displayName: 'Lord', value: 10000, sortOrder: 0, svgChar: 'k' },
+    Met: { name: 'Met', displayName: 'Seed', value: 200, sortOrder: 11, svgChar: 'q' },
+    Khon: { name: 'Khon', displayName: 'Nobleman', value: 350, sortOrder: 6, svgChar: 'b' },
+    Ma: { name: 'Ma', displayName: 'Horse', value: 320, sortOrder: 8, svgChar: 'n' },
+    Ruea: { name: 'Ruea', displayName: 'Boat', value: 500, sortOrder: 4, svgChar: 'r' },
+    Bia: { name: 'Bia', displayName: 'Cowrie', value: 100, sortOrder: 13, svgChar: 'p' },
+    Biangai: { name: 'Biangai', displayName: 'Promoted Cowrie', value: 200, sortOrder: 12, svgChar: 'm' }
 };
 
 export const getPieceMetadata = (name: string): PieceMetadata | undefined => {

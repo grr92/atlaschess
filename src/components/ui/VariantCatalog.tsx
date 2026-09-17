@@ -55,8 +55,8 @@ export const VariantsCatalog = () => {
 
     const historicalVariants = VariantRegistry.getByCategory('historical');
     const regionalVariants = [
-        ...VariantRegistry.getByCategory('regional'),
-        ...VariantRegistry.getByCategory('standard')
+        ...VariantRegistry.getByCategory('standard'),
+        ...VariantRegistry.getByCategory('regional')
     ];
 
     const renderCard = (variant: VariantDefinition) => {

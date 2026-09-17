@@ -33,9 +33,11 @@ export type PieceName =
     // Xiangqi
     | 'XiangqiGeneral' | 'XiangqiAdvisor' | 'XiangqiElephant' | 'XiangqiHorse' | 'XiangqiChariot' | 'XiangqiCannon' | 'XiangqiSoldier'
     // Janggi
-    | 'JanggiGeneral' | 'JanggiGuard' | 'JanggiElephant' | 'JanggiHorse' | 'JanggiChariot' | 'JanggiCannon' | 'JanggiSoldier';
+    | 'JanggiGeneral' | 'JanggiGuard' | 'JanggiElephant' | 'JanggiHorse' | 'JanggiChariot' | 'JanggiCannon' | 'JanggiSoldier'
+    // Makruk (Thai Chess)
+    | 'Khun' | 'Met' | 'Khon' | 'Ma' | 'Ruea' | 'Bia' | 'Biangai';
 
-import type { Piece } from '../core/pieces/Piece.ts';
+import type { Piece } from '../core/pieces/Piece';
 
 export interface Move {
     piece: Piece;

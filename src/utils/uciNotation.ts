@@ -40,6 +40,9 @@ export function moveToUci(
             case 'bishop': promoStr = 'b'; break;
             case 'knight': promoStr = 'n'; break;
             case 'ferz': promoStr = 'f'; break;
+            case 'biangai':
+            case 'met':
+            case 'm': promoStr = 'm'; break;
             default: promoStr = promotionPiece[0].toLowerCase(); break;
         }
     }
@@ -77,6 +80,7 @@ export function uciToMove(
                 case 'b': promotionPiece = 'Bishop'; break;
                 case 'n': promotionPiece = 'Knight'; break;
                 case 'f': promotionPiece = 'Ferz'; break;
+                case 'm': promotionPiece = 'Biangai'; break;
                 default: promotionPiece = 'Queen'; break;
             }
         }
@@ -99,6 +103,7 @@ export function uciToMove(
             case 'b': promotionPiece = 'Bishop'; break;
             case 'n': promotionPiece = 'Knight'; break;
             case 'f': promotionPiece = 'Ferz'; break;
+            case 'm': promotionPiece = 'Biangai'; break;
             default: promotionPiece = 'Queen'; break;
         }
     }
@@ -123,6 +128,7 @@ export function historyToUciMoves(history: Move[], totalRows: number = 8): strin
             else if (move.san?.includes('=B')) promoPiece = 'Bishop';
             else if (move.san?.includes('=N')) promoPiece = 'Knight';
             else if (move.san?.includes('=F')) promoPiece = 'Ferz';
+            else if (move.san?.includes('=M') || move.san?.includes('=Biangai') || move.san?.includes('=Met')) promoPiece = 'Biangai';
 
             return moveToUci(move.from, move.to, promoPiece, totalRows);
         })

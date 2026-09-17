@@ -61,6 +61,18 @@ export const variantMeta_ca: Record<string, VariantMetaI18n> = {
         tag: 'Tauler 9x10',
         desc: 'Joc d\'estratègia coreà derivat del xiangqi, jugat a les 90 interseccions d\'un tauler de 9×10 sense riu. Destaca per les formacions inicials configurables, canons saltadors, elefants de llarg abast i diagonals de palau.',
     },
+    makruk: {
+        title: 'Makruk',
+        origin: 'Tailàndia',
+        tag: 'Tauler 8x8',
+        desc: 'Escacs tradicionals tailandesos descendents del chaturanga, amb Senyors, Llavors, Nobles i regles de comptatge úniques per a reis a la fuga.',
+    },
+    ouk_chaktrang: {
+        title: 'Ouk Chaktrang',
+        origin: 'Cambodja',
+        tag: 'Tauler 8x8',
+        desc: 'Escacs tradicionals cambodjans emparentats amb el makruk, caracteritzats per opcions d\'obertura dinàmiques per al senyor i la llavor abans que es produeixi la primera captura.',
+    },
 };
 
 export const variantCodex_ca: Record<string, VariantCodexI18n> = {
@@ -674,6 +686,133 @@ export const variantCodex_ca: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'Els generals representen els estats rivals de Han (漢, bàndol vermell) i Chu (楚, bàndol blau), que van lluitar pel poder després de la caiguda de la dinastia Qin. Les peces vermelles estan escrites amb cal·ligrafia regular (kaishu), mentre que les blaves utilitzen cal·ligrafia cursiva (caoshu).',
             rightBoxTitle: 'Cultura popular',
             rightBoxDesc: 'A Corea del Sud, el janggi és un esport mental tradicional i un passatemps molt estès. Aficionats de totes les edats es reuneixen durant tot l\'any en parcs urbans per jugar partides amistoses i analitzar posicions tàctiques.',
+        },
+    },
+    makruk: {
+        name: 'Makruk',
+        rules: {
+            intro: 'El Makruk (tailandès: หมากรุก), o escacs tailandesos, és un joc de tauler d\'estratègia descendent del chaturanga indi del segle VI o d\'un parent molt proper. Es juga en un tauler de 8x8 sense colors alternats. Les blanques mouen primer. L\'objectiu és fer escac i mat al senyor enemic i l\'ofegat són taules.',
+            bullets: [
+                {
+                    title: 'El Senyor (Khun - ขุน):',
+                    desc: 'Mou o captura una casella en qualsevol direcció (ortogonal o diagonal). És la peça reial: la partida es guanya fent escac i mat al senyor contrari. El rei ofegat finalitza en taules, tal com als escacs occidentals i a diferència del Shatranj.',
+                    pieceName: 'Khun',
+                },
+                {
+                    title: 'La Llavor (Met - เม็ด):',
+                    desc: 'Mou o captura una casella en diagonal en totes quatre direccions, igual que el ferz al Shatranj. Comença situada a la dreta del senyor.',
+                    pieceName: 'Met',
+                },
+                {
+                    title: 'El Noble (Khon - โคน):',
+                    desc: 'Mou o captura una casella en diagonal en quatre direccions o una casella cap endavant (5 direccions en total), de manera idèntica al general de plata al Shogi.',
+                    pieceName: 'Khon',
+                },
+                {
+                    title: 'El Cavall (Ma - ม้า):',
+                    desc: 'Mou dues caselles ortogonalment i després una casella en perpendicular, saltant per sobre de qualsevol peça en el seu camí, exactament igual que el cavall dels escacs occidentals.',
+                    pieceName: 'Ma',
+                },
+                {
+                    title: 'El Vaixell (Ruea - เรือ):',
+                    desc: 'Mou o captura qualsevol nombre de caselles desocupades ortogonalment al llarg de files i columnes, igual que la torre als escacs occidentals.',
+                    pieceName: 'Ruea',
+                },
+                {
+                    title: 'El Cauri (Bia - เบี้ย):',
+                    desc: 'Mou una casella cap endavant i captura una casella en diagonal cap endavant. No pot avançar dues caselles en el seu primer moviment (no hi ha pas doble ni captura al pas). En assolir la sisena fila relativa (fila 6 per a blanques, fila 3 per a negres), es promociona obligatòriament a cauri invertit (Biangai).',
+                    pieceName: 'Bia',
+                },
+                {
+                    title: 'El Cauri Invertit (Biangai - เบี้ยหงาย):',
+                    desc: 'Un peó/cauri promocionat (girat). Mou o captura una casella en diagonal en qualsevol direcció, tenint el mateix moviment que la llavor (Met).',
+                    pieceName: 'Biangai',
+                },
+                {
+                    title: 'Regles de Comptatge - Comptatge de Tauler (64 Jugades):',
+                    desc: 'Quan a cap dels dos bàndols li queden cauris sense promocionar al tauler, s\'ha de fer escac i mat en un màxim de 64 jugades o la partida es declara taules. El jugador en desavantatge realitza el compte i el pot aturar (y també reiniciar) en qualsevol moment. Si el jugador que compta fa escac i mat sense haver aturat el compte, la partida es declara taules.',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Regles de Comptatge - Comptatge per Peces (Rei a la Fuga):',
+                    desc: 'Quan es captura la darrera peça (que no sigui el senyor) del jugador en desavantatge, aquest pot iniciar el compte dels seus moviments de fugida. El bàndol atacant disposa d\'un límit màxim de jugades segons les peces que conservi: 2 Vaixells = 8 jugades; 1 Vaixell = 16 jugades; 2 Nobles = 22 jugades; 2 Cavalls = 32 jugades; 1 Noble = 44 jugades; 1 Cavall = 64 jugades; Només Llavors = 64 jugades. El jugador que fuig comença a comptar a partir del nombre total de peces que queden al tauler (incloent-hi ambdós senyors), de manera que l\'atacant ha de fer mat abans que s\'assoleixi aquest límit. El jugador en desavantatge realitza el compte i el pot aturar (y també reiniciar) en qualsevol moment.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Consell professional: Coordina els teus vaixells i nobles per controlar el centre, i tingues molt present que en entrar a finals sense cauris o amb un rei solitari, cada jugada compta estrictament contra el límit de taules.',
+        },
+        history: {
+            intro: 'El Makruk (o escacs tailandesos) és un joc de tauler d\'estratègia descendent del joc indi xaturanga del segle VI o d\'un parent molt proper, per la qual cosa està emparentat amb els escacs. A Cambodja es juga pràcticament el mateix joc, conegut com a ouk o ouk chatrang.',
+            leftBoxTitle: 'Origen i Transmissió',
+            leftBoxDesc: 'Comerciants perses van arribar al regne d\'Ayutthaya al voltant del segle XIV per comerciar i difondre la seva cultura, per la qual cosa és possible que el makruk siamès derivés del shatranj persa per intercanvi cultural, ja que la llavor (met) es mou igual que el ferz persa. No obstant això, es considera més probable que arribés més directament des de l\'Índia, ateses les similituds lingüístiques entre xaturanga i el nom cambodjà ouk chaktrang, així com el moviment del noble (khon). A la seva obra «A History of Chess» (1913), H. J. R. Murray suggereix que el joc podria haver seguit l\'expansió del budisme a la regió.',
+            rightBoxTitle: 'L\'Ouk Cambodjà',
+            rightBoxDesc: 'A Cambodja i entre els khmers del Vietnam (on s\'anomena cờ ốc o «escacs de cargol marí»), l\'ouk és un element tradicional de les festivitats del Bon Om Touk. Baixos relleus en temples de l\'Imperi Khmer del segle XII demostren que es juga com a mínim des d\'aquella època. Presenta diferències menors com moviments inicials opcionals de cavall per al senyor i de dues caselles per a la llavor abans que hi hagi captures. El 2008 es va celebrar el primer torneig nacional amb regles estandarditzades i es va incloure als Jocs del Sud-est Asiàtic de 2023 (SEA Games).',
+        },
+    },
+    ouk_chaktrang: {
+        name: 'Ouk Chaktrang',
+        rules: {
+            intro: 'L\'Ouk Chaktrang (en khmer: អុកចត្រង្គ), o escacs cambodjans, és un joc de tauler d\'estratègia estretament emparentat amb el Makruk tailandès. Comparteix les mateixes peces, tauler i regles de comptatge, però introdueix moviments especials d\'obertura per al senyor i la llavor si encara no s\'ha produït cap captura a la partida.',
+            bullets: [
+                {
+                    title: 'Obertura Especial - Salt del Senyor (Ang):',
+                    desc: 'En el seu primer moviment, i únicament si no està en escac, el senyor pot moure saltant com un cavall (en forma de L), sempre que encara no s\'hagi capturat cap peça a la partida.',
+                    pieceName: 'Khun',
+                },
+                {
+                    title: 'Obertura Especial - Avanç Doble de la Llavor (Neang):',
+                    desc: 'En el seu primer moviment, la llavor pot avançar dues caselles en línia recta cap endavant (saltant qualsevol obstacle intermedi), sempre que encara no s\'hagi capturat cap peça a la partida.',
+                    pieceName: 'Met',
+                },
+                {
+                    title: 'El Senyor (Ang):',
+                    desc: 'Mou o captura una casella en qualsevol direcció. La partida es guanya fent escac i mat al senyor adversari, i l\'ofegat són taules.',
+                    pieceName: 'Khun',
+                },
+                {
+                    title: 'La Llavor (Neang):',
+                    desc: 'Mou o captura una casella en diagonal en les quatre direccions. Comença situada a la dreta del senyor.',
+                    pieceName: 'Met',
+                },
+                {
+                    title: 'El Noble (Koul):',
+                    desc: 'Mou o captura una casella en diagonal en les quatre direccions o una casella cap endavant (5 direccions en total), idèntic al noble del Makruk.',
+                    pieceName: 'Khon',
+                },
+                {
+                    title: 'El Cavall (Ses):',
+                    desc: 'Mou en forma de L saltant per damunt de qualsevol peça en el seu camí, exactament igual que el cavall dels escacs.',
+                    pieceName: 'Ma',
+                },
+                {
+                    title: 'El Vaixell (Tuuk):',
+                    desc: 'Mou o captura qualsevol nombre de casilles ortogonalment al llarg de files i columnes, igual que la torre dels escacs.',
+                    pieceName: 'Ruea',
+                },
+                {
+                    title: 'El Peix (Trey):',
+                    desc: 'Mou una casella cap endavant i captura una casella en diagonal cap endavant. En assolir la sisena fila relativa, promociona obligatòriament a peix invertit (Trey Bak).',
+                    pieceName: 'Bia',
+                },
+                {
+                    title: 'El Peix Invertit (Trey Bak):',
+                    desc: 'Un peix promocionat (voltejat). Mou o captura una casella en diagonal en qualsevol direcció, tenint el mateix moviment que la llavor (Neang).',
+                    pieceName: 'Biangai',
+                },
+                {
+                    title: 'Regles de Comptatge (Comptatge de Tauler i Rei a la Fuga):',
+                    desc: 'Hereta les regles de comptatge del Makruk: comptatge de 64 jugades quan no queden peixos sense promocionar i comptatge per peces quan un jugador queda amb rei solitari. Si el jugador que compta fa escac i mat sense aturar el compte, la partida es declara taules.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Consell professional: Aprofita el salt de cavall inicial del senyor per posar-lo en seguretat ràpidament i buidar la columna per als teus vaixells abans que s\'obri el joc amb la primera captura.',
+        },
+        history: {
+            intro: 'L\'Ouk Chaktrang (o Ouk) és el joc d\'estratègia tradicional de Cambodja, amb arrels que es remunten a més d\'un mil·lenni a partir de l\'antic xaturanga indi.',
+            leftBoxTitle: 'Evidència Arqueològica a Angkor',
+            leftBoxDesc: 'Hi ha nombrosos baixos relleus del segle XII a temples de l\'Imperi Khmer (com ara el Bayon i Angkor Wat) que representen figures jugant partides d\'Ouk, demostrant l\'arrelament popular i cortesà del joc durant l\'esplendor d\'Angkor.',
+            rightBoxTitle: 'Tradició Viva i Esport Modern',
+            rightBoxDesc: 'Jugat àmpliament a Cambodja i pels khmers del Vietnam (on es coneix com a cờ ốc), és una part central del festival de l\'aigua Bon Om Touk. El 2008 el Comitè Olímpic de Cambodja en va estandarditzar el reglament nacional i el 2023 va ser esport oficial als Jocs del Sud-est Asiàtic (SEA Games).',
         },
     },
 };

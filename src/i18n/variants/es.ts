@@ -61,6 +61,18 @@ export const variantMeta_es: Record<string, VariantMetaI18n> = {
         tag: 'Tablero 9x10',
         desc: 'Juego de estrategia coreano derivado del xiangqi, jugado en las 90 intersecciones de un tablero de 9×10 sin río. Destaca por sus formaciones iniciales configurables, cañones saltadores, elefantes de largo alcance y diagonales de palacio.',
     },
+    makruk: {
+        title: 'Makruk',
+        origin: 'Tailandia',
+        tag: 'Tablero 8x8',
+        desc: 'Ajedrez tradicional tailandés descendiente del chaturanga, con Señores, Semillas, Nobles y reglas de conteo únicas para reyes en fuga.',
+    },
+    ouk_chaktrang: {
+        title: 'Ouk Chaktrang',
+        origin: 'Camboya',
+        tag: 'Tablero 8x8',
+        desc: 'Ajedrez tradicional camboyano emparentado con el makruk, caracterizado por opciones de apertura dinámicas para el señor y la semilla antes de que se produzca la primera captura.',
+    },
 };
 
 export const variantCodex_es: Record<string, VariantCodexI18n> = {
@@ -674,6 +686,133 @@ export const variantCodex_es: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'Los generales representan a los estados rivales de Han (漢, bando rojo) y Chu (楚, bando azul), que lucharon por el poder tras la caída de la dinastía Qin. Las piezas rojas están escritas con caligrafía regular (kaishu), mientras que las azules emplean caligrafía cursiva (caoshu).',
             rightBoxTitle: 'Cultura popular',
             rightBoxDesc: 'En Corea del Sur, el janggi es un deporte mental tradicional y un pasatiempo muy extendido. Aficionados de todas las edades se reúnen durante todo el año en parques urbanos para disputar partidas amistosas y analizar posiciones tácticas.',
+        },
+    },
+    makruk: {
+        name: 'Makruk',
+        rules: {
+            intro: 'El Makruk (tailandés: หมากรุก), o ajedrez tailandés, es un juego de tablero de estrategia descendiente del chaturanga indio del siglo VI o de un pariente muy cercano. Se juega en un tablero de 8x8 sin colores alternados. Las blancas mueven primero. El objetivo es dar jaque mate al señor enemigo y el ahogado es tablas.',
+            bullets: [
+                {
+                    title: 'El Señor (Khun - ขุน):',
+                    desc: 'Mueve o captura una casilla en cualquier dirección (ortogonal o diagonal). Es la pieza real: la partida se gana dando jaque mate al señor adversario. El rey ahogado finaliza en tablas, al igual que en el ajedrez occidental y a diferencia del Shatranj.',
+                    pieceName: 'Khun',
+                },
+                {
+                    title: 'La Semilla (Met - เม็ด):',
+                    desc: 'Mueve o captura una casilla en diagonal en las cuatro direcciones, igual que el ferz en el Shatranj. Comienza situada a la derecha del señor.',
+                    pieceName: 'Met',
+                },
+                {
+                    title: 'El Noble (Khon - โคน):',
+                    desc: 'Mueve o captura una casilla en diagonal en cuatro direcciones o una casilla hacia adelante (5 direcciones en total), de forma idéntica al general de plata en el Shogi.',
+                    pieceName: 'Khon',
+                },
+                {
+                    title: 'El Caballo (Ma - ม้า):',
+                    desc: 'Mueve dos casillas ortogonalmente y luego una casilla en perpendicular, saltando por encima de cualquier pieza en su camino, exactamente igual que el caballo del ajedrez occidental.',
+                    pieceName: 'Ma',
+                },
+                {
+                    title: 'El Barco (Ruea - เรือ):',
+                    desc: 'Mueve o captura cualquier número de casillas desocupadas ortogonalmente a lo largo de filas y columnas, igual que la torre en el ajedrez occidental.',
+                    pieceName: 'Ruea',
+                },
+                {
+                    title: 'El Cauri (Bia - เบี้ย):',
+                    desc: 'Mueve una casilla hacia adelante y captura una casilla en diagonal hacia adelante. No puede avanzar dos casillas en su primer movimiento (no hay avance doble ni captura al paso). Al alcanzar la sexta fila relativa (fila 6 para blancas, fila 3 para negras), se promociona obligatoriamente a cauri invertido (Biangai).',
+                    pieceName: 'Bia',
+                },
+                {
+                    title: 'El Cauri Invertido (Biangai - เบี้ยหงาย):',
+                    desc: 'Un peón/cauri promocionado (volteado). Mueve o captura una casilla en diagonal en cualquier dirección, teniendo el mismo movimiento que la semilla (Met).',
+                    pieceName: 'Biangai',
+                },
+                {
+                    title: 'Reglas de Conteo - Conteo de Tablero (64 Jugadas):',
+                    desc: 'Cuando a ninguno de los bandos le quedan cauris sin promocionar en el tablero, se debe dar jaque mate en un máximo de 64 jugadas o la partida se declara tablas. El jugador en desventaja realiza la cuenta y puede detenerla (y también reiniciarla) en cualquier momento. Si el jugador que cuenta da jaque mate sin haber detenido la cuenta, la partida se declara tablas.',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Reglas de Conteo - Conteo por Piezas (Rey en Fuga):',
+                    desc: 'Cuando se captura la última pieza (que no sea el señor) del jugador en desventaja, este puede iniciar la cuenta de sus movimientos de huida. El bando atacante dispone de un límite máximo de jugadas según las piezas que conserve: 2 Barcos = 8 jugadas; 1 Barco = 16 jugadas; 2 Nobles = 22 jugadas; 2 Caballos = 32 jugadas; 1 Noble = 44 jugadas; 1 Caballo = 64 jugadas; Solo Semillas = 64 jugadas. El jugador que huye comienza a contar a partir del número total de piezas que quedan en el tablero (incluyendo ambos señores), por lo que el atacante debe dar mate antes de que se alcance dicho límite. El jugador en desventaja realiza la cuenta y puede detenerla (y también reiniciarla) en cualquier momento.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Consejo profesional: Coordina tus barcos y nobles para dominar el centro, y ten muy presente que al entrar en finales sin cauris o con un rey solitario, cada jugada cuenta estrictamente contra el límite de tablas.',
+        },
+        history: {
+            intro: 'El Makruk (o ajedrez tailandés) es un juego de tablero de estrategia descendiente del juego indio chaturanga del siglo VI o de un pariente muy cercano, por lo que está emparentado con el ajedrez. En Camboya se juega prácticamente el mismo juego, conocido como ouk u ouk chatrang.',
+            leftBoxTitle: 'Origen y Transmisión',
+            leftBoxDesc: 'Comerciantes persas llegaron al reino de Ayutthaya alrededor del siglo XIV para comerciar y difundir su cultura, por lo que es posible que el makruk siamés derivara del shatranj persa mediante intercambio cultural, ya que la semilla (met) mueve de forma idéntica al ferz persa. No obstante, se considera más probable que llegara más directamente desde la India, dadas las similitudes lingüísticas entre chaturanga y el nombre camboyano ouk chaktrang, así como el movimiento del noble (khon). En su obra «A History of Chess» (1913), H. J. R. Murray sugiere que el juego pudo haber seguido la expansión del budismo en la región.',
+            rightBoxTitle: 'El Ouk Camboyano',
+            rightBoxDesc: 'En Camboya y entre los jemeres de Vietnam (donde se conoce como cờ ốc o «ajedrez caracol»), el ouk es un elemento central de las festividades del Bon Om Touk. Existen bajorrelieves en templos del Imperio Jemer del siglo XII que evidencian su práctica desde entonces. Cuenta con sutiles diferencias, como movimientos iniciales opcionales de caballo para el señor y de dos casillas para la semilla si aún no hubo capturas. En 2008 se organizó su primer torneo nacional con reglas estandarizadas y fue incluido en los Juegos del Sudeste Asiático de 2023 (SEA Games).',
+        },
+    },
+    ouk_chaktrang: {
+        name: 'Ouk Chaktrang',
+        rules: {
+            intro: 'El Ouk Chaktrang (en jemer: អុកចត្រង្គ), o ajedrez camboyano, es un juego de tablero de estrategia estrechamente emparentado con el Makruk tailandés. Comparte las mismas piezas, tablero y reglas de conteo, pero introduce movimientos especiales de apertura para el señor y la semilla si todavía no se ha producido ninguna captura en la partida.',
+            bullets: [
+                {
+                    title: 'Apertura Especial - Salto del Señor (Ang):',
+                    desc: 'En su primer movimiento, y únicamente si no está en jaque, el señor puede moverse saltando como un caballo (en forma de L), siempre que aún no se haya capturado ninguna pieza en la partida.',
+                    pieceName: 'Khun',
+                },
+                {
+                    title: 'Apertura Especial - Avance Doble de la Semilla (Neang):',
+                    desc: 'En su primer movimiento, la semilla puede avanzar dos casillas en línea recta hacia adelante (saltando cualquier obstáculo intermedio), siempre que aún no se haya capturado ninguna pieza en la partida.',
+                    pieceName: 'Met',
+                },
+                {
+                    title: 'El Señor (Ang):',
+                    desc: 'Mueve o captura una casilla en cualquier dirección. La partida se gana dando jaque mate al señor adversario, y el rey ahogado es tablas.',
+                    pieceName: 'Khun',
+                },
+                {
+                    title: 'La Semilla (Neang):',
+                    desc: 'Mueve o captura una casilla en diagonal en las cuatro direcciones. Comienza situada a la derecha del señor.',
+                    pieceName: 'Met',
+                },
+                {
+                    title: 'El Noble (Koul):',
+                    desc: 'Mueve o captura una casilla en diagonal en las cuatro direcciones o una casilla hacia adelante (5 direcciones en total), idéntico al noble del Makruk.',
+                    pieceName: 'Khon',
+                },
+                {
+                    title: 'El Caballo (Ses):',
+                    desc: 'Mueve en forma de L saltando sobre cualquier pieza en su camino, exactamente igual que el caballo del ajedrez.',
+                    pieceName: 'Ma',
+                },
+                {
+                    title: 'El Barco (Tuuk):',
+                    desc: 'Mueve o captura cualquier número de casillas ortogonalmente a lo largo de filas y columnas, igual que la torre del ajedrez.',
+                    pieceName: 'Ruea',
+                },
+                {
+                    title: 'El Pez (Trey):',
+                    desc: 'Mueve una casilla hacia adelante y captura una casilla en diagonal hacia adelante. Al alcanzar la sexta fila relativa, promociona obligatoriamente a pez invertido (Trey Bak).',
+                    pieceName: 'Bia',
+                },
+                {
+                    title: 'El Pez Invertido (Trey Bak):',
+                    desc: 'Un pez promocionado (volteado). Mueve o captura una casilla en diagonal en cualquier dirección, teniendo el mismo movimiento que la semilla (Neang).',
+                    pieceName: 'Biangai',
+                },
+                {
+                    title: 'Reglas de Conteo (Conteo de Tablero y Rey en Fuga):',
+                    desc: 'Hereda las reglas de conteo del Makruk: conteo de 64 jugadas cuando no quedan peces sin promocionar y conteo por piezas cuando un jugador queda con rey solitario. Si el jugador que cuenta da jaque mate sin detener la cuenta, la partida se declara tablas.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Consejo profesional: Aprovecha el salto de caballo inicial del señor para ponerlo a salvo rápidamente y despejar la columna para tus barcos antes de que se abra el juego con la primera captura.',
+        },
+        history: {
+            intro: 'El Ouk Chaktrang (u Ouk) es el juego de estrategia tradicional de Camboya. Sus raíces se remontan a más de un milenio, habiendo evolucionado a partir del chaturanga indio o de ancestros comunes de la región del sudeste asiático.',
+            leftBoxTitle: 'Evidencia Arqueológica en Angkor',
+            leftBoxDesc: 'Existen numerosos bajorrelieves del siglo XII en templos del Imperio Jemer (como Bayon y Angkor Wat) que representan figuras jugando partidas de Ouk. Estas representaciones demuestran que el juego ya gozaba de un arraigo popular y cortesano prominente durante el esplendor de Angkor.',
+            rightBoxTitle: 'Tradición Viva y Deporte Moderno',
+            rightBoxDesc: 'Jugado ampliamente en Camboya y por los jemeres de Vietnam (donde se le conoce como cờ ốc), es un componente insustituible del festival del agua Bon Om Touk. En 2008 el Comité Olímpico de Camboya estandarizó su reglamento nacional, y en 2023 fue disciplina oficial en los Juegos del Sudeste Asiático (SEA Games).',
         },
     },
 };

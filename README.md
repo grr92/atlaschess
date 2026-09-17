@@ -8,46 +8,82 @@ This is my very first software project outside my CS studies, and it has been de
 
 ## Features
 
-- **Multiple Variants:** Play Classic Chess, travel back in time with historical variants or ancestors of chess (Chaturanga, Shatranj and more...) or travel around the world playing regional variants. The underlying engine is built to support custom board sizes and piece mechanics.
-- **Dice Modes:** Play Grant Acedrex using the historical 13th-century 8-sided dice rule commissioned by King Alfonso X or Chaturanga for 4 players with a 4-sided dice where the rolled die determines which piece must move on that turn (fully playable in PvP and against the AI).
-- **AI Opponent (PvE):** Challenge the machine powered by a dual-engine architecture:
-    - **Fairy-Stockfish 14:** High-performance native UCI engine for classical chess and standard historical variants.
-    - **Native Minimax Heuristic Engine:** Custom TypeScript game-theory engine with Alpha-Beta pruning built specifically for complex non-standard variants (such as Tamerlane's 112 squares, 11 pawn stages, citadel mechanics, and Grant Acedrex's d8 dice rule).
-    - **Adjustable Difficulty:** Play in Easy, Medium, or Master levels with color selection (White, Black, Random) and automatic board orientation.
-- **Undo:** *Undo* button to seamlessly rewind the game state using rapid event replay, ensuring perfect state consistency (automatically steps back 2 moves in PvE mode).
-- **Save & Load (.atlas):** Save your game progress at any point into a custom `.atlas` JSON file and load it back later to continue right where you left off.
-- **Smart HUD:**
-    - Dynamic Captured Pieces tracker with automatic score advantage calculation.
-    - Animated 8-sided die widget showing active piece rolls and turn indications.
-    - Game Timer and turn status indicators (Player vs. AI).
-    - Contextual Modals for pawn promotion, citadel choices, succession choices, and game reset/exit confirmations.
+- **Rich Catalog of 12 Chess Variants:**
+    - **Standard:** Classic FIDE Chess (8×8).
+    - **Historical Ancestors & Medieval Variants:**
+        - **Chaturanga** (6th c. India, 8×8) — The ancient forefather of chess featuring Gajas, Mantris, and early infantry tactics.
+        - **Shatranj** (7th c. Persia, 8×8) — Classical Islamic chess featuring the Ferz, Alfil, and Baidaq.
+        - **Courier Chess** (12th c. Germany, 12×8) — Medieval German favorite introducing the fast-stepping Courier, Jester, and Sage.
+        - **Grant Acedrex** (13th c. Castile, 12×12) — Commissioned by King Alfonso X, featuring mythical beasts (Aanca, Crocodile, Giraffe, Unicorn, Lion) and an 8-sided die.
+        - **Tamerlane Chess** (14th c. Timurid Empire, 112 squares) — Legendary 10×11 board with 2 imperial Citadels, 11 distinct pawn types with multi-tier promotions, and Adventitious King succession.
+        - **Chaturaji** (8×8, 4 Players) — Ancient 4-player Indian dice chess featuring stakes counters, alliances, and a 4-sided die.
+        - **Four Seasons Chess** (8×8, 4 Players) — Medieval allegorical chess representing Spring, Summer, Autumn, and Winter with elemental rotations and an optional 6-sided die.
+    - **Living Regional Variants:**
+        - **Xiangqi** (Chinese Chess, 9×10) — Played across the River and inside the Nine Palaces, featuring jumping Cannons, crossing Soldiers, and a toggle between traditional calligraphy (Hanzi) and modern Westernized pieces.
+        - **Janggi** (Korean Chess, 9×10) — Fast-paced Korean chess with customizable starting formations (Sang-Ma swaps), wide-sweeping Elephants, Palace diagonals, and turn-passing / Bikjang mechanics.
+        - **Makruk** (Thai Chess, 8×8) — Traditional uncheckered board with Seeds, Nobles, 6th-rank Bia promotions, and authentic Board & Piece Counting rules.
+        - **Ouk Chaktrang** (Cambodian Chess, 8×8) — Ancient Khmer counterpart to Makruk featuring dynamic opening moves (Lord's knight leap and Seed's two-square advance before the first capture) and full countdown systems.
+- **Multiple Game Modes & 4-Player Battle:**
+    - **Player vs. Player (PvP):** Local pass-and-play supporting standard 2-player games as well as full 4-player rotational battles (Chaturaji and Four Seasons).
+    - **Player vs. AI (PvE):** Single-player mode with adjustable difficulty (Easy, Medium, Master), custom player color assignment, and automatic board flipping.
+    - **Historical Dice Modes:** Authentic dice-driven turns powered by animated dice widgets:
+        - 4-sided die (d4) in *Chaturaji*.
+        - 6-sided die (d6) in *Four Seasons Chess*.
+        - 8-sided die (d8) in *Grant Acedrex*.
+        - Optional dice-less mode toggle where supported.
+- **Dual-Engine AI Architecture:**
+    - **Fairy-Stockfish 14:** High-performance native UCI engine embedded via Electron IPC for Classic Chess and standard regional/historical games (*Xiangqi*, *Janggi*, *Makruk*, *Ouk Chaktrang*, *Shatranj*, *Chaturanga*, *Courier*).
+    - **Native Minimax Heuristic Engine:** Custom TypeScript game-theory engine with Alpha-Beta pruning built specifically for complex non-standard geometries and mechanics (*Tamerlane's* 112 squares, Citadels, 11 pawn varieties; *Grant Acedrex's* 12×12 d8; 4-player *Chaturaji* and *Four Seasons*).
+- **Interactive Variant Codex & Customization:**
+    - **Variant Codex:** Integrated educational modal with complete rules, piece movement guides, historical context, and pro tips for every variant.
+    - **Calligraphy / Icon Style Toggle:** Instant switching between traditional Chinese/Korean characters and graphical icons for Xiangqi and Janggi.
+    - **Pre-Game Formation Setup:** Interactive modal to configure custom initial setups (such as horse/elephant placement in Janggi) before starting the match.
+- **Endgame & Counting HUD:**
+    - Dedicated **Makruk & Ouk Chaktrang Counting Widget**: Real-time HUD showing remaining fleeing moves (Piece Count) and 64-board limits, with interactive start/stop controls for the disadvantaged player and automatic draw enforcement.
+- **Undo & State Rewind:**
+    - Universal *Undo* button utilizing deep event replay for guaranteed state consistency across multi-player turns, dice rolls, and AI matches (automatically rewinds 2 plies in PvE).
+- **Save & Load (.atlas):**
+    - Seamless game persistence allowing you to export and reload entire game states—including move history, captured pieces, dice outcomes, counting clocks, and active formations—via custom `.atlas` JSON files.
+- **Smart HUD & Audio:**
+    - Dynamic Captured Pieces tracker with real-time material balance and advantage calculation.
+    - Animated dice widgets displaying active rolled pieces and eligible moves.
+    - Chaturaji stakes and score counter.
+    - Turn status indicator, game timers, and contextual modals for pawn promotions, citadel choices, and royal succession.
+    - Atmospheric sound effects for moves, captures, checks, dice rolls, and victory/draw states, with full mute/unmute audio settings.
+- **Multilingual Support (i18n):**
+    - Fully translated into **English**, **Spanish (Español)**, and **Catalan (Català)** across all menus, codex entries, modals, and in-game tooltips.
 
 ## Project Structure
 
 ```text
-src/
-├── assets/             # Piece images (SVG/PNG), logos, etc.
-│   ├── logos/          # Logos used in the game
-│   └── pieces/         # Piece images (SVG)
-├── components/         # React UI Components
-│   ├── board/          # Board, squares, piece rendering, and modals
-│   ├── logos/          # Game logo versions in .tsx
-│   ├── menu/           # Main menu, variant selector, loading screen
-│   ├── modals/         # Modals (How to play, Game Setup, Exit confirmation)
-│   └── ui/             # Generic buttons, side panels, badges
-├── core/               # Game logic & Domain layer (zero React/Electron dependencies)
-│   ├── ai/             # HeuristicAiEngine.ts (Minimax Alpha-Beta native search)
-│   ├── engine/         # BaseEngine.ts, TamerlaneEngine.ts, GrantAcedrexEngine.ts
-│   ├── models/         # Board.ts, TamerlaneBoard.ts, Position.ts
-│   ├── pieces/         # Piece.ts (abstract) and concrete pieces per variant
-│   └── variants/       # GameVariant.ts (interface) and variant definitions
-├── electron/           # Electron main process, IPC bridge, and Fairy-Stockfish service
-├── store/              # Zustand slices (gameSlice, aiSlice, saveLoadSlice)
-├── types/              # Global TypeScript types and electron definitions
-├── utils/              # Notation, UCI translation, asset mappings, dice mappings
-├── App.tsx             # Root component
-├── index.css           # Global styles (Tailwind)
-└── main.tsx            # Vite entry point
+├── bin/                # Bundled binaries & configs (Fairy-Stockfish engine, variants.ini)
+├── electron/           # Electron main process, IPC bridge & FairyStockfishService
+├── src/                # Frontend application & game domain layer
+│   ├── assets/         # Piece SVGs, branding, and graphics
+│   │   ├── logos/      # Game logos
+│   │   └── pieces/     # Piece graphics per variant
+│   ├── components/     # React UI Components
+│   │   ├── board/      # Board renderers (8x8, 10x11, 9x10) & HUD widgets (dice, counters)
+│   │   ├── logos/      # Interactive vector logo components
+│   │   ├── menu/       # Main menu and navigation
+│   │   ├── modals/     # Setup, Settings, Codex, and in-game modal overlays
+│   │   └── ui/         # Buttons, badges, and variant catalog components
+│   ├── core/           # Pure TypeScript domain & engine layer (zero UI/Electron dependencies)
+│   │   ├── ai/         # HeuristicAiEngine (Minimax Alpha-Beta) & evaluation strategies
+│   │   ├── engine/     # Variant engines (rules, Makruk counting, dice turns, strategies)
+│   │   ├── models/     # Board, Position, Move, and domain data models
+│   │   ├── pieces/     # Base piece class & concrete piece sets per variant
+│   │   └── variants/   # Variant registry and rule specifications
+│   ├── i18n/           # Trilingual localization system (EN, ES, CA)
+│   │   ├── locales/    # UI interface translations
+│   │   └── variants/   # History, piece definitions, and rules codex per variant
+│   ├── store/          # Zustand state slices (gameSlice, aiSlice, saveLoadSlice)
+│   ├── types/          # Global TypeScript definitions and IPC contracts
+│   ├── utils/          # Notation, UCI translation, asset mappers & SoundManager
+│   ├── App.tsx         # Root component
+│   ├── index.css       # Global styles (Tailwind CSS)
+│   └── main.tsx        # Vite application entry point
+└── tests/              # Vitest test suites (engines, rules, AI heuristic, and save/load)
 ```
 
 ## Tech Stack
@@ -143,7 +179,16 @@ I highly value your feedback! Feel free to open an issue to suggest new features
   - Attribution: By Uray M. János - http://zoldsakk.hu/en/info.php?item=images, GFDL, https://commons.wikimedia.org/w/index.php?curid=61257887 & https://commons.wikimedia.org/w/index.php?curid=61261369
 
 - **Colour Pieces (Chaturaji)**
-  - Attibution: By SpinningSpark work: NikNaks, CC BY-SA 3.0
+  - Attibution: By SpinningSpark work: NikNaks, CC BY-SA 3.0, https://commons.wikimedia.org/wiki/User:Spinningspark
+
+**Xiangqi Pieces**
+  - Attribution: By Inductiveload - Own work, Public Domain, https://commons.wikimedia.org/wiki/User:Inductiveload
+
+**Janggi Pieces**
+  - Attribution: By Hari Seldon - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/User:Hari_Seldon
+
+**Makruk Pieces**
+  - Attribution: By Yevrowl - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/User:Yevrowl
 
 - **Knight from the Atlas Chess Fusion Logo:**
   - Attribution: By [Gregory Strong](https://www.chessvariants.com/who/GregoryStrong) and [H.G. Muller](https://www.chessvariants.com/who/HGMuller), [Alfaerie SVG Chess Graphics](https://www.chessvariants.com/graphics.dir/alfaerieSVG/index.html)
@@ -175,7 +220,5 @@ You are free to share and adapt the material for non-commercial purposes, as lon
 
 - Regional:
   - Shogi (Japan)
-  - Makruk (Thailand)
-  - Ouk Chatrang (Cambodia)
   - Sittuyin (Myanmar)
   - ~~Shatar (Mongolia)~~ (Shatar is just chess in Mongolia. Not implemented due to lack of solid evidence regarding pre-chess old rules)

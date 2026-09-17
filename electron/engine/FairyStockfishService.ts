@@ -172,6 +172,10 @@ export class FairyStockfishService extends EventEmitter {
                 return 'grantacedrex';
             case 'tamerlane':
                 return 'tamerlane';
+            case 'makruk':
+                return 'makruk';
+            case 'ouk_chaktrang':
+                return 'cambodian';
             default:
                 return variantId.toLowerCase();
         }

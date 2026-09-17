@@ -142,6 +142,15 @@ export interface Translations {
         };
         iconPieces: string;
         textPieces: string;
+        makrukPieceCount: string;
+        makrukBoardCount: string;
+        makrukCount: string;
+        movesRemaining: string;
+        makrukStartCounting: string;
+        makrukStopCounting: string;
+        makrukStartCountingTooltip: string;
+        makrukStopCountingTooltip: string;
+        makrukOnlyDisadvantaged: string;
     };
     variantCodex: {
         codexReference: string;

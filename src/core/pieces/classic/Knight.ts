@@ -1,6 +1,6 @@
-import { Piece } from "../Piece.ts";
+import { Piece } from "../Piece";
 import type { PieceColor, Position} from "../../../types";
-import { Board } from "../../models/Board.ts";
+import { Board } from "../../models/Board";
 
 export class Knight extends Piece {
     constructor(id: string, color: PieceColor, position: Position) {

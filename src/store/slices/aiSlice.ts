@@ -86,10 +86,17 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                             break;
                     }
 
-                    const uciMoves = historyToUciMoves(engine.history, engine.board.rows);
+                    const isMakruk = currentVariantId === 'makruk';
+                    const fenToSend = isMakruk && typeof (engine as any).getFen === 'function'
+                        ? (engine as any).getFen()
+                        : (engine as any).initialFen;
+                    const movesToSend = isMakruk
+                        ? []
+                        : historyToUciMoves(engine.history, engine.board.rows);
+
                     const bestMoveStr = await window.electronAPI.engine.calculateMove({
-                        fen: (engine as any).initialFen,
-                        moves: uciMoves,
+                        fen: fenToSend,
+                        moves: movesToSend,
                         movetime,
                         depth,
                         skillLevel
@@ -186,6 +193,7 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                     history: [...engine.history],
                     isAiThinking: false,
                     activeInterception: null,
+                    lastAction: 'move',
                 });
 
                 // Roll dice for the next turn if dice rule is active

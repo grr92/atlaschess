@@ -1,4 +1,4 @@
-import { Piece } from '../pieces/Piece.ts';
+import { Piece } from '../pieces/Piece';
 import type { Position } from '../../types';
 
 export class Board {

@@ -8,7 +8,10 @@ import {
     ChaturajiKing, ChaturajiElephant, ChaturajiHorse, ChaturajiBoat, ChaturajiPawn,
     GrantKing, Aanca, Unicorn, Lion, Giraffe, Crocodile, GrantPawn,
     CourierKing, Courier, CourierBishop, CourierQueen, Schleich, Sage,
-    FourSeasonsKing, FourSeasonsGeneral, FourSeasonsRook, FourSeasonsKnight, FourSeasonsBishop, FourSeasonsPawn
+    FourSeasonsKing, FourSeasonsGeneral, FourSeasonsRook, FourSeasonsKnight, FourSeasonsBishop, FourSeasonsPawn,
+    XiangqiGeneral, XiangqiAdvisor, XiangqiElephant, XiangqiHorse, XiangqiChariot, XiangqiCannon, XiangqiSoldier,
+    JanggiGeneral, JanggiGuard, JanggiElephant, JanggiHorse, JanggiChariot, JanggiCannon, JanggiSoldier,
+    Khun, Met, Khon, Ma, Ruea, Bia, Biangai
 } from '../core/pieces/piecesIndex';
 import { FourSeasonsEngine } from '../core/engine/FourSeasonsEngine';
 
@@ -93,6 +96,30 @@ export function populateCustomPieces(
             case 'Bishop': pieceInstance = new Bishop(p.id, p.color, p.position); break;
             case 'Knight': pieceInstance = new Knight(p.id, p.color, p.position); break;
             case 'Pawn': pieceInstance = new Pawn(p.id, p.color, p.position); break;
+            // Xiangqi
+            case 'XiangqiGeneral': pieceInstance = new XiangqiGeneral(p.id, p.color, p.position); break;
+            case 'XiangqiAdvisor': pieceInstance = new XiangqiAdvisor(p.id, p.color, p.position); break;
+            case 'XiangqiElephant': pieceInstance = new XiangqiElephant(p.id, p.color, p.position); break;
+            case 'XiangqiHorse': pieceInstance = new XiangqiHorse(p.id, p.color, p.position); break;
+            case 'XiangqiChariot': pieceInstance = new XiangqiChariot(p.id, p.color, p.position); break;
+            case 'XiangqiCannon': pieceInstance = new XiangqiCannon(p.id, p.color, p.position); break;
+            case 'XiangqiSoldier': pieceInstance = new XiangqiSoldier(p.id, p.color, p.position); break;
+            // Janggi
+            case 'JanggiGeneral': pieceInstance = new JanggiGeneral(p.id, p.color, p.position); break;
+            case 'JanggiGuard': pieceInstance = new JanggiGuard(p.id, p.color, p.position); break;
+            case 'JanggiElephant': pieceInstance = new JanggiElephant(p.id, p.color, p.position); break;
+            case 'JanggiHorse': pieceInstance = new JanggiHorse(p.id, p.color, p.position); break;
+            case 'JanggiChariot': pieceInstance = new JanggiChariot(p.id, p.color, p.position); break;
+            case 'JanggiCannon': pieceInstance = new JanggiCannon(p.id, p.color, p.position); break;
+            case 'JanggiSoldier': pieceInstance = new JanggiSoldier(p.id, p.color, p.position); break;
+            // Makruk
+            case 'Khun': pieceInstance = new Khun(p.id, p.color, p.position); break;
+            case 'Met': pieceInstance = new Met(p.id, p.color, p.position); break;
+            case 'Khon': pieceInstance = new Khon(p.id, p.color, p.position); break;
+            case 'Ma': pieceInstance = new Ma(p.id, p.color, p.position); break;
+            case 'Ruea': pieceInstance = new Ruea(p.id, p.color, p.position); break;
+            case 'Bia': pieceInstance = new Bia(p.id, p.color, p.position); break;
+            case 'Biangai': pieceInstance = new Biangai(p.id, p.color, p.position); break;
         }
         if (pieceInstance) {
             engine.board.setPiece(pieceInstance, p.position.x, p.position.y);

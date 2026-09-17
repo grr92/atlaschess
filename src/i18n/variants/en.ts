@@ -61,6 +61,18 @@ export const variantMeta_en: Record<string, VariantMetaI18n> = {
         tag: '9x10 Board',
         desc: 'Korean strategy board game derived from xiangqi, played on the 90 intersections of a 9×10 board without a river. Features customizable starting setups, jumping cannons, wide-ranging elephants, and palace diagonals.',
     },
+    makruk: {
+        title: 'Makruk',
+        origin: 'Thailand',
+        tag: '8x8 Board',
+        desc: 'Traditional Thai chess descended from chaturanga, featuring Lords, Seeds, Noblemen, and unique counting rules for fleeing kings.',
+    },
+    ouk_chaktrang: {
+        title: 'Ouk Chaktrang',
+        origin: 'Cambodia',
+        tag: '8x8 Board',
+        desc: 'Traditional Cambodian chess closely related to Makruk, featuring dynamic opening options for the Lord and Seed before the first capture occurs.',
+    },
 };
 
 export const variantCodex_en: Record<string, VariantCodexI18n> = {
@@ -674,6 +686,133 @@ export const variantCodex_en: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'The generals represent the rival Chinese states of Han (漢, red side) and Chu (楚, blue side) that fought for power after the fall of the Qin dynasty. Red pieces are inscribed with regular script characters, while blue pieces use cursive script.',
             rightBoxTitle: 'Popular Culture',
             rightBoxDesc: 'In South Korea, janggi is a traditional mind sport and widely enjoyed leisure game. Players often gather year-round in city parks to play casual matches and analyze tactical positions.',
+        },
+    },
+    makruk: {
+        name: 'Makruk',
+        rules: {
+            intro: 'Makruk (Thai: หมากรุก), or Thai chess, is a strategy board game descended from 6th-century Indian chaturanga or a close relative thereof. Played on an 8x8 uncheckered board. White moves first. The objective is to checkmate the enemy lord and stalemate is a draw.',
+            bullets: [
+                {
+                    title: 'The Lord (Khun - ขุน):',
+                    desc: 'Moves or captures one space in any direction (orthogonally or diagonally). Royal piece: the game is won by checkmating the opponent\'s lord. Stalemate results in a draw, like in Western chess and unlike Shatranj.',
+                    pieceName: 'Khun',
+                },
+                {
+                    title: 'The Seed (Met - เม็ด):',
+                    desc: 'Moves or captures one space diagonally in all four directions, like the ferz in Shatranj. Starts to the right side of the lord.',
+                    pieceName: 'Met',
+                },
+                {
+                    title: 'The Nobleman (Khon - โคน):',
+                    desc: 'Moves or captures one space diagonally in four directions or one space straight forward (5 directions total), like the silver general in Shogi.',
+                    pieceName: 'Khon',
+                },
+                {
+                    title: 'The Horse (Ma - ม้า):',
+                    desc: 'Moves two spaces orthogonally and then one space perpendicularly, leaping over any intervening pieces, exactly like the knight in Western chess.',
+                    pieceName: 'Ma',
+                },
+                {
+                    title: 'The Boat (Ruea - เรือ):',
+                    desc: 'Moves or captures any number of unoccupied spaces orthogonally along ranks and files, like the rook in Western chess.',
+                    pieceName: 'Ruea',
+                },
+                {
+                    title: 'The Cowrie Shell (Bia - เบี้ย):',
+                    desc: 'Moves one space forward and captures one space diagonally forward. It cannot advance two spaces on its first move (no double-step, no en passant). When reaching the sixth rank (rank 6 for White, rank 3 for Black), it is always promoted to an overturned cowrie (Biangai).',
+                    pieceName: 'Bia',
+                },
+                {
+                    title: 'The Overturned Cowrie (Biangai - เบี้ยหงาย):',
+                    desc: 'A promoted cowrie shell. Moves or captures one space diagonally in any direction, possessing identical movement to the seed (Met).',
+                    pieceName: 'Biangai',
+                },
+                {
+                    title: 'Counting Rules - Board Count (64 Moves):',
+                    desc: 'When neither side has any unpromoted cowries left on the board, checkmate must be achieved within 64 moves or the game is declared a draw. The disadvantaged player counts and may stop counting (and also restart) at any time. If the disadvantaged player delivers mate without having stopped counting, the game is declared a draw.',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Counting Rules - Piece Count (Fleeing King):',
+                    desc: 'When the last non-lord piece of the disadvantaged player is captured, the weaker player may start counting fleeing moves. The maximum move quota is determined by the stronger player\'s surviving pieces: 2 Boats = 8 moves; 1 Boat = 16 moves; 2 Noblemen = 22 moves; 2 Horses = 32 moves; 1 Nobleman = 44 moves; 1 Horse = 64 moves; Seeds only = 64 moves. The disadvantaged player begins counting from the total number of pieces left on the board (including both lords), requiring the attacker to checkmate before the limit is reached. The disadvantaged player counts and may stop counting (and also restart) at any time.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Pro tip: Coordinate your boats and noblemen to establish board control, and remember that when entering the endgame without cowries or with a lone king, every move counts strictly against the countdown.',
+        },
+        history: {
+            intro: 'Makruk (or Thai chess) is a strategy board game descended from the 6th-century Indian game of chaturanga or a close relative thereof, and is related to chess. In Cambodia, virtually the same game is played, where it is known as ouk or ouk chatrang.',
+            leftBoxTitle: 'Origin and Transmission',
+            leftBoxDesc: 'Persian traders arrived in the Ayutthaya kingdom around the 14th century to trade and spread their culture, suggesting Siamese makruk could have derived from Persian shatranj through cultural exchange, as the movement of the seed (met) is essentially identical to the Persian ferz. However, it is considered more likely that the game arrived more directly from India, given the phonetic similarity between chaturanga and Cambodian ouk chaktrang, as well as the movement of the nobleman (khon). In «A History of Chess» (1913), H. J. R. Murray suggests the game may have followed the expansion of Buddhism in the region.',
+            rightBoxTitle: 'Cambodian Ouk',
+            rightBoxDesc: 'In Cambodia and among Khmers in Vietnam (who call it cờ ốc, or «seashell chess»), ouk is a traditional staple of the Bon Om Touk festivities. 12th-century temple bas-reliefs from the Khmer Empire demonstrate that the game has been played since at least that era. It features minor differences such as optional free opening moves (the lord moving like a horse and the seed advancing two squares before any capture). Cambodia held the first nationwide standardized tournament in 2008 and featured ouk chaktrang as a traditional sport at the 2023 SEA Games.',
+        },
+    },
+    ouk_chaktrang: {
+        name: 'Ouk Chaktrang',
+        rules: {
+            intro: 'Ouk Chaktrang (Khmer: អុកចត្រង្គ), or Cambodian chess, is a strategy board game closely related to Thai Makruk. It shares the same pieces, board, and counting rules, but introduces dynamic opening options for the lord and seed as long as no captures have occurred in the game.',
+            bullets: [
+                {
+                    title: 'Special Opening - Lord\'s Knight Leap (Ang):',
+                    desc: 'On its very first move, and only if not currently in check, the lord may leap like a knight (L-shape), provided no pieces have been captured in the game so far.',
+                    pieceName: 'Khun',
+                },
+                {
+                    title: 'Special Opening - Seed\'s Two-Square Advance (Neang):',
+                    desc: 'On its very first move, the seed may advance two squares straight forward (jumping over any intervening piece), provided no pieces have been captured in the game so far.',
+                    pieceName: 'Met',
+                },
+                {
+                    title: 'The Lord (Ang):',
+                    desc: 'Moves or captures one square in any direction. The game is won by checkmating the enemy lord, and stalemate is a draw.',
+                    pieceName: 'Khun',
+                },
+                {
+                    title: 'The Seed (Neang):',
+                    desc: 'Moves or captures one square diagonally in all four directions. Starts positioned to the right of the lord.',
+                    pieceName: 'Met',
+                },
+                {
+                    title: 'The Nobleman (Koul):',
+                    desc: 'Moves or captures one square diagonally in four directions or one square straight forward (5 directions total), identical to the Makruk nobleman.',
+                    pieceName: 'Khon',
+                },
+                {
+                    title: 'The Horse (Ses):',
+                    desc: 'Moves in an L-shape leaping over any intervening piece, exactly like the chess knight.',
+                    pieceName: 'Ma',
+                },
+                {
+                    title: 'The Boat (Tuuk):',
+                    desc: 'Moves or captures any number of unobstructed squares orthogonally along ranks and files, like the chess rook.',
+                    pieceName: 'Ruea',
+                },
+                {
+                    title: 'The Fish (Trey):',
+                    desc: 'Moves one square forward and captures one square diagonally forward. Upon reaching the relative 6th rank, mandatory promotion to inverted fish (Trey Bak).',
+                    pieceName: 'Bia',
+                },
+                {
+                    title: 'The Inverted Fish (Trey Bak):',
+                    desc: 'A promoted (turned over) fish. Moves or captures one square diagonally in any direction, having the same movement as the seed (Neang).',
+                    pieceName: 'Biangai',
+                },
+                {
+                    title: 'Counting Rules (Board Count & Fleeing King):',
+                    desc: 'Inherits all Makruk counting rules: 64-move board count when no unpromoted fish remain, and piece countdown against a fleeing lone king. If the counting player checkmates without stopping the count, the game is declared a draw.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Pro tip: Utilize the lord\'s opening knight leap to quickly reach safety and activate your boats before the first capture unlocks open lines.',
+        },
+        history: {
+            intro: 'Ouk Chaktrang (or Ouk) is the traditional strategy board game of Cambodia, with roots extending back over a millennium from ancient Indian chaturanga.',
+            leftBoxTitle: 'Archaeological Evidence at Angkor',
+            leftBoxDesc: '12th-century bas-reliefs in Khmer Empire temples such as Angkor Wat and the Bayon depict people playing Ouk, proving that the game was already an established courtly and popular pastime during the zenith of Angkor civilization.',
+            rightBoxTitle: 'Living Tradition & Modern Sport',
+            rightBoxDesc: 'Played across Cambodia and by Khmers in Vietnam (where it is known as cờ ốc), Ouk is a featured staple of the annual Bon Om Touk water festival. Standardized nationwide in 2008, it was contested as an official medal sport at the 2023 Southeast Asian Games (SEA Games).',
         },
     },
 };

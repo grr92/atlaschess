@@ -1,12 +1,12 @@
 import type {GameVariant} from './GameVariant';
 import { Board } from '../models/Board';
 
-import { Pawn } from '../pieces/classic/Pawn.ts';
-import { Rook } from '../pieces/classic/Rook.ts';
-import { Knight } from '../pieces/classic/Knight.ts';
-import { Bishop } from '../pieces/classic/Bishop.ts';
-import { Queen } from '../pieces/classic/Queen.ts';
-import { King } from '../pieces/classic/King.ts';
+import { Pawn } from '../pieces/classic/Pawn';
+import { Rook } from '../pieces/classic/Rook';
+import { Knight } from '../pieces/classic/Knight';
+import { Bishop } from '../pieces/classic/Bishop';
+import { Queen } from '../pieces/classic/Queen';
+import { King } from '../pieces/classic/King';
 
 export class ClassicChess implements GameVariant {
     name: string;

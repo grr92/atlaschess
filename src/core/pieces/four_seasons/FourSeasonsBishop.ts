@@ -1,6 +1,6 @@
-import { Piece } from '../Piece.ts';
+import { Piece } from '../Piece';
 import type { Move, PieceColor, Position } from '../../../types';
-import { Board } from '../../models/Board.ts';
+import { Board } from '../../models/Board';
 
 /**
  * Historical Bishop (Alfil / Pil) in Four Seasons Chess.
