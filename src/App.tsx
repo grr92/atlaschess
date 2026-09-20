@@ -17,6 +17,7 @@ import { VariantInfoModal } from "./components/modals/VariantInfoModal";
 import { SettingsModal } from "./components/modals/SettingsModal";
 import { D8DiceWidget } from "./components/board/D8DiceWidget";
 import { MakrukCountingWidget } from "./components/board/MakrukCountingWidget";
+import { SittuyinCountingWidget } from "./components/board/SittuyinCountingWidget";
 import { ChaturajiEngine } from "./core/engine/ChaturajiEngine";
 import { FourSeasonsEngine, type FourSeasonsColor } from "./core/engine/FourSeasonsEngine";
 import { VariantRegistry } from "./core/variants/variantRegistry";
@@ -124,6 +125,10 @@ const App = () => {
                 }
                 return t.gameplay.draw;
             }
+        }
+        const customStatus = engine?.getCustomStatus();
+        if (customStatus) {
+            return customStatus;
         }
         if (gameState === 'checkmate') return t.gameplay.checkmate;
         if (gameState === 'draw') return t.gameplay.draw;
@@ -239,6 +244,7 @@ const App = () => {
                                 <div className="flex items-center gap-2 flex-shrink-0">
                                     <D8DiceWidget />
                                     <MakrukCountingWidget />
+                                    <SittuyinCountingWidget />
                                     {canPass && (
                                         <button
                                             onClick={passTurn}
@@ -256,30 +262,36 @@ const App = () => {
                                             <span>{t.gameplay.aiThinking}</span>
                                         </div>
                                     ) : (
-                                        <div className="flex items-center gap-2">
-                                            <div className={`w-3.5 h-3.5 rounded-full ring-2 ring-amber-400/50 ${getPlayerColorDot(currentTurn)} shadow-md`} />
-                                            <span className="text-xs uppercase font-bold tracking-wider text-atlas-titleText">
-                                                {getPlayerColorName(currentTurn)}
-                                            </span>
-                                            {currentVariantId === 'four_seasons' && engine instanceof FourSeasonsEngine && engine.annexedArmies[currentTurn as FourSeasonsColor]?.length > 1 && (
-                                                <div className="flex items-center gap-1 bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 rounded text-[10px] text-amber-300 font-bold" title="Armies commanded by active player">
-                                                    <span>+{engine.annexedArmies[currentTurn as FourSeasonsColor].filter((c: FourSeasonsColor) => c !== currentTurn).length}</span>
-                                                    <div className="flex items-center -space-x-1 ml-0.5">
-                                                        {engine.annexedArmies[currentTurn as FourSeasonsColor]
-                                                            .filter((c: FourSeasonsColor) => c !== currentTurn)
-                                                            .map((c: FourSeasonsColor) => (
-                                                                <div key={c} className={`w-2.5 h-2.5 rounded-full ${getPlayerColorDot(c)} ring-1 ring-slate-900`} title={getPlayerColorName(c)} />
-                                                            ))
-                                                        }
-                                                    </div>
+                                        (() => {
+                                            const activeColor = engine ? engine.getActiveController() : currentTurn;
+
+                                            return (
+                                                <div className="flex items-center gap-2">
+                                                    <div className={`w-3.5 h-3.5 rounded-full ring-2 ring-amber-400/50 ${getPlayerColorDot(activeColor)} shadow-md`} />
+                                                    <span className="text-xs uppercase font-bold tracking-wider text-atlas-titleText">
+                                                        {getPlayerColorName(activeColor)}
+                                                    </span>
+                                                    {currentVariantId === 'four_seasons' && engine instanceof FourSeasonsEngine && engine.annexedArmies[currentTurn as FourSeasonsColor]?.length > 1 && (
+                                                        <div className="flex items-center gap-1 bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 rounded text-[10px] text-amber-300 font-bold" title="Armies commanded by active player">
+                                                            <span>+{engine.annexedArmies[currentTurn as FourSeasonsColor].filter((c: FourSeasonsColor) => c !== currentTurn).length}</span>
+                                                            <div className="flex items-center -space-x-1 ml-0.5">
+                                                                {engine.annexedArmies[currentTurn as FourSeasonsColor]
+                                                                    .filter((c: FourSeasonsColor) => c !== currentTurn)
+                                                                    .map((c: FourSeasonsColor) => (
+                                                                        <div key={c} className={`w-2.5 h-2.5 rounded-full ${getPlayerColorDot(c)} ring-1 ring-slate-900`} title={getPlayerColorName(c)} />
+                                                                    ))
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    {gameMode === 'vs_ai' && (
+                                                        <span className="text-[10px] px-1.5 py-0.2 bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold rounded">
+                                                            {activeColor === playerColor ? t.gameplay.turnYou : t.gameplay.turnAi}
+                                                        </span>
+                                                    )}
                                                 </div>
-                                            )}
-                                            {gameMode === 'vs_ai' && (
-                                                <span className="text-[10px] px-1.5 py-0.2 bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold rounded">
-                                                    {currentTurn === playerColor ? t.gameplay.turnYou : t.gameplay.turnAi}
-                                                </span>
-                                            )}
-                                        </div>
+                                            );
+                                        })()
                                     )}
                                     <span className="text-white/20">|</span>
                                     <span className={`text-xs font-bold uppercase tracking-wider ${

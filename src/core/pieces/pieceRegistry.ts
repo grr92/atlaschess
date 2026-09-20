@@ -128,7 +128,15 @@ export const PIECE_REGISTRY: Record<PieceName, PieceMetadata> = {
     Ma: { name: 'Ma', displayName: 'Horse', value: 320, sortOrder: 8, svgChar: 'n' },
     Ruea: { name: 'Ruea', displayName: 'Boat', value: 500, sortOrder: 4, svgChar: 'r' },
     Bia: { name: 'Bia', displayName: 'Cowrie', value: 100, sortOrder: 13, svgChar: 'p' },
-    Biangai: { name: 'Biangai', displayName: 'Promoted Cowrie', value: 200, sortOrder: 12, svgChar: 'm' }
+    Biangai: { name: 'Biangai', displayName: 'Promoted Cowrie', value: 200, sortOrder: 12, svgChar: 'm' },
+
+    // Sittuyin (Burmese Chess)
+    Mingyi: { name: 'Mingyi', displayName: 'King', value: 10000, sortOrder: 0, svgChar: 'k' },
+    Sitke: { name: 'Sitke', displayName: 'General', value: 200, sortOrder: 11, svgChar: 'q' },
+    Sin: { name: 'Sin', displayName: 'Elephant', value: 350, sortOrder: 6, svgChar: 'e' },
+    Myin: { name: 'Myin', displayName: 'Horse', value: 320, sortOrder: 8, svgChar: 'n' },
+    Yahhta: { name: 'Yahhta', displayName: 'Chariot', value: 500, sortOrder: 4, svgChar: 'r' },
+    Ne: { name: 'Ne', displayName: 'Feudal Lord', value: 100, sortOrder: 13, svgChar: 'p' }
 };
 
 export const getPieceMetadata = (name: string): PieceMetadata | undefined => {

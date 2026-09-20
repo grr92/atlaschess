@@ -73,6 +73,12 @@ export const variantMeta_ca: Record<string, VariantMetaI18n> = {
         tag: 'Tauler 8x8',
         desc: 'Escacs tradicionals cambodjans emparentats amb el makruk, caracteritzats per opcions d\'obertura dinàmiques per al senyor i la llavor abans que es produeixi la primera captura.',
     },
+    sittuyin: {
+        title: 'Sittuyin',
+        origin: 'Myanmar (Birmània)',
+        tag: 'Tauler 8x8',
+        desc: 'Escacs tradicionals birmans amb un tauler marcat per les diagonals Sit-ke-min, peons esglaonats i posicions inicials de les peces variables i personalitzables.',
+    },
 };
 
 export const variantCodex_ca: Record<string, VariantCodexI18n> = {
@@ -813,6 +819,62 @@ export const variantCodex_ca: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'Hi ha nombrosos baixos relleus del segle XII a temples de l\'Imperi Khmer (com ara el Bayon i Angkor Wat) que representen figures jugant partides d\'Ouk, demostrant l\'arrelament popular i cortesà del joc durant l\'esplendor d\'Angkor.',
             rightBoxTitle: 'Tradició Viva i Esport Modern',
             rightBoxDesc: 'Jugat àmpliament a Cambodja i pels khmers del Vietnam (on es coneix com a cờ ốc), és una part central del festival de l\'aigua Bon Om Touk. El 2008 el Comitè Olímpic de Cambodja en va estandarditzar el reglament nacional i el 2023 va ser esport oficial als Jocs del Sud-est Asiàtic (SEA Games).',
+        },
+    },
+    sittuyin: {
+        name: 'Sittuyin',
+        rules: {
+            intro: 'El Sittuyin (en birmà: စစ်တုရင်) és el joc d\'escacs tradicional de Myanmar (Birmània). Jugat sobre un tauler monocrom de 8×8 amb les diagonals Sit-ke-min creuades, els peons comencen en una formació esglaonada asimètrica i poden promocionar a General en assolir o creuar la línia diagonal de promoció a la meitat enemiga quan el propi General ha caigut.',
+            bullets: [
+                {
+                    title: 'El Rei (Mingyi):',
+                    desc: 'Mou una casella en qualsevol direcció (ortogonal o diagonal). L\'objectiu és fer escac i mat. L\'ofegat (stalemate) resulta en taules.',
+                    pieceName: 'Mingyi',
+                },
+                {
+                    title: 'El General (Sitke):',
+                    desc: 'Mou una casella en diagonal en les quatre direccions (idèntic al Ferz del Shatranj o Met del Makruk). Cada jugador pot tenir un màxim d\'un General actiu al tauler.',
+                    pieceName: 'Sitke',
+                },
+                {
+                    title: 'El Elefant (Sin):',
+                    desc: 'Mou una casella en diagonal en les quatre direccions o una casella endavant en línia recta (5 direccions en total), idèntic al Noble del Makruk o General de Plata de Shogi.',
+                    pieceName: 'Sin',
+                },
+                {
+                    title: 'El Cavall (Myin):',
+                    desc: 'Mou amb el salt característic en "L", podent saltar sobre qualsevol obstacle en el seu camí.',
+                    pieceName: 'Myin',
+                },
+                {
+                    title: 'El Carro / Torre (Yahhta):',
+                    desc: 'Mou ortogonalment qualsevol nombre de caselles lliures al llarg de files o columnes.',
+                    pieceName: 'Yahhta',
+                },
+                {
+                    title: 'El Peó / Senyor Feudal (Ne):',
+                    desc: 'Mou una casella cap endavant sense capturar i captura una casella en diagonal cap endavant. No disposa d\'avanç doble inicial ni captura al pas.',
+                    pieceName: 'Ne',
+                },
+                {
+                    title: 'Promoció Immediata i Diferida:',
+                    desc: 'Els peons promocionen a General en assolir o creuar la línia diagonal de la meitat del tauler del rival, sempre que el propi General hagi estat capturat. Si el General ja és mort en creuar la línia, la promoció és immediata. Si el General és viu, el peó roman com a peó; quan el General mori més endavant, el jugador pot promocionar-lo in situ en el seu torn mitjançant la píndola d\'acció flotant.',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Regles de Taules i Comptatge del Rei Solitari:',
+                    desc: 'Es declaren taules per rei ofegat, posició morta, triple repetició o regla de 50 jugades. A més, si un jugador queda únicament amb el seu Rei i el rival no té peons, el rei solitari empata si sobreviu a un comptatge fix: 16 jugades si el rival té com a mínim una Torre, 44 jugades si té com a mínim un Elefant, o 64 jugades si té com a mínim un Cavall.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Consell professional: Mantén els teus peons situats a les diagonals enemigues com una amenaça latent; si perds el teu General, podràs promoure immediatament o reviure un nou General en una posició avançada clau.',
+        },
+        history: {
+            intro: 'El Sittuyin (en birmà: စစ်တုရင်) és el joc d\'escacs mil·lenari de Myanmar, descendent directe del xaturanga indi que va arribar a la regió cap al segle VIII. El seu nom deriva de «sit» (guerra o exèrcit) i representa les quatre divisions militars tradicionals: infanteria (nè), cavalleria (myin), elefants (sin) i carros (yahhta). En fonts històriques i cròniques colonials del segle XIX va ser documentat sota denominacions com «chit-thareen» (Stewart Culin, 1898; Hiram Cox, 1801; Michael Symes, 1800, qui el va anomenar «el joc del general») o «tsit-da-yin» (G. W. Strettell, 1876). Els antics monarques i cabdills birmans el feien servir a la cort per assajar tàctiques de combat abans d\'entrar en campanya: com que els reis birmans lluitaven directament a primera línia de foc, el lideratge actiu del monarca sobre el tauler decidia el resultat de la contesa.',
+            leftBoxTitle: 'Mitologia del Ramayana, Art i Tradició Viva',
+            leftBoxDesc: 'Les peces tradicionals són escultures en fusta o marfil (vermelles i negres o verdes) que encarnen la lluita èpica del Ramayana (Yama Zatdaw): el príncep Rama i el general simi Hanuman davant el rei dimoni Ravana. Els artesans construïen taulers de taula elevats (sittuyin-kon) dotats de calaixos per desar-hi les peces, pensats per jugar-hi a la gatzollada a terra. En les partides clàssiques, cada moviment s\'acompanya d\'un cop sec i ressonant contra la fusta, recordant el xoc de les armes. Emparentat anatòmicament amb el Makruk tailandès i l\'Ouk Chaktrang cambodjà segons l\'historiador Jean-Louis Cazaux, el joc va patir un fort declivi i una gran escassetat de jocs tallats antics després de cinc dècades de dictadura militar i aïllament al segle XX, eclipsat pel joc internacional però preservat a les regions nord-occidentals.',
+            rightBoxTitle: 'Desplegament Sit-tee, Sit-ke-min i Reglament',
+            rightBoxDesc: 'El joc es disputa sobre un tauler llis de 64 caselles sense alternança de colors, travessat per dues grans diagonals anomenades Sit-ke-min («línies del general»). La partida comença amb la fase de Sit-tee (desplegament de tropes): darrere dels peons esglaonats, cada bàndol disposa lliurement les seves peces majors; en tornejos oficials es col·loca una petita cortina al mig per ocultar la formació fins que ambdós exèrcits estan preparats. H. J. R. Murray en va descriure el 1913 l\'evolució en tres etapes (col·locació, recol·locació i batalla oberta). Els peons només poden promocionar a General en assolir les diagonals Sit-ke-min i únicament si el propi General ja ha estat capturat. L\'objectiu és fer escac i mat (khwè), estant prohibit l\'ofegat (taules il·legals). Anne Sunnucks també va registrar antigues variants amb tres daus de torns triples.',
         },
     },
 };

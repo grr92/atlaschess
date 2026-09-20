@@ -11,7 +11,8 @@ import {
     FourSeasonsKing, FourSeasonsGeneral, FourSeasonsRook, FourSeasonsKnight, FourSeasonsBishop, FourSeasonsPawn,
     XiangqiGeneral, XiangqiAdvisor, XiangqiElephant, XiangqiHorse, XiangqiChariot, XiangqiCannon, XiangqiSoldier,
     JanggiGeneral, JanggiGuard, JanggiElephant, JanggiHorse, JanggiChariot, JanggiCannon, JanggiSoldier,
-    Khun, Met, Khon, Ma, Ruea, Bia, Biangai
+    Khun, Met, Khon, Ma, Ruea, Bia, Biangai,
+    Mingyi, Sitke, Sin, Myin, Yahhta, Ne
 } from '../core/pieces/piecesIndex';
 import { FourSeasonsEngine } from '../core/engine/FourSeasonsEngine';
 
@@ -120,6 +121,21 @@ export function populateCustomPieces(
             case 'Ruea': pieceInstance = new Ruea(p.id, p.color, p.position); break;
             case 'Bia': pieceInstance = new Bia(p.id, p.color, p.position); break;
             case 'Biangai': pieceInstance = new Biangai(p.id, p.color, p.position); break;
+            // Sittuyin
+            case 'Mingyi': pieceInstance = new Mingyi(p.id, p.color, p.position); break;
+            case 'Sitke': pieceInstance = new Sitke(p.id, p.color, p.position); break;
+            case 'Sin': pieceInstance = new Sin(p.id, p.color, p.position); break;
+            case 'Myin': pieceInstance = new Myin(p.id, p.color, p.position); break;
+            case 'Yahhta':
+            case 'Ywatha': pieceInstance = new Yahhta(p.id, p.color, p.position); break;
+            case 'Ne': {
+                const ne = new Ne(p.id, p.color, p.position);
+                if ((p as any).hasLostPromotion) {
+                    ne.hasLostPromotion = true;
+                }
+                pieceInstance = ne;
+                break;
+            }
         }
         if (pieceInstance) {
             engine.board.setPiece(pieceInstance, p.position.x, p.position.y);

@@ -73,6 +73,12 @@ export const variantMeta_en: Record<string, VariantMetaI18n> = {
         tag: '8x8 Board',
         desc: 'Traditional Cambodian chess closely related to Makruk, featuring dynamic opening options for the Lord and Seed before the first capture occurs.',
     },
+    sittuyin: {
+        title: 'Sittuyin',
+        origin: 'Myanmar (Burma)',
+        tag: '8x8 Board',
+        desc: 'Traditional Burmese chess played on a board marked with the Sit-ke-min diagonals, featuring staggered pawns and variable, customizable initial piece positions.',
+    },
 };
 
 export const variantCodex_en: Record<string, VariantCodexI18n> = {
@@ -813,6 +819,62 @@ export const variantCodex_en: Record<string, VariantCodexI18n> = {
             leftBoxDesc: '12th-century bas-reliefs in Khmer Empire temples such as Angkor Wat and the Bayon depict people playing Ouk, proving that the game was already an established courtly and popular pastime during the zenith of Angkor civilization.',
             rightBoxTitle: 'Living Tradition & Modern Sport',
             rightBoxDesc: 'Played across Cambodia and by Khmers in Vietnam (where it is known as cờ ốc), Ouk is a featured staple of the annual Bon Om Touk water festival. Standardized nationwide in 2008, it was contested as an official medal sport at the 2023 Southeast Asian Games (SEA Games).',
+        },
+    },
+    sittuyin: {
+        name: 'Sittuyin',
+        rules: {
+            intro: 'Sittuyin (Burmese: စစ်တုရင်) is the traditional chess of Myanmar (Burma). Played on an 8×8 monochrome board marked with crossed Sit-ke-min diagonals, pawns start in an asymmetric staggered formation and can promote to General upon reaching or crossing the diagonal promotion line in the opponent\'s territory when one\'s own General has fallen.',
+            bullets: [
+                {
+                    title: 'The King (Mingyi):',
+                    desc: 'Moves one square in any direction (orthogonal or diagonal). The objective is checkmate. Stalemate results in a draw.',
+                    pieceName: 'Mingyi',
+                },
+                {
+                    title: 'The General (Sitke):',
+                    desc: 'Moves one square diagonally in all four directions (identical to the Ferz in Shatranj or Met in Makruk). Each player can have at most one active General on the board.',
+                    pieceName: 'Sitke',
+                },
+                {
+                    title: 'The Elephant (Sin):',
+                    desc: 'Moves one square diagonally in all four directions or one square straight forward (5 directions in total), identical to the Nobleman in Makruk or Silver General in Shogi.',
+                    pieceName: 'Sin',
+                },
+                {
+                    title: 'The Horse (Myin):',
+                    desc: 'Moves with the classic "L" leap, jumping over any obstacle in its path.',
+                    pieceName: 'Myin',
+                },
+                {
+                    title: 'The Chariot / Rook (Yahhta):',
+                    desc: 'Moves orthogonally any number of unoccupied squares along ranks or files.',
+                    pieceName: 'Yahhta',
+                },
+                {
+                    title: 'The Pawn / Feudal Lord (Ne):',
+                    desc: 'Moves one square straight forward without capturing, and captures one square diagonally forward. No initial double-step or en passant.',
+                    pieceName: 'Ne',
+                },
+                {
+                    title: 'Immediate and Deferred Promotion:',
+                    desc: 'Pawns promote to General upon reaching or crossing the opponent\'s diagonal line, provided one\'s own General has been captured. If the General is already dead upon crossing the line, promotion is immediate. If the General is alive, the pawn remains a pawn; once the General dies later, the player may promote the pawn in situ on their turn using the floating action pill.',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Draw Rules and Lone King Counting:',
+                    desc: 'Draws occur by stalemate, dead position, threefold repetition, or the 50-move rule. Additionally, if a player is left with only a lone King and the opponent has no pawns, the lone King escapes with a draw if it survives a fixed move count: 16 moves if the opponent has at least one Rook, 44 moves if at least one Elephant, or 64 moves if at least one Horse.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Pro tip: Keep pawns posted on or beyond the enemy diagonals as a dormant threat; if your General falls, you can instantly promote or revive a new General on an advanced square.',
+        },
+        history: {
+            intro: 'Sittuyin (Burmese: စစ်တုရင်) is Myanmar\'s millennium-old chess variant, a direct descendant of Indian chaturanga that reached the region around the 8th century. Its name derives from "sit" (war or army) and signifies the representation of the four traditional military divisions: infantry (nè), cavalry (myin), elephants (sin), and chariots (yahhta). Early Western chronicles and colonial scholarship recorded the game under names such as "chit-thareen" (Stewart Culin, 1898; Captain Hiram Cox, 1801; Major Michael Symes, 1800, who described it as the "General\'s game") or "tsit-da-yin" (G. W. Strettell, 1876). Ancient Burmese monarchs and commanders used it to rehearse real-world combat tactics before launching military campaigns: because Burmese kings fought directly on the front lines, the bold leadership of an active monarch on the board decided the battle\'s outcome.',
+            leftBoxTitle: 'Ramayana Mythology, Artistry, and Living Heritage',
+            leftBoxDesc: 'Traditional sets are miniature sculptures carved in wood or ivory (in official red and black or green) portraying the epic clash of the Ramayana (Yama Zatdaw): Prince Rama and his faithful monkey general Hanuman opposing the demon king Ravana. Traditional craftsmen constructed massive elevated board tables (sittuyin-kon) with sliding drawers beneath the playing surface, designed for players sitting or squatting on the floor. In classical play, pieces are slammed down onto the uncheckered wood with combative, resonant cracks reminiscent of weapon strikes. Structurally twinned with Thai Makruk and Cambodian Ouk Chaktrang as noted by chess historian Jean-Louis Cazaux, Sittuyin suffered severe decline and scarcity of antique carved sets over five decades of military dictatorship and economic hardship in the 20th century, largely overshadowed by international chess yet kept alive in northwestern Myanmar.',
+            rightBoxTitle: 'The Sit-tee Encampment, Sit-ke-min Diagonals, and Classical Play',
+            rightBoxDesc: 'Played on an uncheckered 64-square board crossed by two corner-to-corner diagonals called Sit-ke-min ("lines of the general"), games begin with the Sit-tee (troop deployment) phase. Behind fixed staggered pawns, each commander secretly positions their officers; in official tournaments, a cloth curtain is hung across the center to conceal army formations until both sides are marshaled. In 1913, H. J. R. Murray described this process across three distinct stages (initial placement, unrestricted maneuver, and open warfare). Pawns promote to General only upon reaching the Sit-ke-min diagonals and strictly when the player\'s original General has fallen. The objective is to checkmate (khwè) the opposing king, while stalemate is strictly forbidden. Chess encyclopedist Anne Sunnucks also documented historical variants employing three dice for triple-move turns.',
         },
     },
 };

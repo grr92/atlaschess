@@ -86,11 +86,11 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                             break;
                     }
 
-                    const isMakruk = currentVariantId === 'makruk';
-                    const fenToSend = isMakruk && typeof (engine as any).getFen === 'function'
+                    const isDynamicFenVariant = currentVariantId === 'makruk' || currentVariantId === 'sittuyin';
+                    const fenToSend = isDynamicFenVariant && typeof (engine as any).getFen === 'function'
                         ? (engine as any).getFen()
                         : (engine as any).initialFen;
-                    const movesToSend = isMakruk
+                    const movesToSend = isDynamicFenVariant
                         ? []
                         : historyToUciMoves(engine.history, engine.board.rows);
 
@@ -109,13 +109,20 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                     } else if (bestMoveStr && bestMoveStr !== '(none)') {
                         const parsed = uciToMove(bestMoveStr, engine.board.rows);
                         if (parsed) {
-                            const piece = engine.board.getPieceAt(parsed.from.x, parsed.from.y);
-                            let promotionPiece = parsed.promotionPiece;
-                            if (piece?.name === 'Pawn' && (parsed.to.y === 0 || parsed.to.y === engine.board.rows - 1) && !promotionPiece) {
-                                promotionPiece = 'Queen';
-                            }
+                            if (parsed.from.x === parsed.to.x && parsed.from.y === parsed.to.y) {
+                                // In-place deferred promotion (e.g. Sittuyin d6d6f)
+                                if (typeof (engine as any).promotePawnInPlace === 'function') {
+                                    executed = (engine as any).promotePawnInPlace(parsed.to);
+                                }
+                            } else {
+                                const piece = engine.board.getPieceAt(parsed.from.x, parsed.from.y);
+                                let promotionPiece = parsed.promotionPiece;
+                                if (piece?.name === 'Pawn' && (parsed.to.y === 0 || parsed.to.y === engine.board.rows - 1) && !promotionPiece) {
+                                    promotionPiece = 'Queen';
+                                }
 
-                            executed = engine.executeMove(parsed.from, parsed.to, promotionPiece);
+                                executed = engine.executeMove(parsed.from, parsed.to, promotionPiece);
+                            }
                         }
                     }
                 } catch (fsErr) {

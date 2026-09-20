@@ -3,13 +3,16 @@ import { useGameStore } from '../../src/store/useGameStore';
 import { XiangqiEngine } from '../../src/core/engine/XiangqiEngine';
 import { JanggiEngine } from '../../src/core/engine/JanggiEngine';
 import { MakrukEngine } from '../../src/core/engine/MakrukEngine';
+import { SittuyinEngine } from '../../src/core/engine/SittuyinEngine';
 import {
     XiangqiSoldier,
     JanggiElephant,
     JanggiHorse,
     Bia,
     Biangai,
-    Ruea
+    Ruea,
+    Yahhta,
+    Ne
 } from '../../src/core/pieces/piecesIndex';
 
 describe('Regional Variants: In-Depth Save/Load and Undo Verification', () => {
@@ -412,6 +415,152 @@ describe('Regional Variants: In-Depth Save/Load and Undo Verification', () => {
             // Undo move
             store.undoMove();
             expect((useGameStore.getState().engine as MakrukEngine).getCountingStatus().isCountingActive).toBe(false);
+        });
+    });
+
+    describe('Sittuyin (Burmese Chess)', () => {
+        it('should trigger counting rule upon capturing last piece with pawns present, save/reload and undo correctly', () => {
+            const store = useGameStore.getState();
+            const scenarioData = {
+                variantId: 'sittuyin',
+                gameMode: 'pvp',
+                playerColor: 'red',
+                currentTurn: 'red',
+                customPieces: [
+                    { name: 'Mingyi', id: 'k_r', color: 'red', position: { x: 0, y: 7 } },
+                    { name: 'Yahhta', id: 'r_r', color: 'red', position: { x: 4, y: 7 } },
+                    { name: 'Ne', id: 'p_r', color: 'red', position: { x: 2, y: 4 } },
+                    { name: 'Mingyi', id: 'k_b', color: 'black', position: { x: 1, y: 1 } },
+                    { name: 'Yahhta', id: 'r_b', color: 'black', position: { x: 5, y: 7 } }
+                ],
+                history: []
+            };
+
+            store.loadGame(JSON.stringify(scenarioData));
+            const engine = useGameStore.getState().engine as SittuyinEngine;
+            expect(engine.getCountingStatus().isActive).toBe(false);
+
+            // Red captures Black Rook at (5, 7)
+            store.selectSquare({ x: 4, y: 7 });
+            store.selectSquare({ x: 5, y: 7 });
+
+            // Counting must now be active with 16 moves limit
+            const statusAfterCapture = (useGameStore.getState().engine as SittuyinEngine).getCountingStatus();
+            expect(statusAfterCapture.isActive).toBe(true);
+            expect(statusAfterCapture.loneKingColor).toBe('black');
+            expect(statusAfterCapture.targetMoves).toBe(16);
+            expect(statusAfterCapture.remainingMoves).toBe(16);
+
+            // Save the game
+            const savedData = store.saveGame();
+            expect(savedData).toBeDefined();
+
+            // Corrupt by switching variant
+            store.initGame('classic', 'pvp', 'white', 'medium', false);
+            expect(useGameStore.getState().currentVariantId).toBe('classic');
+
+            // Load saved game
+            const loaded = store.loadGame(savedData!);
+            expect(loaded).toBe(true);
+
+            const reloadedEngine = useGameStore.getState().engine as SittuyinEngine;
+            expect(reloadedEngine).toBeInstanceOf(SittuyinEngine);
+            const reloadedStatus = reloadedEngine.getCountingStatus();
+            expect(reloadedStatus.isActive).toBe(true);
+            expect(reloadedStatus.loneKingColor).toBe('black');
+            expect(reloadedStatus.targetMoves).toBe(16);
+            expect(reloadedStatus.remainingMoves).toBe(16);
+
+            // Undo move: Black rook should be restored and counting should be deactivated
+            store.undoMove();
+            const afterUndoEngine = useGameStore.getState().engine as SittuyinEngine;
+            expect(afterUndoEngine.getCountingStatus().isActive).toBe(false);
+            expect(afterUndoEngine.board.getPieceAt(5, 7)).toBeInstanceOf(Yahhta);
+        });
+
+        it('should save, load, and undo deferred in-place pawn promotion in Sittuyin', () => {
+            const store = useGameStore.getState();
+            const scenarioData = {
+                variantId: 'sittuyin',
+                gameMode: 'pvp',
+                playerColor: 'red',
+                currentTurn: 'red',
+                customPieces: [
+                    { name: 'Mingyi', id: 'k_r', color: 'red', position: { x: 0, y: 7 } },
+                    { name: 'Ne', id: 'p_r', color: 'red', position: { x: 2, y: 2 } },
+                    { name: 'Mingyi', id: 'k_b', color: 'black', position: { x: 7, y: 0 } }
+                ],
+                history: []
+            };
+
+            store.loadGame(JSON.stringify(scenarioData));
+            const engine = useGameStore.getState().engine as SittuyinEngine;
+            expect(engine.board.getPieceAt(2, 2)).toBeInstanceOf(Ne);
+            expect(engine.canPromoteDeferred({ x: 2, y: 2 })).toBe(true);
+
+            // Execute deferred in-place promotion
+            store.executeContextAction({ x: 2, y: 2 }, 'promote_general');
+            expect(useGameStore.getState().history.length).toBe(1);
+            const promotedPiece = useGameStore.getState().engine.board.getPieceAt(2, 2);
+            expect(promotedPiece?.name).toBe('Sitke');
+            expect(useGameStore.getState().currentTurn).toBe('black');
+
+            // Save game
+            const savedData = store.saveGame();
+            expect(savedData).toBeDefined();
+
+            // Clear state by switching variant
+            store.initGame('classic', 'pvp', 'white', 'medium', false);
+            expect(useGameStore.getState().currentVariantId).toBe('classic');
+
+            // Load saved game
+            const loaded = store.loadGame(savedData!);
+            expect(loaded).toBe(true);
+
+            const reloadedEngine = useGameStore.getState().engine as SittuyinEngine;
+            expect(reloadedEngine.board.getPieceAt(2, 2)?.name).toBe('Sitke');
+            expect(useGameStore.getState().currentTurn).toBe('black');
+            expect(useGameStore.getState().history.length).toBe(1);
+
+            // Undo promotion
+            store.undoMove();
+            const afterUndoEngine = useGameStore.getState().engine as SittuyinEngine;
+            expect(afterUndoEngine.board.getPieceAt(2, 2)).toBeInstanceOf(Ne);
+            expect(useGameStore.getState().currentTurn).toBe('red');
+            expect(useGameStore.getState().history.length).toBe(0);
+        });
+
+        it('should save and load a game in Sittuyin after moves', () => {
+            const store = useGameStore.getState();
+            store.initGame('sittuyin', 'pvp', 'red', 'medium', false);
+
+            const initialEngine = useGameStore.getState().engine as SittuyinEngine;
+            expect(initialEngine).toBeInstanceOf(SittuyinEngine);
+
+            // Make a legal move with Red Ne (Pawn) at (0, 5) -> (0, 4)
+            store.selectSquare({ x: 0, y: 5 });
+            store.selectSquare({ x: 0, y: 4 });
+            expect(useGameStore.getState().history.length).toBe(1);
+            expect(useGameStore.getState().currentTurn).toBe('black');
+
+            // Save the game
+            const savedData = store.saveGame();
+            expect(savedData).toBeDefined();
+
+            // Clear state by switching variant
+            store.initGame('classic', 'pvp', 'white', 'medium', false);
+            expect(useGameStore.getState().currentVariantId).toBe('classic');
+
+            // Load saved game
+            const loaded = store.loadGame(savedData!);
+            expect(loaded).toBe(true);
+
+            const reloadedEngine = useGameStore.getState().engine as SittuyinEngine;
+            expect(reloadedEngine).toBeInstanceOf(SittuyinEngine);
+            expect(reloadedEngine.isDeploying()).toBe(false);
+            expect(reloadedEngine.board.getPieceAt(0, 4)?.name).toBe('Ne');
+            expect(useGameStore.getState().currentTurn).toBe('black');
+            expect(useGameStore.getState().history.length).toBe(1);
         });
     });
 

@@ -3,5 +3,5 @@ import { Board } from '../models/Board';
 
 export interface GameVariant {
     readonly name: string;
-    setupBoard(): Board;
+    setupBoard(options?: unknown): Board;
 }

@@ -81,7 +81,7 @@ export const GameSetupModal: React.FC<GameSetupModalProps> = ({
             chosenColor = colorOption as PieceColor;
         }
 
-        let variantOptions: any = undefined;
+        let variantOptions: any = variantDef?.defaultOptions;
         if (isJanggi) {
             if (mode === 'vs_ai') {
                 const aiSetup = getRandomJanggiSetup();

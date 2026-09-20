@@ -8,7 +8,7 @@ This is my very first software project outside my CS studies, and it has been de
 
 ## Features
 
-- **Rich Catalog of 12 Chess Variants:**
+- **Rich Catalog of 13 Chess Variants:**
     - **Standard:** Classic FIDE Chess (8×8).
     - **Historical Ancestors & Medieval Variants:**
         - **Chaturanga** (6th c. India, 8×8) — The ancient forefather of chess featuring Gajas, Mantris, and early infantry tactics.
@@ -23,6 +23,7 @@ This is my very first software project outside my CS studies, and it has been de
         - **Janggi** (Korean Chess, 9×10) — Fast-paced Korean chess with customizable starting formations (Sang-Ma swaps), wide-sweeping Elephants, Palace diagonals, and turn-passing / Bikjang mechanics.
         - **Makruk** (Thai Chess, 8×8) — Traditional uncheckered board with Seeds, Nobles, 6th-rank Bia promotions, and authentic Board & Piece Counting rules.
         - **Ouk Chaktrang** (Cambodian Chess, 8×8) — Ancient Khmer counterpart to Makruk featuring dynamic opening moves (Lord's knight leap and Seed's two-square advance before the first capture) and full countdown systems.
+        - **Sittuyin** (Burmese Chess, 8×8) — Traditional Myanmar chess on an uncheckered monochrome board with large diagonals, featuring the interactive *Sit-tee* troop deployment phase, staggered pawn chains, diagonal promotions, and lone king counting rules.
 - **Multiple Game Modes & 4-Player Battle:**
     - **Player vs. Player (PvP):** Local pass-and-play supporting standard 2-player games as well as full 4-player rotational battles (Chaturaji and Four Seasons).
     - **Player vs. AI (PvE):** Single-player mode with adjustable difficulty (Easy, Medium, Master), custom player color assignment, and automatic board flipping.
@@ -214,11 +215,5 @@ You are free to share and adapt the material for non-commercial purposes, as lon
 
 ## Planned Variants
 
-- Historical:
-  - ~~Senterej~~ (not implemented due to differing rule sets)
-  - ~~Short assize~~ (not implemented due to lack of evidence)
-
 - Regional:
   - Shogi (Japan)
-  - Sittuyin (Myanmar)
-  - ~~Shatar (Mongolia)~~ (Shatar is just chess in Mongolia. Not implemented due to lack of solid evidence regarding pre-chess old rules)

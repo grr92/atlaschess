@@ -1,6 +1,7 @@
 import type { StateCreator } from 'zustand';
 import type { Position, GameState, Move, PieceColor, GameInterception, InterceptionDecision } from '../types';
 import type { BaseEngine } from '../core/engine/BaseEngine';
+import type { SittuyinPieceName } from '../core/variants/sittuyin/sittuyinSetup';
 
 export type GameMode = 'pvp' | 'vs_ai';
 export type AiDifficulty = 'easy' | 'medium' | 'hard';
@@ -49,6 +50,21 @@ export interface GameSliceActions {
     setLanguage: (lang: AppLanguage) => void;
     setRegionalPieceStyle: (style: 'text' | 'icon') => void;
     toggleMakrukCounting: () => void;
+    executeContextAction: (pos: Position, actionId?: string) => void;
+}
+
+export interface SittuyinSliceState {
+    sittuyinSelectedPiece: SittuyinPieceName | null;
+}
+
+export interface SittuyinSliceActions {
+    selectSittuyinDeployPiece: (pieceName: SittuyinPieceName | null) => void;
+    deploySittuyinPiece: (pos: Position) => void;
+    removeSittuyinPiece: (pos: Position) => void;
+    autoDeploySittuyin: (presetId?: string) => void;
+    resetSittuyinDeploy: () => void;
+    confirmSittuyinDeploy: () => void;
+    startBlackSittuyinDeploy: () => void;
 }
 
 export interface AiSliceState {
@@ -76,6 +92,8 @@ export interface SaveLoadSliceActions {
 
 export type GameStore = GameSliceState &
     GameSliceActions &
+    SittuyinSliceState &
+    SittuyinSliceActions &
     AiSliceState &
     AiSliceActions &
     SaveLoadSliceState &

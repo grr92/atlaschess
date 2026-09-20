@@ -5,11 +5,13 @@ import { TamerlaneEngine } from '../../core/engine/TamerlaneEngine';
 import { ChaturajiEngine } from '../../core/engine/ChaturajiEngine';
 import { FourSeasonsEngine } from '../../core/engine/FourSeasonsEngine';
 import { MakrukEngine } from '../../core/engine/MakrukEngine';
+import { SittuyinEngine } from '../../core/engine/SittuyinEngine';
 import { VariantRegistry } from '../../core/variants/variantRegistry';
 import { replayMove, replayHistory } from '../../utils/historyReplayer';
 import { getAvailableDiceNumbers, isPieceAllowedByDice, hasLegalMovesForDiceRoll } from '../../utils/diceMapper';
 import { soundManager } from '../../utils/soundManager';
 import { populateCustomPieces } from '../../utils/customPiecesLoader';
+import { getAiSittuyinPreset, type SittuyinPieceName } from '../../core/variants/sittuyin/sittuyinSetup';
 
 let pendingAiTimeout: ReturnType<typeof setTimeout> | null = null;
 
@@ -50,6 +52,28 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             }
         }
 
+        // Initialize Sittuyin Sit-tee troops deployment phase
+        if (variantId === 'sittuyin' && variantOptions?.deploy === true) {
+            if (engine instanceof SittuyinEngine) {
+                engine.startDeployment();
+                if (activeMode === 'vs_ai') {
+                    const aiColor: PieceColor = activePlayerColor === 'red' ? 'black' : 'red';
+                    const aiPreset = getAiSittuyinPreset(aiColor, activeDifficulty);
+                    engine.applyDeployPreset(aiColor, aiPreset.id);
+
+                    if (activePlayerColor === 'red') {
+                        // Human is Red: AI is Black. AI generates preset deploy behind the scenes!
+                        engine.isBlackHiddenInDeployment = true;
+                        engine.deployStage = 'red';
+                    } else {
+                        // Human is Black: AI is Red. AI generates preset deploy behind the scenes!
+                        engine.isRedHiddenInDeployment = true;
+                        engine.deployStage = 'black';
+                    }
+                }
+            }
+        }
+
         if (pendingAiTimeout) {
             clearTimeout(pendingAiTimeout);
             pendingAiTimeout = null;
@@ -78,6 +102,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             initialCustomTurn: null,
             initialAnnexedArmies: null,
             lastAction: 'load',
+            sittuyinSelectedPiece: null,
         });
 
         // If dice rules are active, roll the opening die
@@ -88,7 +113,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
         // If playing vs AI and it's not the player's opening turn, AI makes the opening move
         const openingController = engine.getActiveController();
 
-        if (activeMode === 'vs_ai' && openingController !== activePlayerColor) {
+        if (activeMode === 'vs_ai' && openingController !== activePlayerColor && !(engine instanceof SittuyinEngine && engine.isDeploying())) {
             pendingAiTimeout = setTimeout(() => {
                 pendingAiTimeout = null;
                 get().triggerAiMove();
@@ -169,6 +194,33 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
         } = get();
 
         if (!engine || engine.state === 'checkmate' || engine.state === 'draw') return;
+
+        // Sittuyin Sit-tee troop deployment phase square interaction
+        if (engine instanceof SittuyinEngine && engine.isDeploying()) {
+            if (isAiThinking) return;
+            if (gameMode === 'vs_ai' && engine.deployStage !== playerColor) return;
+            if (engine.deployStage === 'transition') return;
+
+            const { sittuyinSelectedPiece } = get();
+            const currentDeployColor = engine.deployStage as PieceColor;
+
+            if (sittuyinSelectedPiece) {
+                if (engine.canDeployPiece(currentDeployColor, sittuyinSelectedPiece, pos)) {
+                    get().deploySittuyinPiece(pos);
+                    return;
+                }
+            }
+
+            // Check if clicked piece can be removed
+            const pieceAtSquare = engine.board.getPieceAt(pos.x, pos.y);
+            if (pieceAtSquare && pieceAtSquare.color === currentDeployColor && pieceAtSquare.name !== 'Ne') {
+                const removedName = pieceAtSquare.name as SittuyinPieceName;
+                get().removeSittuyinPiece(pos);
+                get().selectSittuyinDeployPiece(removedName);
+                return;
+            }
+            return;
+        }
 
         // Disallow moves while AI is thinking or if it's not the player's turn in PvE mode
         const activeController = engine.getActiveController();
@@ -278,7 +330,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
 
     resetGame: () => {
         const { currentVariantId, gameMode, playerColor, aiDifficulty, useDiceRule, engine } = get();
-        const variantOptions = engine?.getVariantOptions();
+        const variantOptions = engine?.getResetOptions();
         get().initGame(currentVariantId, gameMode, playerColor, aiDifficulty, useDiceRule, variantOptions);
     },
 
@@ -348,6 +400,8 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
         if (engine instanceof MakrukEngine && variantOptions?.hasUserDeactivated) {
             engine.restoreCountingState(variantOptions);
         }
+
+        engine.updateGameState();
 
         const lastMove = engine.history.length > 0 ? engine.history[engine.history.length - 1] : null;
         const postInterception = lastMove ? engine.getPostMoveInterception(lastMove) : null;
@@ -619,6 +673,43 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             set({
                 gameState: engine.state,
             });
+        }
+    },
+
+    executeContextAction: (pos: Position, actionId: string = 'default') => {
+        const { engine, gameMode, playerColor } = get();
+        if (!engine) return;
+        if (engine.state === 'checkmate' || engine.state === 'draw') return;
+
+        if (gameMode === 'vs_ai' && engine.currentTurn !== playerColor) return;
+
+        const success = engine.executeContextAction(actionId, pos);
+        if (success) {
+            const currentState: string = engine.state;
+            if (currentState === 'check' || currentState === 'checkmate') {
+                soundManager.playCheck();
+            } else {
+                soundManager.playMove();
+            }
+
+            set({
+                selectedPosition: null,
+                legalMoves: [],
+                gameState: engine.state,
+                currentTurn: engine.currentTurn,
+                history: [...engine.history],
+                lastAction: 'move',
+            });
+
+            const stateAfterMove: string = engine.state;
+            if (gameMode === 'vs_ai' && stateAfterMove !== 'checkmate' && stateAfterMove !== 'draw') {
+                if (engine.currentTurn !== playerColor) {
+                    pendingAiTimeout = setTimeout(() => {
+                        pendingAiTimeout = null;
+                        get().triggerAiMove();
+                    }, 200);
+                }
+            }
         }
     }
 });

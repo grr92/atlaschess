@@ -25,6 +25,8 @@ import { Makruk } from './Makruk';
 import { MakrukEngine } from '../engine/MakrukEngine';
 import { OukChaktrang } from './OukChaktrang';
 import { OukChaktrangEngine } from '../engine/OukChaktrangEngine';
+import { Sittuyin } from './Sittuyin';
+import { SittuyinEngine } from '../engine/SittuyinEngine';
 
 export type VariantCategory = 'standard' | 'historical' | 'regional';
 
@@ -43,6 +45,7 @@ export interface VariantDefinition {
     catalogPieceColor?: PieceColor;
     hasPieceStyleToggle?: boolean;
     isMonochromeBoard?: boolean;
+    defaultOptions?: any;
     createEngine: (options?: any) => BaseEngine;
 }
 
@@ -239,4 +242,20 @@ VariantRegistry.register({
     catalogPieceColor: 'black',
     createEngine: (options?: any) => new OukChaktrangEngine(new OukChaktrang(), options)
 });
+
+VariantRegistry.register({
+    id: 'sittuyin',
+    title: 'Sittuyin',
+    category: 'regional',
+    origin: 'Traditional • Myanmar (Burma)',
+    tag: '8x8 Board',
+    tileSize: 'standard',
+    isMonochromeBoard: true,
+    playerColors: ['red', 'black'],
+    defaultPlayerColor: 'red',
+    catalogPieceColor: 'red',
+    defaultOptions: { deploy: true },
+    createEngine: (options?: any) => new SittuyinEngine(new Sittuyin(), options)
+});
+
 

@@ -10,6 +10,12 @@ import { DefaultEvaluationStrategy } from '../ai/strategies/EvaluationStrategy';
 
 export type PreMoveInterception = GameInterception;
 export type PostMoveInterception = GameInterception;
+export interface ContextAction {
+    id: string;
+    labelKey: string;
+    icon?: string;
+    colorScheme?: 'amber' | 'blue' | 'emerald';
+}
 
 export abstract class BaseEngine {
     board: Board;
@@ -40,6 +46,28 @@ export abstract class BaseEngine {
 
     getVariantOptions(): any {
         return this.variantOptions;
+    }
+
+    /**
+     * Options to use when resetting or restarting a match for this engine.
+     */
+    getResetOptions(): any {
+        return this.getVariantOptions();
+    }
+
+    /**
+     * Restores variant-specific custom state (e.g. counting rules, stages, options)
+     * from serialized variantOptions. Subclasses override as needed.
+     */
+    restoreCustomState(_options: any): void {
+        // Base implementation does nothing
+    }
+
+    /**
+     * Optional custom status/phase label for variants with specialized stages (e.g. 'Sit-tee').
+     */
+    getCustomStatus(): string | null {
+        return null;
     }
 
     getEvaluationStrategy(): IEvaluationStrategy {
@@ -184,4 +212,40 @@ export abstract class BaseEngine {
 
     // Hook for actions after turn: for example saving hashes of the board for the triple repetition rule
     protected postTurnHook(): void {}
+
+    /**
+     * Polymorphic hook to retrieve contextual actions available for a specific board square.
+     * Used by variants like Sittuyin for in-place deferred pawn promotion.
+     */
+    getContextActions(_pos: Position): ContextAction[] {
+        return [];
+    }
+
+    /**
+     * Polymorphic execution of a contextual action on a specific board square.
+     */
+    executeContextAction(_actionId: string, _pos: Position): boolean {
+        return false;
+    }
+
+    /**
+     * Polymorphic hook returning squares currently valid for piece placement (e.g. Sittuyin Sit-tee deploy).
+     */
+    getPlacementTargets(): Position[] {
+        return [];
+    }
+
+    /**
+     * Polymorphic hook to determine if a piece on a square can be picked up / removed during setup/deployment phases.
+     */
+    isSquareRemovable(_pos: Position): boolean {
+        return false;
+    }
+
+    /**
+     * Polymorphic hook to determine if a piece on the board is currently concealed (e.g. fog of war in deployment).
+     */
+    isPieceHidden(_piece: Piece): boolean {
+        return false;
+    }
 }
