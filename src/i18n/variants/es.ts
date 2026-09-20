@@ -73,6 +73,12 @@ export const variantMeta_es: Record<string, VariantMetaI18n> = {
         tag: 'Tablero 8x8',
         desc: 'Ajedrez tradicional camboyano emparentado con el makruk, caracterizado por opciones de apertura dinámicas para el señor y la semilla antes de que se produzca la primera captura.',
     },
+    sittuyin: {
+        title: 'Sittuyin',
+        origin: 'Myanmar (Birmania)',
+        tag: 'Tablero 8x8',
+        desc: 'Ajedrez tradicional birmano con tablero marcado con las diagonales Sit-ke-min, peones escalonados y posiciones iniciales de las piezas variables y personalizables.',
+    },
 };
 
 export const variantCodex_es: Record<string, VariantCodexI18n> = {
@@ -813,6 +819,62 @@ export const variantCodex_es: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'Existen numerosos bajorrelieves del siglo XII en templos del Imperio Jemer (como Bayon y Angkor Wat) que representan figuras jugando partidas de Ouk. Estas representaciones demuestran que el juego ya gozaba de un arraigo popular y cortesano prominente durante el esplendor de Angkor.',
             rightBoxTitle: 'Tradición Viva y Deporte Moderno',
             rightBoxDesc: 'Jugado ampliamente en Camboya y por los jemeres de Vietnam (donde se le conoce como cờ ốc), es un componente insustituible del festival del agua Bon Om Touk. En 2008 el Comité Olímpico de Camboya estandarizó su reglamento nacional, y en 2023 fue disciplina oficial en los Juegos del Sudeste Asiático (SEA Games).',
+        },
+    },
+    sittuyin: {
+        name: 'Sittuyin',
+        rules: {
+            intro: 'El Sittuyin (en birmano: စစ်တုရင်) es el ajedrez tradicional de Myanmar (Birmania). Jugado sobre un tablero monocromo de 8×8 con las diagonales Sit-ke-min cruzadas, los peones comienzan en una formación escalonada asimétrica y pueden promocionar a General al alcanzar o cruzar la línea de promoción de la mitad enemiga cuando el General propio ha caído.',
+            bullets: [
+                {
+                    title: 'El Rey (Mingyi):',
+                    desc: 'Mueve una casilla en cualquier dirección (ortogonal o diagonal). El objetivo del juego es darle jaque mate. El rey ahogado (stalemate) resulta en tablas.',
+                    pieceName: 'Mingyi',
+                },
+                {
+                    title: 'El General (Sitke):',
+                    desc: 'Mueve una casilla en diagonal en las cuatro direcciones (igual al Ferz del Shatranj o Met del Makruk). Cada jugador puede tener un máximo de un General activo en el tablero.',
+                    pieceName: 'Sitke',
+                },
+                {
+                    title: 'El Elefante (Sin):',
+                    desc: 'Mueve una casilla en diagonal en las cuatro direcciones o una casilla hacia adelante en línea recta (5 direcciones en total), idéntico al Noble del Makruk o General de Plata de Shogi.',
+                    pieceName: 'Sin',
+                },
+                {
+                    title: 'El Caballo (Myin):',
+                    desc: 'Mueve con el salto característico en "L", pudiendo saltar sobre cualquier obstáculo en su camino.',
+                    pieceName: 'Myin',
+                },
+                {
+                    title: 'El Carro / Torre (Yahhta):',
+                    desc: 'Mueve ortogonalmente cualquier número de casillas libres a lo largo de filas o columnas.',
+                    pieceName: 'Yahhta',
+                },
+                {
+                    title: 'El Peón / Señor Feudal (Ne):',
+                    desc: 'Mueve una casilla hacia adelante sin capturar y captura una casilla en diagonal hacia adelante. No dispone de avance doble inicial ni captura al paso.',
+                    pieceName: 'Ne',
+                },
+                {
+                    title: 'Promoción Inmediata y Diferida:',
+                    desc: 'Los peones promocionan a General al alcanzar o cruzar la línea diagonal de la mitad del tablero del rival, siempre que el General propio haya sido capturado. Si el General ya está muerto al cruzar la línea, la promoción es inmediata. Si el General está vivo, el peón permanece como peón; cuando el General muera más adelante, el jugador puede promocionarlo in situ en su turno mediante la píldora de acción flotante.',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Reglas de Tablas y Conteo del Rey Solitario:',
+                    desc: 'Se declara tablas por rey ahogado, posición muerta, triple repetición o regla de 50 movimientos. Además, si un jugador queda únicamente con su Rey y el rival no tiene peones, el rey solitario empata si sobrevive a un conteo fijo: 16 movimientos si el rival tiene al menos una Torre, 44 movimientos si tiene al menos un Elefante, o 64 movimientos si tiene al menos un Caballo.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Consejo profesional: Mantén tus peones situados en las diagonales enemigas como una amenaza latente; si pierdes a tu General, podrás promover inmediatamente o revivir a un nuevo General en una casilla avanzada clave.',
+        },
+        history: {
+            intro: 'El Sittuyin (en birmano: စစ်တုရင်) es el ajedrez milenario de Myanmar, descendiente directo del chaturanga indio que penetró en la región hacia el siglo VIII. Su nombre deriva de «sit» (guerra o ejército) y representa las cuatro armas bélicas tradicionales: infantería (nè), caballería (myin), elefantes (sin) y carros (yahhta). En fuentes históricas y crónicas coloniales del siglo XIX fue documentado bajo denominaciones como «chit-thareen» (Stewart Culin, 1898; Hiram Cox, 1801; Michael Symes, 1800, quien lo llamó «el juego del general») o «tsit-da-yin» (G. W. Strettell, 1876). Los antiguos monarcas y caudillos birmanos lo utilizaban en la corte para ensayar tácticas reales antes del combate: al luchar los reyes en primera línea de batalla, el liderazgo audaz del monarca en el tablero decidía el destino de la contienda.',
+            leftBoxTitle: 'Mitología del Ramayana, Arte y Tradición',
+            leftBoxDesc: 'Las piezas tradicionales son esculturas en madera o marfil (rojas y negras o verdes) que encarnan la epopeya del Ramayana (Yama Zatdaw): el príncipe Rama y el general simio Hanuman frente al rey demonio Ravana. Los artesanos tallaban tableros de mesa elevados (sittuyin-kon) provistos de cajones para guardar las piezas, concebidos para jugar en cuclillas sobre el suelo. En las partidas tradicionales, cada jugada se acompaña de un seco y resonante golpe sobre la madera, evocando el fragor bélico. Emparentado anatómicamente con el Makruk tailandés y el Ouk Chaktrang camboyano según el historiador Jean-Louis Cazaux, el juego sufrió un fuerte declive y escasez de juegos artesanales tras cinco décadas de aislamiento militar y pobreza en el siglo XX, eclipsado en gran medida por el ajedrez internacional aunque preservado en regiones del noroeste.',
+            rightBoxTitle: 'Despliegue Sit-tee, Sit-ke-min y Reglamento',
+            rightBoxDesc: 'El juego se disputa sobre un tablero liso de 64 casillas sin alternancia de color, cruzado por dos grandes diagonales llamadas Sit-ke-min («líneas del general»). La partida se inicia con la fase de Sit-tee (despliegue de tropas), donde tras fijar los peones escalonados, cada bando posiciona libremente sus piezas mayores; en los torneos oficiales se coloca una cortina divisoria en el centro para ocultar la disposición táctica hasta que ambas fuerzas están listas. H. J. R. Murray documentó en 1913 su evolución en tres etapas (despliegue, recolocación y batalla abierta). Los peones solo pueden ascender a General al alcanzar las diagonales Sit-ke-min y únicamente si el General propio ya ha perecido. El objetivo supremo es dar mate (khwè), estando terminantemente prohibido el rey ahogado (tablas ilegales). Anne Sunnucks registró además antiguas variantes con dados de tres jugadas simultáneas.',
         },
     },
 };

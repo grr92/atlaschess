@@ -459,6 +459,10 @@ export class MakrukEngine extends BaseEngine {
         if (options.fleeingColor !== undefined) this.fleeingColor = options.fleeingColor;
     }
 
+    override restoreCustomState(options: any): void {
+        this.restoreCountingState(options);
+    }
+
     override getVariantOptions(): any {
         return {
             hasUserDeactivated: this.hasUserDeactivated,

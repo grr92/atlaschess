@@ -1,5 +1,4 @@
 import type { StoreSlice, SaveLoadSliceState, SaveLoadSliceActions } from '../types';
-import { MakrukEngine } from '../../core/engine/MakrukEngine';
 import { populateCustomPieces } from '../../utils/customPiecesLoader';
 import { replayHistory } from '../../utils/historyReplayer';
 
@@ -81,8 +80,8 @@ export const createSaveLoadSlice: StoreSlice<SaveLoadSliceState & SaveLoadSliceA
                 replayHistory(engine, parsed.history);
             }
 
-            if (engine instanceof MakrukEngine && loadedVariantOptions) {
-                engine.restoreCountingState(loadedVariantOptions);
+            if (loadedVariantOptions) {
+                engine.restoreCustomState(loadedVariantOptions);
             }
 
             const loadedTime = typeof parsed.time === 'number' ? parsed.time : 0;

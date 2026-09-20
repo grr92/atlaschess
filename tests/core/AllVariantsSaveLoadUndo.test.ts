@@ -101,7 +101,7 @@ describe('All Variants: Save/Load and Undo Verification', () => {
 
             it(`should properly undo moves in vs_ai mode`, () => {
                 const store = useGameStore.getState();
-                const playerCol = variantId === 'four_seasons' ? 'green' : ((variantId === 'chaturaji' || variantId === 'xiangqi') ? 'red' : (variantId === 'janggi' ? 'blue' : 'white'));
+                const playerCol = variantId === 'four_seasons' ? 'green' : ((variantId === 'chaturaji' || variantId === 'xiangqi' || variantId === 'sittuyin') ? 'red' : (variantId === 'janggi' ? 'blue' : 'white'));
                 store.initGame(variantId, 'vs_ai', playerCol, 'medium', false);
 
                 const engine = useGameStore.getState().engine;

@@ -96,4 +96,13 @@ export * from './makruk/Ruea';
 export * from './makruk/Bia';
 export * from './makruk/Biangai';
 
+// Sittuyin (Burmese Chess)
+export * from './sittuyin/Mingyi';
+export * from './sittuyin/Sitke';
+export * from './sittuyin/Sin';
+export * from './sittuyin/Myin';
+export * from './sittuyin/Yahhta';
+export * from './sittuyin/Ne';
+
+
 

@@ -1,5 +1,6 @@
 import { Piece } from '../core/pieces/piecesIndex';
 import { getPieceSvgChar } from '../core/pieces/pieceRegistry';
+import { VariantRegistry } from '../core/variants/variantRegistry';
 import { pieceSvgAssets } from './pieceAssets';
 import { getXiangqiPieceImage } from './xiangqiPieceMapper';
 import { getJanggiPieceImage } from './janggiPieceMapper';
@@ -97,6 +98,9 @@ export const getSquareBackground = (x: number, y: number, variantId: string): st
 
     let isMarked = false;
 
+    const variantDef = VariantRegistry.get(variantId);
+    const isMonochrome = Boolean(variantDef?.isMonochromeBoard);
+
     // Board squares marked with an X for the Chaturanga variant
     if (variantId === 'chaturanga') {
         const markedSquares = [
@@ -107,7 +111,7 @@ export const getSquareBackground = (x: number, y: number, variantId: string): st
         ];
         isMarked = markedSquares.includes(`${x},${y}`);
         colorChar = 'l';
-    } else if (variantId === 'shatranj' || variantId === 'tamerlane' || variantId === 'chaturaji' || variantId === 'makruk' || variantId === 'ouk_chaktrang') {
+    } else if (isMonochrome) {
         // Those games use the uncheckered monochrome board without the X's
         isMarked = false;
         colorChar = 'l';

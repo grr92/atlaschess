@@ -35,7 +35,9 @@ export type PieceName =
     // Janggi
     | 'JanggiGeneral' | 'JanggiGuard' | 'JanggiElephant' | 'JanggiHorse' | 'JanggiChariot' | 'JanggiCannon' | 'JanggiSoldier'
     // Makruk (Thai Chess)
-    | 'Khun' | 'Met' | 'Khon' | 'Ma' | 'Ruea' | 'Bia' | 'Biangai';
+    | 'Khun' | 'Met' | 'Khon' | 'Ma' | 'Ruea' | 'Bia' | 'Biangai'
+    // Sittuyin (Burmese Chess)
+    | 'Mingyi' | 'Sitke' | 'Sin' | 'Myin' | 'Yahhta' | 'Ne';
 
 import type { Piece } from '../core/pieces/Piece';
 

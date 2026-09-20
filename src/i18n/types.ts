@@ -151,6 +151,26 @@ export interface Translations {
         makrukStartCountingTooltip: string;
         makrukStopCountingTooltip: string;
         makrukOnlyDisadvantaged: string;
+        promoteToGeneral: string;
+        sittuyinCount: string;
+        sittuyinDeployTitle: string;
+        sittuyinDeploySubtitle: string;
+        sittuyinDeployPiecesLeft: string;
+        sittuyinDeployPresetTournament: string;
+        sittuyinDeployPresetFlank: string;
+        sittuyinDeployPresetFortress: string;
+        sittuyinDeployPresetLeftWing: string;
+        sittuyinDeployPresetCenterChariots: string;
+        sittuyinDeployPresetCavalryVanguard: string;
+        sittuyinDeployReset: string;
+        sittuyinDeployConfirm: string;
+        sittuyinDeployIncomplete: string;
+        sittuyinDeployTip: string;
+        sittuyinTransitionTitle: string;
+        sittuyinTransitionSubtitle: string;
+        sittuyinTransitionStartBlack: string;
+        sittuyinDeployRedPlayer: string;
+        sittuyinDeployBlackPlayer: string;
     };
     variantCodex: {
         codexReference: string;

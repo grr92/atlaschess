@@ -2,6 +2,7 @@ import type { BaseEngine } from '../core/engine/BaseEngine';
 import type { Move } from '../types';
 import { TamerlaneEngine } from '../core/engine/TamerlaneEngine';
 import { ChaturajiEngine } from '../core/engine/ChaturajiEngine';
+import { SittuyinEngine } from '../core/engine/SittuyinEngine';
 
 /**
  * Replays a single recorded move on an engine instance, handling variant-specific
@@ -12,6 +13,13 @@ export function replayMove(engine: BaseEngine, move: Move): void {
     if (move.isPass || move.san === 'pass') {
         engine.passTurn();
         return;
+    }
+
+    if (move.from.x === move.to.x && move.from.y === move.to.y) {
+        if (engine instanceof SittuyinEngine) {
+            engine.promotePawnInPlace(move.to);
+            return;
+        }
     }
 
     let promotionPiece: string | undefined = undefined;
