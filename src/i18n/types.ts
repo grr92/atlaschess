@@ -188,6 +188,19 @@ export interface Translations {
         shogiJishogiWin: string;
         shogiSennichiteDraw: string;
         shogiOuteSennichiteWin: string;
+        gameOverTitle: string;
+        victory: string;
+        defeat: string;
+        victoryDesc: string;
+        defeatDesc: string;
+        drawDesc: string;
+        playerVictory: string;
+        playAgain: string;
+        reviewBoard: string;
+        backToMenu: string;
+        viewResult: string;
+        matchDuration: string;
+        matchMoves: string;
     };
     variantCodex: {
         codexReference: string;

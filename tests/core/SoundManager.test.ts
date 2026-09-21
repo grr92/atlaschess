@@ -24,5 +24,8 @@ describe('SoundManager', () => {
         expect(() => soundManager.playMove()).not.toThrow();
         expect(() => soundManager.playCapture()).not.toThrow();
         expect(() => soundManager.playCheck()).not.toThrow();
+        expect(() => soundManager.playVictory()).not.toThrow();
+        expect(() => soundManager.playDefeat()).not.toThrow();
+        expect(() => soundManager.playDraw()).not.toThrow();
     });
 });

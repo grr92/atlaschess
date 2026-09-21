@@ -192,6 +192,99 @@ class SoundManager {
         osc.stop(now + 0.22);
     }
 
+    /**
+     * Plays a triumphant fanfare / victory chord using synthesized harmonics.
+     */
+    playVictory() {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+        // C5, E5, G5, C6 arpeggiated fanfare
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const noteStart = now + i * 0.1;
+            const noteDuration = i === notes.length - 1 ? 0.6 : 0.25;
+
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, noteStart);
+
+            gain.gain.setValueAtTime(0.001, noteStart);
+            gain.gain.exponentialRampToValueAtTime(0.25, noteStart + 0.04);
+            gain.gain.exponentialRampToValueAtTime(0.001, noteStart + noteDuration);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(noteStart);
+            osc.stop(noteStart + noteDuration);
+        });
+    }
+
+    /**
+     * Plays a descending sombre tone for defeat.
+     */
+    playDefeat() {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+        // G4, Eb4, C4 descending minor progression
+        const notes = [392.00, 311.13, 261.63];
+        notes.forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const noteStart = now + i * 0.18;
+            const noteDuration = i === notes.length - 1 ? 0.7 : 0.3;
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, noteStart);
+
+            gain.gain.setValueAtTime(0.001, noteStart);
+            gain.gain.exponentialRampToValueAtTime(0.2, noteStart + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, noteStart + noteDuration);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(noteStart);
+            osc.stop(noteStart + noteDuration);
+        });
+    }
+
+    /**
+     * Plays a calm neutral harmony for a draw.
+     */
+    playDraw() {
+        if (this.isMuted) return;
+        const ctx = this.getContext();
+        if (!ctx) return;
+
+        const now = ctx.currentTime;
+        const notes = [440, 554.37]; // A4, C#5
+        notes.forEach((freq) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, now);
+
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.exponentialRampToValueAtTime(0.18, now + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.5);
+        });
+    }
+
     toggleMute(): boolean {
         this.isMuted = !this.isMuted;
         if (typeof window !== 'undefined') {

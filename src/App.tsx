@@ -9,12 +9,13 @@ import { VariantsCatalog } from "./components/ui/VariantCatalog";
 import { MoveHistory } from './components/board/MoveHistory';
 import { CapturedPieces } from './components/board/CapturedPieces';
 import { ChaturajiStakesCounter } from './components/board/ChaturajiStakesCounter';
-import { Undo2, RefreshCcw, Save, Bot, Volume2, VolumeX, Settings, SkipForward } from 'lucide-react';
+import { Undo2, RefreshCcw, Save, Bot, Volume2, VolumeX, Settings, SkipForward, Trophy } from 'lucide-react';
 import { BackButton } from "./components/ui/BackButton";
 import { GameTimer } from "./components/board/GameTimer";
 import { InfoButton } from "./components/ui/InfoButton";
 import { VariantInfoModal } from "./components/modals/VariantInfoModal";
 import { SettingsModal } from "./components/modals/SettingsModal";
+import { GameOverModal } from "./components/modals/GameOverModal";
 import { D8DiceWidget } from "./components/board/D8DiceWidget";
 import { MakrukCountingWidget } from "./components/board/MakrukCountingWidget";
 import { SittuyinCountingWidget } from "./components/board/SittuyinCountingWidget";
@@ -60,6 +61,18 @@ const App = () => {
     const [infoModalOpen, setInfoModalOpen] = useState(false);
     // state for settings modal
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+    // state to allow reviewing the board after game over
+    const [isGameOverDismissed, setIsGameOverDismissed] = useState(false);
+
+    const isGameOver = gameState === 'checkmate' || gameState === 'draw';
+    const isGameOverModalOpen = isGameOver && !isGameOverDismissed;
+
+    // Reset game over dismissed state whenever a game is active or moves are undone
+    useEffect(() => {
+        if (gameState === 'playing' || gameState === 'check') {
+            setIsGameOverDismissed(false);
+        }
+    }, [gameState]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -69,6 +82,8 @@ const App = () => {
                 }
                 if (confirmAction) {
                     setConfirmAction(null);
+                } else if (isGameOverModalOpen) {
+                    setIsGameOverDismissed(true);
                 } else if (infoModalOpen) {
                     setInfoModalOpen(false);
                 } else if (isSettingsOpen) {
@@ -80,7 +95,7 @@ const App = () => {
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [confirmAction, infoModalOpen, isSettingsOpen, currentScreen]);
+    }, [confirmAction, isGameOverModalOpen, infoModalOpen, isSettingsOpen, currentScreen]);
 
     // function to process the "yes" confirmation
     const handleConfirm = () => {
@@ -303,6 +318,16 @@ const App = () => {
                                     }`}>
                                         {getGameStateLabel()}
                                     </span>
+                                    {isGameOver && isGameOverDismissed && (
+                                        <button
+                                            onClick={() => setIsGameOverDismissed(false)}
+                                            className="ml-1 flex items-center gap-1 px-2.5 py-0.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded-full text-[11px] font-bold transition-all shadow-sm active:scale-95 animate-pulse"
+                                            title={t.gameplay.viewResult}
+                                        >
+                                            <Trophy className="w-3 h-3 text-amber-400" />
+                                            <span>{t.gameplay.viewResult}</span>
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -405,6 +430,12 @@ const App = () => {
             <SettingsModal
                 isOpen={isSettingsOpen}
                 onClose={() => setIsSettingsOpen(false)}
+            />
+
+            {/* game over modal */}
+            <GameOverModal
+                isOpen={isGameOverModalOpen}
+                onClose={() => setIsGameOverDismissed(true)}
             />
 
             {currentScreen === 'VARIANTS' && (

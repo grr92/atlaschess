@@ -633,4 +633,33 @@ export class ChaturajiEngine extends BaseEngine {
         }
         return { winner: null, maxStakes, isTie: true, tiedWinners };
     }
+
+    override getVariantOptions(): any {
+        return {
+            stakes: { ...this.stakes },
+            partnerControlled: { ...this.partnerControlled },
+            kingsKilledByPlayerKing: { ...this.kingsKilledByPlayerKing },
+            kingsKilledOnThrone: { ...this.kingsKilledOnThrone },
+            rescuedKings: Array.from(this.rescuedKings)
+        };
+    }
+
+    override restoreCustomState(options: any): void {
+        if (!options) return;
+        if (options.stakes) {
+            this.stakes = { ...this.stakes, ...options.stakes };
+        }
+        if (options.partnerControlled) {
+            this.partnerControlled = { ...this.partnerControlled, ...options.partnerControlled };
+        }
+        if (options.kingsKilledByPlayerKing) {
+            this.kingsKilledByPlayerKing = { ...this.kingsKilledByPlayerKing, ...options.kingsKilledByPlayerKing };
+        }
+        if (options.kingsKilledOnThrone) {
+            this.kingsKilledOnThrone = { ...this.kingsKilledOnThrone, ...options.kingsKilledOnThrone };
+        }
+        if (options.rescuedKings && Array.isArray(options.rescuedKings)) {
+            this.rescuedKings = new Set(options.rescuedKings);
+        }
+    }
 }
