@@ -15,6 +15,7 @@ import {
     Mingyi, Sitke, Sin, Myin, Yahhta, Ne
 } from '../core/pieces/piecesIndex';
 import { FourSeasonsEngine } from '../core/engine/FourSeasonsEngine';
+import { createShogiPiece } from '../core/variants/shogi/shogiSetup';
 
 export function populateCustomPieces(
     engine: BaseEngine,
@@ -134,6 +135,12 @@ export function populateCustomPieces(
                     ne.hasLostPromotion = true;
                 }
                 pieceInstance = ne;
+                break;
+            }
+            default: {
+                if (p.name?.startsWith('Shogi')) {
+                    pieceInstance = createShogiPiece(p.name, p.color, p.position, p.id);
+                }
                 break;
             }
         }

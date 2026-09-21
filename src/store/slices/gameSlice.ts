@@ -6,6 +6,7 @@ import { ChaturajiEngine } from '../../core/engine/ChaturajiEngine';
 import { FourSeasonsEngine } from '../../core/engine/FourSeasonsEngine';
 import { MakrukEngine } from '../../core/engine/MakrukEngine';
 import { SittuyinEngine } from '../../core/engine/SittuyinEngine';
+import { ShogiEngine } from '../../core/engine/ShogiEngine';
 import { VariantRegistry } from '../../core/variants/variantRegistry';
 import { replayMove, replayHistory } from '../../utils/historyReplayer';
 import { getAvailableDiceNumbers, isPieceAllowedByDice, hasLegalMovesForDiceRoll } from '../../utils/diceMapper';
@@ -227,6 +228,18 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
 
         if (isAiThinking) return;
         if (gameMode === 'vs_ai' && activeController !== playerColor) return;
+
+        // Shogi in-hand piece drop placement
+        if (engine instanceof ShogiEngine && get().shogiSelectedPiece) {
+            const selectedPiece = get().shogiSelectedPiece!;
+            const legalDrops = engine.getLegalDrops(selectedPiece, engine.currentTurn);
+            if (legalDrops.some(m => m.x === pos.x && m.y === pos.y)) {
+                get().dropShogiPiece(pos);
+                return;
+            } else {
+                get().selectShogiDropPiece(null);
+            }
+        }
 
         // If pending King Placement is active (Chaturaji), clicking a board square places the King
         if (activeInterception?.type === 'KING_PLACEMENT') {

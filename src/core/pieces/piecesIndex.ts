@@ -104,5 +104,18 @@ export * from './sittuyin/Myin';
 export * from './sittuyin/Yahhta';
 export * from './sittuyin/Ne';
 
-
-
+// Shogi (Japanese Chess)
+export * from './shogi/ShogiKing';
+export * from './shogi/ShogiRook';
+export * from './shogi/ShogiBishop';
+export * from './shogi/ShogiGold';
+export * from './shogi/ShogiSilver';
+export * from './shogi/ShogiKnight';
+export * from './shogi/ShogiLance';
+export * from './shogi/ShogiPawn';
+export * from './shogi/ShogiDragon';
+export * from './shogi/ShogiHorse';
+export * from './shogi/ShogiPromotedSilver';
+export * from './shogi/ShogiPromotedKnight';
+export * from './shogi/ShogiPromotedLance';
+export * from './shogi/ShogiTokin';

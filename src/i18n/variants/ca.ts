@@ -79,6 +79,12 @@ export const variantMeta_ca: Record<string, VariantMetaI18n> = {
         tag: 'Tauler 8x8',
         desc: 'Escacs tradicionals birmans amb un tauler marcat per les diagonals Sit-ke-min, peons esglaonats i posicions inicials de les peces variables i personalitzables.',
     },
+    shogi: {
+        title: 'Shogi',
+        origin: 'Període Heian • Japó',
+        tag: 'Tauler 9x9',
+        desc: 'Els escacs tradicionals japonesos. Destaca pel sistema de reintroducció de peces capturades (drops), promocions en territori enemic i una gran profunditat tàctica.',
+    },
 };
 
 export const variantCodex_ca: Record<string, VariantCodexI18n> = {
@@ -875,6 +881,72 @@ export const variantCodex_ca: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'Les peces tradicionals són escultures en fusta o marfil (vermelles i negres o verdes) que encarnen la lluita èpica del Ramayana (Yama Zatdaw): el príncep Rama i el general simi Hanuman davant el rei dimoni Ravana. Els artesans construïen taulers de taula elevats (sittuyin-kon) dotats de calaixos per desar-hi les peces, pensats per jugar-hi a la gatzollada a terra. En les partides clàssiques, cada moviment s\'acompanya d\'un cop sec i ressonant contra la fusta, recordant el xoc de les armes. Emparentat anatòmicament amb el Makruk tailandès i l\'Ouk Chaktrang cambodjà segons l\'historiador Jean-Louis Cazaux, el joc va patir un fort declivi i una gran escassetat de jocs tallats antics després de cinc dècades de dictadura militar i aïllament al segle XX, eclipsat pel joc internacional però preservat a les regions nord-occidentals.',
             rightBoxTitle: 'Desplegament Sit-tee, Sit-ke-min i Reglament',
             rightBoxDesc: 'El joc es disputa sobre un tauler llis de 64 caselles sense alternança de colors, travessat per dues grans diagonals anomenades Sit-ke-min («línies del general»). La partida comença amb la fase de Sit-tee (desplegament de tropes): darrere dels peons esglaonats, cada bàndol disposa lliurement les seves peces majors; en tornejos oficials es col·loca una petita cortina al mig per ocultar la formació fins que ambdós exèrcits estan preparats. H. J. R. Murray en va descriure el 1913 l\'evolució en tres etapes (col·locació, recol·locació i batalla oberta). Els peons només poden promocionar a General en assolir les diagonals Sit-ke-min i únicament si el propi General ja ha estat capturat. L\'objectiu és fer escac i mat (khwè), estant prohibit l\'ofegat (taules il·legals). Anne Sunnucks també va registrar antigues variants amb tres daus de torns triples.',
+        },
+    },
+    shogi: {
+        name: 'Shogi',
+        rules: {
+            intro: 'El Shogi (將棋, «joc dels generals»), o escacs japonesos, es juga sobre una quadrícula monòcroma de 9×9 caselles. Les peces tenen forma de falca i apunten cap a l\'adversari. Comença Sente (peces inferiors / blanques). L\'objectiu és fer escac i mat al Rei rival. La seva gran particularitat és la regla de reintroducció (drop): les peces capturades passen a la reserva del jugador i es poden tornar a col·locar a qualsevol casella buida com a pròpies.',
+            bullets: [
+                {
+                    title: 'El Rei (Gyoku / Osho):',
+                    desc: 'Mou una casella en qualsevol direcció (ortogonal o diagonal). Donar escac i mat al rei rival atorga la victòria.',
+                    pieceName: 'ShogiKing',
+                },
+                {
+                    title: 'La Torre (Hisha) i el Drac (Ryu):',
+                    desc: 'La Torre mou qualsevol nombre de caselles lliures ortogonalment. En promocionar es converteix en Drac (Ryu), conservant el moviment de la torre i sumant el moviment d\'una casella en diagonal.',
+                    pieceName: 'ShogiRook',
+                },
+                {
+                    title: 'L\'Alfil (Kaku) i el Cavall Drac (Uma):',
+                    desc: 'L\'Alfil mou qualsevol nombre de caselles lliures en diagonal. En promocionar es converteix en Cavall Drac (Uma), conservant les diagonals i sumant el moviment d\'una casella ortogonalment.',
+                    pieceName: 'ShogiBishop',
+                },
+                {
+                    title: 'El General d\'Or (Kin):',
+                    desc: 'Mou una casella en les quatre direccions ortogonals o una casella en diagonal cap endavant (6 direccions en total). No pot promocionar.',
+                    pieceName: 'ShogiGold',
+                },
+                {
+                    title: 'El General de Plata (Gin):',
+                    desc: 'Mou una casella en les quatre direccions diagonals o una casella ortogonal cap endavant (5 direccions en total). En promocionar esdevé Plata Promocionada (Narigin), movent com un General d\'Or.',
+                    pieceName: 'ShogiSilver',
+                },
+                {
+                    title: 'El Cavall (Keima):',
+                    desc: 'Avança dues caselles cap endavant i una cap al costat (només els dos salts frontals). Pot saltar peces. En promocionar esdevé Cavall Promocionat (Narikei), movent com un General d\'Or.',
+                    pieceName: 'ShogiKnight',
+                },
+                {
+                    title: 'La Llança (Kyosha):',
+                    desc: 'Mou qualsevol nombre de caselles lliures únicament cap endavant a la seva columna. En promocionar esdevé Llança Promocionada (Narikyo), movent com un General d\'Or.',
+                    pieceName: 'ShogiLance',
+                },
+                {
+                    title: 'El Peó (Fuhyo) i el Tokin:',
+                    desc: 'Mou i captura una casella cap endavant. En promocionar esdevé Tokin, movent exactament igual que un General d\'Or.',
+                    pieceName: 'ShogiPawn',
+                },
+                {
+                    title: 'Reintroducció de Peces (Drops):',
+                    desc: 'En lloc de moure una peça del tauler, pots reintroduir una peça de la teva reserva a qualsevol casella desocupada en la seva forma bàsica. Restriccions: no es pot col·locar una peça sense moviments legals futurs; regla de Nifu (no pots col·locar un peó en una columna on ja tinguis un altre peó no promocionat); regla d\'Uchifuzume (no es pot fer escac i mat immediat amb la reintroducció d\'un peó).',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Zona de Promoció:',
+                    desc: 'Les tres files més allunyades de cada bàndol formen la zona de promoció. En entrar, sortir o moure\'s dins aquesta zona, una peça pot promocionar. La promoció és obligatòria si no té moviments legals posteriors.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Consell professional: Al Shogi el material capturat sempre torna al tauler; construeix una fortalesa sòlida (com ara Mino o Yagura) abans de llançar el teu atac.',
+        },
+        history: {
+            intro: 'El Shogi és el membre japonès de la família dels escacs, derivat del Chaturanga indi que va arribar al Japó a través de la Xina durant el període Heian (amb peces arqueològiques datades cap al 1058). Cap al segle XVI les seves regles van quedar fixades en el shogi estàndard modern. Tot i que no hi ha un registre històric clar de quan es van introduir els drops, aquesta mecànica atorga a la partida un gran dinamisme tàctic i una taxa d\'empats gairebé nul·la.',
+            leftBoxTitle: 'El Període Edo i les Cases Meijin',
+            leftBoxDesc: 'Durant el Shogunat Tokugawa (període Edo), el Shogi va rebre el patrocini estatal del Shogun. Es van crear les tres grans escoles dinàstiques (la casa Ōhashi, la seva branca secundària i la casa Itō) i es va instaurar el títol oficial de Meijin per al millor mestre del joc.',
+            rightBoxTitle: 'Organització Professional i Títols',
+            rightBoxDesc: 'Al Japó contemporani, el Shogi està organitzat professionalment per la Nihon Shogi Renmei (JSA), que celebra vuit grans tornejos oficials. Mestres llegendaris com Yoshiharu Habu (el primer a posseir set corones alhora) o Sota Fujii (posseïdor dels vuit títols) són figures destacades d\'aquest esport mental.',
         },
     },
 };

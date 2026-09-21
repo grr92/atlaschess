@@ -140,8 +140,8 @@ export interface Translations {
             settings: string;
             info: string;
         };
-        iconPieces: string;
-        textPieces: string;
+        pieceStyleTraditional: string;
+        pieceStyleInternational: string;
         makrukPieceCount: string;
         makrukBoardCount: string;
         makrukCount: string;
@@ -171,6 +171,23 @@ export interface Translations {
         sittuyinTransitionStartBlack: string;
         sittuyinDeployRedPlayer: string;
         sittuyinDeployBlackPlayer: string;
+        shogiPromotePieceTitle: string;
+        shogiPromote: string;
+        shogiDoNotPromote: string;
+        shogiHand: string;
+        shogiDropHelp: string;
+        shogiKomadaiTitle: string;
+        shogiKomadaiEmpty: string;
+        shogiSentePlayer: string;
+        shogiGotePlayer: string;
+        shogiSelectDropSquare: string;
+        shogiDropInstruction: string;
+        shogiJishogiTitle: string;
+        shogiJishogiButton: string;
+        shogiJishogiDraw: string;
+        shogiJishogiWin: string;
+        shogiSennichiteDraw: string;
+        shogiOuteSennichiteWin: string;
     };
     variantCodex: {
         codexReference: string;

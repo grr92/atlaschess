@@ -79,6 +79,12 @@ export const variantMeta_es: Record<string, VariantMetaI18n> = {
         tag: 'Tablero 8x8',
         desc: 'Ajedrez tradicional birmano con tablero marcado con las diagonales Sit-ke-min, peones escalonados y posiciones iniciales de las piezas variables y personalizables.',
     },
+    shogi: {
+        title: 'Shogi',
+        origin: 'Período Heian • Japón',
+        tag: 'Tablero 9x9',
+        desc: 'El ajedrez tradicional japonés. Destaca por su sistema de reintroducción de piezas capturadas (drops), promociones en territorio enemigo y batallas tácticas de máxima profundidad.',
+    },
 };
 
 export const variantCodex_es: Record<string, VariantCodexI18n> = {
@@ -875,6 +881,72 @@ export const variantCodex_es: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'Las piezas tradicionales son esculturas en madera o marfil (rojas y negras o verdes) que encarnan la epopeya del Ramayana (Yama Zatdaw): el príncipe Rama y el general simio Hanuman frente al rey demonio Ravana. Los artesanos tallaban tableros de mesa elevados (sittuyin-kon) provistos de cajones para guardar las piezas, concebidos para jugar en cuclillas sobre el suelo. En las partidas tradicionales, cada jugada se acompaña de un seco y resonante golpe sobre la madera, evocando el fragor bélico. Emparentado anatómicamente con el Makruk tailandés y el Ouk Chaktrang camboyano según el historiador Jean-Louis Cazaux, el juego sufrió un fuerte declive y escasez de juegos artesanales tras cinco décadas de aislamiento militar y pobreza en el siglo XX, eclipsado en gran medida por el ajedrez internacional aunque preservado en regiones del noroeste.',
             rightBoxTitle: 'Despliegue Sit-tee, Sit-ke-min y Reglamento',
             rightBoxDesc: 'El juego se disputa sobre un tablero liso de 64 casillas sin alternancia de color, cruzado por dos grandes diagonales llamadas Sit-ke-min («líneas del general»). La partida se inicia con la fase de Sit-tee (despliegue de tropas), donde tras fijar los peones escalonados, cada bando posiciona libremente sus piezas mayores; en los torneos oficiales se coloca una cortina divisoria en el centro para ocultar la disposición táctica hasta que ambas fuerzas están listas. H. J. R. Murray documentó en 1913 su evolución en tres etapas (despliegue, recolocación y batalla abierta). Los peones solo pueden ascender a General al alcanzar las diagonales Sit-ke-min y únicamente si el General propio ya ha perecido. El objetivo supremo es dar mate (khwè), estando terminantemente prohibido el rey ahogado (tablas ilegales). Anne Sunnucks registró además antiguas variantes con dados de tres jugadas simultáneas.',
+        },
+    },
+    shogi: {
+        name: 'Shogi',
+        rules: {
+            intro: 'El Shogi (將棋, «juego de los generales»), o ajedrez japonés, se juega en una cuadrícula monocroma de 9×9 casillas. Las piezas tienen forma de cuña y se orientan apuntando hacia el adversario. La partida la inicia Sente (jugador inferior / blancas). El objetivo es dar jaque mate al Rey oponente. Lo que distingue al Shogi de casi todas las demás variantes de ajedrez es la regla de reintroducción (drop): las piezas capturadas pasan a la reserva del jugador y pueden ser reintroducidas en cualquier casilla vacía como propias.',
+            bullets: [
+                {
+                    title: 'El Rey (Gyoku / Osho):',
+                    desc: 'Mueve una casilla en cualquier dirección (ortogonal o diagonal). Es la pieza real suprema; la captura o jaque mate del rey rival otorga la victoria.',
+                    pieceName: 'ShogiKing',
+                },
+                {
+                    title: 'La Torre (Hisha) y el Dragón (Ryu):',
+                    desc: 'La Torre mueve cualquier número de casillas ortogonalmente. Al promocionar se convierte en Dragón Rey (Ryu), conservando el movimiento de la torre y sumando la capacidad de mover una casilla en diagonal.',
+                    pieceName: 'ShogiRook',
+                },
+                {
+                    title: 'El Alfil (Kaku) y el Caballo Dragón (Uma):',
+                    desc: 'El Alfil mueve cualquier número de casillas en diagonal. Al promocionar se convierte en Caballo Dragón (Uma), conservando las diagonales y sumando la capacidad de mover una casilla ortogonalmente.',
+                    pieceName: 'ShogiBishop',
+                },
+                {
+                    title: 'El General de Oro (Kin):',
+                    desc: 'Mueve una casilla en las cuatro direcciones ortogonales o una casilla en diagonal hacia adelante (6 direcciones en total). No puede promocionar.',
+                    pieceName: 'ShogiGold',
+                },
+                {
+                    title: 'El General de Plata (Gin):',
+                    desc: 'Mueve una casilla en las cuatro direcciones diagonales o una casilla ortogonal hacia adelante (5 direcciones en total). Al promocionar se convierte en Plata Promovida (Narigin), moviendo exactamente como un General de Oro.',
+                    pieceName: 'ShogiSilver',
+                },
+                {
+                    title: 'El Caballo (Keima):',
+                    desc: 'Avanza dos casillas hacia adelante y una hacia el lado (solo los dos saltos frontales). Salta por encima de piezas intermedias. Al promocionar se convierte en Caballo Promovido (Narikei), moviendo como un General de Oro.',
+                    pieceName: 'ShogiKnight',
+                },
+                {
+                    title: 'La Lanza (Kyosha):',
+                    desc: 'Mueve cualquier número de casillas libres únicamente hacia adelante en su columna. Al promocionar se convierte en Lanza Promovida (Narikyo), moviendo como un General de Oro.',
+                    pieceName: 'ShogiLance',
+                },
+                {
+                    title: 'El Peón (Fuhyo) y el Tokin:',
+                    desc: 'Mueve y captura una casilla hacia adelante. Al promocionar se convierte en Tokin, moviendo exactamente igual que un General de Oro.',
+                    pieceName: 'ShogiPawn',
+                },
+                {
+                    title: 'Reintroducción de Piezas (Drops):',
+                    desc: 'En lugar de mover una pieza del tablero, puedes reintroducir una pieza de tu reserva (capturada previamente) en cualquier casilla desocupada en su forma básica no promocionada. Restricciones: no se puede colocar una pieza sin movimientos legales futuros (peón/lanza en última fila, caballo en las dos últimas); regla de Nifu (no puedes colocar un peón en una columna donde ya tengas otro peón no promocionado); regla de Uchifuzume (no se puede dar jaque mate inmediato con la reintroducción de un peón, aunque sí jaque mate con cualquier otra pieza o jaque simple con peón).',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Zona de Promoción:',
+                    desc: 'Las tres filas más lejanas al inicio de cada bando forman la zona de promoción. Al entrar, salir o moverse dentro de dicha zona, una pieza puede promocionar. La promoción es obligatoria si la pieza no tuviera ningún movimiento legal en caso de no promocionar.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Consejo profesional: En Shogi casi nunca se simplifica el material hacia un final tranquilo; cada pieza capturada se convierte en un arma arrojadiza. Construye un castillo sólido (como Mino o Yagura) para tu rey antes de lanzar un ataque coordinado con reintroducciones.',
+        },
+        history: {
+            intro: 'El Shogi es el miembro japonés de la familia del ajedrez, derivado del Chaturanga indio que llegó a Japón a través de China durante el período Heian (con piezas arqueológicas datadas hacia 1058). Hacia el siglo XVI sus reglas quedaron fijadas en el shogi estándar moderno. Su rasgo más distintivo es la regla de reintroducción de piezas capturadas (drops), cuyo momento exacto de invención carece de registro histórico, dotando al juego de un gran dinamismo táctico y una tasa de empates casi nula.',
+            leftBoxTitle: 'El Período Edo y las Casas Meijin',
+            leftBoxDesc: 'Durante el Shogunato Tokugawa (período Edo), el Shogi recibió el patrocinio estatal del Shogun. Se crearon las tres grandes escuelas dinásticas (Ohashi, Ohashi rama secundaria e Ito) y se instauró el título oficial de Meijin para el mayor maestro del juego.',
+            rightBoxTitle: 'Organización Profesional y Títulos',
+            rightBoxDesc: 'En el Japón contemporáneo, el Shogi es organizado profesionalmente por la Nihon Shogi Renmei (JSA), que disputa ocho grandes títulos anuales. Maestros legendarios como Yoshiharu Habu (el primero en ostentar siete coronas) o Sota Fujii (poseedor de las ocho coronas) son figuras consagradas de este deporte mental.',
         },
     },
 };

@@ -1,17 +1,23 @@
-import { Piece } from '../core/pieces/piecesIndex';
+import type { PieceColor } from '../types';
 import { getPieceSvgChar } from '../core/pieces/pieceRegistry';
 import { VariantRegistry } from '../core/variants/variantRegistry';
 import { pieceSvgAssets } from './pieceAssets';
 import { getXiangqiPieceImage } from './xiangqiPieceMapper';
 import { getJanggiPieceImage } from './janggiPieceMapper';
 import { getMakrukPieceImage } from './makrukPieceMapper';
+import { getShogiPieceImage } from './shogiPieceMapper';
 
 export type RegionalPieceStyle = 'text' | 'icon';
+export type VisualPiece = { name: string; color: PieceColor };
 
 const svgAssets = pieceSvgAssets;
 
-export const getPieceImage = (piece: Piece | null, style: RegionalPieceStyle = 'text'): string | null => {
+export const getPieceImage = (piece: VisualPiece | null, style: RegionalPieceStyle = 'text'): string | null => {
     if (!piece) return null;
+
+    if (piece.name.startsWith('Shogi')) {
+        return getShogiPieceImage(piece, style);
+    }
 
     if (piece.name.startsWith('Xiangqi')) {
         return getXiangqiPieceImage(piece, style);

@@ -3,6 +3,8 @@ import type { Move } from '../types';
 import { TamerlaneEngine } from '../core/engine/TamerlaneEngine';
 import { ChaturajiEngine } from '../core/engine/ChaturajiEngine';
 import { SittuyinEngine } from '../core/engine/SittuyinEngine';
+import { ShogiEngine } from '../core/engine/ShogiEngine';
+import { uciCharToPieceName } from '../core/variants/shogi/shogiSetup';
 
 /**
  * Replays a single recorded move on an engine instance, handling variant-specific
@@ -12,6 +14,22 @@ import { SittuyinEngine } from '../core/engine/SittuyinEngine';
 export function replayMove(engine: BaseEngine, move: Move): void {
     if (move.isPass || move.san === 'pass') {
         engine.passTurn();
+        return;
+    }
+
+    if (engine instanceof ShogiEngine) {
+        if (move.isDrop && move.dropPiece) {
+            engine.dropPiece(move.dropPiece, move.to);
+            return;
+        }
+        if (move.san?.includes('@')) {
+            const [pieceChar] = move.san.split('@');
+            const pieceName = uciCharToPieceName(pieceChar);
+            engine.dropPiece(pieceName, move.to);
+            return;
+        }
+        const promo = move.isPromotion || move.san?.endsWith('+') ? '+' : undefined;
+        engine.executeMove(move.from, move.to, promo);
         return;
     }
 

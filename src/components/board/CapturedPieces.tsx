@@ -3,6 +3,8 @@ import { getPieceImage } from '../../utils/pieceMapper';
 import { getPieceValue, getPieceSortOrder } from '../../core/pieces/pieceRegistry';
 import { ChaturajiEngine, type ChaturajiColor } from '../../core/engine/ChaturajiEngine';
 import { FourSeasonsEngine, type FourSeasonsColor } from '../../core/engine/FourSeasonsEngine';
+import { ShogiEngine } from '../../core/engine/ShogiEngine';
+import { createShogiPiece } from '../../core/variants/shogi/shogiSetup';
 import { useTranslation } from '../../i18n';
 import { VariantRegistry } from '../../core/variants/variantRegistry';
 
@@ -28,6 +30,105 @@ export const CapturedPieces = () => {
     const playerColor = useGameStore(state => state.playerColor);
     const currentVariantId = useGameStore(state => state.currentVariantId);
     const regionalPieceStyle = useGameStore(state => state.regionalPieceStyle);
+    const shogiSelectedPiece = useGameStore(state => state.shogiSelectedPiece);
+    const selectShogiDropPiece = useGameStore(state => state.selectShogiDropPiece);
+    const isAiThinking = useGameStore(state => state.isAiThinking);
+
+    const isShogiFlipped = gameMode === 'vs_ai' && playerColor === 'black';
+
+    // Shogi Komadai (In-hand pieces) layout
+    if (engine instanceof ShogiEngine) {
+        const isHumanTurn = gameMode !== 'vs_ai' || engine.currentTurn === playerColor;
+
+        const renderHand = (color: 'white' | 'black', label: string) => {
+            const hand = engine.inHand[color];
+            const isTurn = engine.currentTurn === color;
+            const canInteract = isTurn && isHumanTurn && !isAiThinking;
+
+            const counts = ['ShogiRook', 'ShogiBishop', 'ShogiGold', 'ShogiSilver', 'ShogiKnight', 'ShogiLance', 'ShogiPawn'].map(name => ({
+                name,
+                count: hand.filter(p => p === name).length
+            })).filter(item => item.count > 0);
+
+            return (
+                <div className={`p-2.5 rounded-xl border transition-all ${
+                    isTurn ? 'bg-amber-500/10 border-amber-500/40 shadow-md' : 'bg-slate-900/40 border-white/10'
+                }`}>
+                    <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center gap-2">
+                            <div className={`w-3 h-3 rounded-full shadow-md ${color === 'white' ? 'bg-white' : 'bg-slate-950 border border-slate-600'}`} />
+                            <span className="text-xs font-bold text-slate-200">{label}</span>
+                            <span className="text-[10px] text-slate-500 font-mono">({hand.length})</span>
+                        </div>
+                        {isTurn && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold uppercase">
+                                {t.gameplay.playing}
+                            </span>
+                        )}
+                    </div>
+
+                    {counts.length === 0 ? (
+                        <div className="text-[11px] text-slate-500 italic py-1 pl-1 min-h-[36px] flex items-center">
+                            {t.gameplay.shogiKomadaiEmpty}
+                        </div>
+                    ) : (
+                        <div className="flex flex-wrap gap-1.5 items-center min-h-[36px]">
+                            {counts.map(({ name, count }) => {
+                                const isSelected = shogiSelectedPiece === name && isTurn;
+                                const dummy = createShogiPiece(name, color, { x: 0, y: 0 });
+                                const img = getPieceImage(dummy, regionalPieceStyle);
+
+                                return (
+                                    <button
+                                        key={name}
+                                        type="button"
+                                        disabled={!canInteract}
+                                        onClick={() => selectShogiDropPiece(isSelected ? null : name)}
+                                        className={`relative p-1 rounded-lg border transition-all ${
+                                            isSelected
+                                                ? 'bg-amber-500/30 border-amber-400 ring-2 ring-amber-400/80 shadow-md scale-105'
+                                                : canInteract
+                                                ? 'bg-slate-800/80 border-white/15 hover:border-amber-400/50 hover:bg-slate-700/80 cursor-pointer'
+                                                : 'bg-slate-800/40 border-white/10 cursor-default'
+                                        }`}
+                                        title={`${name} (x${count})`}
+                                    >
+                                        <img src={img!} alt={name} className="w-6 h-6 object-contain pointer-events-none" />
+                                        <span className="absolute -top-1 -right-1 bg-amber-500 text-slate-950 text-[9px] font-black px-1 rounded-full border border-amber-300">
+                                            {count}
+                                        </span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const topPlayer = isShogiFlipped ? 'white' : 'black';
+        const bottomPlayer = isShogiFlipped ? 'black' : 'white';
+        const topLabel = topPlayer === 'black' ? t.gameplay.shogiGotePlayer : t.gameplay.shogiSentePlayer;
+        const bottomLabel = bottomPlayer === 'white' ? t.gameplay.shogiSentePlayer : t.gameplay.shogiGotePlayer;
+
+        return (
+            <div className="bg-atlas-surface/80 backdrop-blur-md rounded-2xl p-4 w-full h-full flex flex-col shadow-lg border border-white/10 text-atlas-titleText">
+                <h3 className="font-extrabold mb-3 pb-2 text-xs text-amber-400 tracking-widest uppercase border-b border-white/5 flex items-center justify-between">
+                    <span>{t.gameplay.shogiKomadaiTitle}</span>
+                    <span className="text-[10px] text-slate-400 font-normal">
+                        {shogiSelectedPiece ? t.gameplay.shogiSelectDropSquare : ''}
+                    </span>
+                </h3>
+
+                <div className="flex-1 flex flex-col justify-between gap-3">
+                    {renderHand(topPlayer, topLabel)}
+                    <div className="mt-auto">
+                        {renderHand(bottomPlayer, bottomLabel)}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     // 4-Player Four Seasons layout
     if (engine instanceof FourSeasonsEngine) {

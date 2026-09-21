@@ -4,6 +4,7 @@ import { XiangqiEngine } from '../../src/core/engine/XiangqiEngine';
 import { JanggiEngine } from '../../src/core/engine/JanggiEngine';
 import { MakrukEngine } from '../../src/core/engine/MakrukEngine';
 import { SittuyinEngine } from '../../src/core/engine/SittuyinEngine';
+import { ShogiEngine } from '../../src/core/engine/ShogiEngine';
 import {
     XiangqiSoldier,
     JanggiElephant,
@@ -12,7 +13,9 @@ import {
     Biangai,
     Ruea,
     Yahhta,
-    Ne
+    Ne,
+    ShogiPawn,
+    ShogiTokin
 } from '../../src/core/pieces/piecesIndex';
 
 describe('Regional Variants: In-Depth Save/Load and Undo Verification', () => {
@@ -561,6 +564,91 @@ describe('Regional Variants: In-Depth Save/Load and Undo Verification', () => {
             expect(reloadedEngine.board.getPieceAt(0, 4)?.name).toBe('Ne');
             expect(useGameStore.getState().currentTurn).toBe('black');
             expect(useGameStore.getState().history.length).toBe(1);
+        });
+    });
+
+    describe('Shogi (Japanese Chess)', () => {
+        it('should handle regular moves, promotions via modal, captures into hand, drops, undo, and save/load', () => {
+            useGameStore.getState().initGame('shogi', 'pvp', 'white', 'medium', false);
+            const store = useGameStore.getState();
+
+            expect(useGameStore.getState().currentTurn).toBe('white');
+            const initialEngine = useGameStore.getState().engine as ShogiEngine;
+            expect(initialEngine).toBeInstanceOf(ShogiEngine);
+
+            // Move 1: White 7g Pawn (2, 6) -> 7f (2, 5) (opening the Bishop diagonal)
+            store.selectSquare({ x: 2, y: 6 });
+            store.selectSquare({ x: 2, y: 5 });
+            expect(useGameStore.getState().currentTurn).toBe('black');
+
+            // Move 2: Black 3c Pawn (6, 2) -> 3d (6, 3) (opening the Bishop diagonal)
+            store.selectSquare({ x: 6, y: 2 });
+            store.selectSquare({ x: 6, y: 3 });
+            expect(useGameStore.getState().currentTurn).toBe('white');
+
+            // Move 3: White 8h Bishop (1, 7) captures Black 2b Bishop at (7, 1) with optional promotion!
+            store.selectSquare({ x: 1, y: 7 });
+            store.selectSquare({ x: 7, y: 1 });
+
+            // Expect promotion interception modal
+            const activeInterception = useGameStore.getState().activeInterception;
+            expect(activeInterception).toBeDefined();
+            expect(activeInterception?.type).toBe('PROMOTION');
+            expect(activeInterception?.availablePieces).toEqual(['ShogiHorse', 'ShogiBishop']);
+
+            // Accept promotion to ShogiHorse
+            store.resolveInterception({ type: 'PROMOTION', pieceName: 'ShogiHorse' });
+
+            // Verify White's captured Bishop is now in hand!
+            const engineAfterCapture = useGameStore.getState().engine as ShogiEngine;
+            expect(engineAfterCapture.inHand.white).toContain('ShogiBishop');
+            expect(engineAfterCapture.board.getPieceAt(7, 1)?.name).toBe('ShogiHorse');
+            expect(useGameStore.getState().currentTurn).toBe('black');
+
+            // Move 4: Black Silver at (6, 0) captures White Horse at (7, 1)
+            store.selectSquare({ x: 6, y: 0 });
+            store.selectSquare({ x: 7, y: 1 });
+            // Horse demoted to Bishop in Black's hand
+            const engineAfterBlackCapture = useGameStore.getState().engine as ShogiEngine;
+            expect(engineAfterBlackCapture.inHand.black).toContain('ShogiBishop');
+            expect(useGameStore.getState().currentTurn).toBe('white');
+
+            // Move 5: White drops Bishop from hand onto (4, 4)
+            store.selectShogiDropPiece('ShogiBishop');
+            expect((useGameStore.getState().engine as ShogiEngine).selectedDropPiece).toBe('ShogiBishop');
+            store.selectSquare({ x: 4, y: 4 });
+
+            const engineAfterDrop = useGameStore.getState().engine as ShogiEngine;
+            expect(engineAfterDrop.board.getPieceAt(4, 4)?.name).toBe('ShogiBishop');
+            expect(engineAfterDrop.inHand.white).not.toContain('ShogiBishop');
+            expect(useGameStore.getState().currentTurn).toBe('black');
+
+            // Save the game
+            const savedData = store.saveGame();
+            expect(savedData).toBeDefined();
+
+            // Corrupt store state
+            store.initGame('classic', 'pvp', 'white', 'medium', false);
+            expect(useGameStore.getState().currentVariantId).toBe('classic');
+
+            // Reload saved game
+            const loadSuccess = store.loadGame(savedData!);
+            expect(loadSuccess).toBe(true);
+
+            const reloadedEngine = useGameStore.getState().engine as ShogiEngine;
+            expect(reloadedEngine).toBeInstanceOf(ShogiEngine);
+            expect(reloadedEngine.board.getPieceAt(4, 4)?.name).toBe('ShogiBishop');
+            expect(reloadedEngine.inHand.black).toContain('ShogiBishop');
+            expect(reloadedEngine.inHand.white).not.toContain('ShogiBishop');
+            expect(useGameStore.getState().currentTurn).toBe('black');
+            expect(useGameStore.getState().history.length).toBe(5);
+
+            // Test Undo: Undoing Move 5 (the drop)
+            store.undoMove();
+            const engineAfterUndoDrop = useGameStore.getState().engine as ShogiEngine;
+            expect(engineAfterUndoDrop.board.getPieceAt(4, 4)).toBeNull();
+            expect(engineAfterUndoDrop.inHand.white).toContain('ShogiBishop');
+            expect(useGameStore.getState().currentTurn).toBe('white');
         });
     });
 

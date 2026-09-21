@@ -67,6 +67,16 @@ export interface SittuyinSliceActions {
     startBlackSittuyinDeploy: () => void;
 }
 
+export interface ShogiSliceState {
+    shogiSelectedPiece: string | null;
+}
+
+export interface ShogiSliceActions {
+    selectShogiDropPiece: (pieceName: string | null) => void;
+    dropShogiPiece: (pos: Position) => void;
+    declareShogiJishogi: () => void;
+}
+
 export interface AiSliceState {
     gameMode: GameMode;
     playerColor: PieceColor;
@@ -94,9 +104,12 @@ export type GameStore = GameSliceState &
     GameSliceActions &
     SittuyinSliceState &
     SittuyinSliceActions &
+    ShogiSliceState &
+    ShogiSliceActions &
     AiSliceState &
     AiSliceActions &
     SaveLoadSliceState &
     SaveLoadSliceActions;
+
 
 export type StoreSlice<T> = StateCreator<GameStore, [], [], T>;

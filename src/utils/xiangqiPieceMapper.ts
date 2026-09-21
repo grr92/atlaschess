@@ -1,9 +1,10 @@
-import { Piece } from '../core/pieces/piecesIndex';
+import type { PieceColor } from '../types';
 import { pieceSvgAssets } from './pieceAssets';
 
 export type XiangqiPieceStyle = 'text' | 'icon';
+export type VisualPiece = { name: string; color: PieceColor };
 
-export const getXiangqiPieceImage = (piece: Piece | null, style: XiangqiPieceStyle = 'text'): string | null => {
+export const getXiangqiPieceImage = (piece: VisualPiece | null, style: XiangqiPieceStyle = 'text'): string | null => {
     if (!piece) return null;
 
     let pieceName = '';
