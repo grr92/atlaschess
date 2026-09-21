@@ -1,9 +1,10 @@
-import { Piece } from '../core/pieces/piecesIndex';
+import type { PieceColor } from '../types';
 import { pieceSvgAssets } from './pieceAssets';
 
 export type JanggiPieceStyle = 'text' | 'icon';
+export type VisualPiece = { name: string; color: PieceColor };
 
-export const getJanggiPieceImage = (piece: Piece | null, style: JanggiPieceStyle = 'text'): string | null => {
+export const getJanggiPieceImage = (piece: VisualPiece | null, style: JanggiPieceStyle = 'text'): string | null => {
     if (!piece) return null;
 
     let pieceName = '';

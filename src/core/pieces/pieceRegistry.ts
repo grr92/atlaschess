@@ -136,7 +136,23 @@ export const PIECE_REGISTRY: Record<PieceName, PieceMetadata> = {
     Sin: { name: 'Sin', displayName: 'Elephant', value: 350, sortOrder: 6, svgChar: 'e' },
     Myin: { name: 'Myin', displayName: 'Horse', value: 320, sortOrder: 8, svgChar: 'n' },
     Yahhta: { name: 'Yahhta', displayName: 'Chariot', value: 500, sortOrder: 4, svgChar: 'r' },
-    Ne: { name: 'Ne', displayName: 'Feudal Lord', value: 100, sortOrder: 13, svgChar: 'p' }
+    Ne: { name: 'Ne', displayName: 'Feudal Lord', value: 100, sortOrder: 13, svgChar: 'p' },
+
+    // Shogi (Japanese Chess)
+    ShogiKing: { name: 'ShogiKing', displayName: 'King (王将/玉将)', value: 10000, sortOrder: 0, svgChar: 'k' },
+    ShogiRook: { name: 'ShogiRook', displayName: 'Rook (飛車)', value: 1000, sortOrder: 1, svgChar: 'r' },
+    ShogiBishop: { name: 'ShogiBishop', displayName: 'Bishop (角行)', value: 800, sortOrder: 2, svgChar: 'b' },
+    ShogiGold: { name: 'ShogiGold', displayName: 'Gold General (金将)', value: 600, sortOrder: 3, svgChar: 'g' },
+    ShogiSilver: { name: 'ShogiSilver', displayName: 'Silver General (銀将)', value: 500, sortOrder: 4, svgChar: 's' },
+    ShogiKnight: { name: 'ShogiKnight', displayName: 'Knight (桂馬)', value: 400, sortOrder: 5, svgChar: 'n' },
+    ShogiLance: { name: 'ShogiLance', displayName: 'Lance (香車)', value: 300, sortOrder: 6, svgChar: 'l' },
+    ShogiPawn: { name: 'ShogiPawn', displayName: 'Pawn (歩兵)', value: 100, sortOrder: 7, svgChar: 'p' },
+    ShogiDragon: { name: 'ShogiDragon', displayName: 'Dragon King (龍王)', value: 1200, sortOrder: 1, svgChar: 'r' },
+    ShogiHorse: { name: 'ShogiHorse', displayName: 'Dragon Horse (龍馬)', value: 1000, sortOrder: 2, svgChar: 'b' },
+    ShogiPromotedSilver: { name: 'ShogiPromotedSilver', displayName: 'Promoted Silver (成銀)', value: 600, sortOrder: 4, svgChar: 's' },
+    ShogiPromotedKnight: { name: 'ShogiPromotedKnight', displayName: 'Promoted Knight (成桂)', value: 600, sortOrder: 5, svgChar: 'n' },
+    ShogiPromotedLance: { name: 'ShogiPromotedLance', displayName: 'Promoted Lance (成車)', value: 600, sortOrder: 6, svgChar: 'l' },
+    ShogiTokin: { name: 'ShogiTokin', displayName: 'Tokin (と金)', value: 600, sortOrder: 7, svgChar: 'p' },
 };
 
 export const getPieceMetadata = (name: string): PieceMetadata | undefined => {

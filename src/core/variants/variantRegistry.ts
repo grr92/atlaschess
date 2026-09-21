@@ -27,6 +27,8 @@ import { OukChaktrang } from './OukChaktrang';
 import { OukChaktrangEngine } from '../engine/OukChaktrangEngine';
 import { Sittuyin } from './Sittuyin';
 import { SittuyinEngine } from '../engine/SittuyinEngine';
+import { Shogi } from './Shogi';
+import { ShogiEngine } from '../engine/ShogiEngine';
 
 export type VariantCategory = 'standard' | 'historical' | 'regional';
 
@@ -213,6 +215,21 @@ VariantRegistry.register({
     hasPieceStyleToggle: true,
     supportsPassTurn: true,
     createEngine: (options?: any) => new JanggiEngine(new Janggi(options), options)
+});
+
+VariantRegistry.register({
+    id: 'shogi',
+    title: 'Shogi',
+    category: 'regional',
+    origin: 'Heian Period • Japan',
+    tag: '9x9 Board',
+    tileSize: 'compact',
+    isMonochromeBoard: true,
+    hasPieceStyleToggle: true,
+    playerColors: ['white', 'black'],
+    defaultPlayerColor: 'white',
+    catalogPieceColor: 'white',
+    createEngine: () => new ShogiEngine(new Shogi())
 });
 
 VariantRegistry.register({

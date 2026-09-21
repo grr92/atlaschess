@@ -44,5 +44,21 @@ export const BoardMarkings: React.FC<BoardMarkingsProps> = ({ variantId }) => {
         );
     }
 
+    if (variantId === 'shogi') {
+        // 4 star points (hoshi) at the 4 grid intersections: (3,3), (6,3), (3,6), (6,6)
+        return (
+            <svg
+                className="absolute inset-0 w-full h-full pointer-events-none z-[5]"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+            >
+                <circle cx="33.333" cy="33.333" r="1.1" fill="#4a2e12" />
+                <circle cx="66.667" cy="33.333" r="1.1" fill="#4a2e12" />
+                <circle cx="33.333" cy="66.667" r="1.1" fill="#4a2e12" />
+                <circle cx="66.667" cy="66.667" r="1.1" fill="#4a2e12" />
+            </svg>
+        );
+    }
+
     return null;
 };

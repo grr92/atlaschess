@@ -37,7 +37,10 @@ export type PieceName =
     // Makruk (Thai Chess)
     | 'Khun' | 'Met' | 'Khon' | 'Ma' | 'Ruea' | 'Bia' | 'Biangai'
     // Sittuyin (Burmese Chess)
-    | 'Mingyi' | 'Sitke' | 'Sin' | 'Myin' | 'Yahhta' | 'Ne';
+    | 'Mingyi' | 'Sitke' | 'Sin' | 'Myin' | 'Yahhta' | 'Ne'
+    // Shogi (Japanese Chess)
+    | 'ShogiKing' | 'ShogiRook' | 'ShogiBishop' | 'ShogiGold' | 'ShogiSilver' | 'ShogiKnight' | 'ShogiLance' | 'ShogiPawn'
+    | 'ShogiDragon' | 'ShogiHorse' | 'ShogiPromotedSilver' | 'ShogiPromotedKnight' | 'ShogiPromotedLance' | 'ShogiTokin';
 
 import type { Piece } from '../core/pieces/Piece';
 
@@ -52,6 +55,10 @@ export interface Move {
     rescuedKingPlacement?: { color: PieceColor; pos: Position };
     rescuedKingDeclined?: boolean;
     isPass?: boolean;
+    isDrop?: boolean;
+    dropPiece?: string;
+    isPromotion?: boolean;
+    isCheck?: boolean;
 }
 
 export type GameState = 'playing' | 'check' | 'checkmate' | 'draw';

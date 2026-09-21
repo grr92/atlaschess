@@ -1,7 +1,9 @@
-import { Piece } from '../core/pieces/piecesIndex';
+import type { PieceColor } from '../types';
 import { pieceSvgAssets } from './pieceAssets';
 
-export const getMakrukPieceImage = (piece: Piece | null): string | null => {
+export type VisualPiece = { name: string; color: PieceColor };
+
+export const getMakrukPieceImage = (piece: VisualPiece | null): string | null => {
     if (!piece) return null;
 
     const fileName = `${piece.name}_${piece.color}.svg`;

@@ -6,6 +6,7 @@ import { TamerlaneEngine } from '../../core/engine/TamerlaneEngine';
 import { ChaturajiEngine } from '../../core/engine/ChaturajiEngine';
 import { DICE_PIECE_MAP, CHATURAJI_DICE_PIECE_MAP, FOUR_SEASONS_DICE_PIECE_MAP } from '../../utils/diceMapper';
 import { soundManager } from '../../utils/soundManager';
+import { uciCharToPieceName } from '../../core/variants/shogi/shogiSetup';
 
 export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, get) => ({
     gameMode: 'pvp',
@@ -86,7 +87,7 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                             break;
                     }
 
-                    const isDynamicFenVariant = currentVariantId === 'makruk' || currentVariantId === 'sittuyin';
+                    const isDynamicFenVariant = currentVariantId === 'makruk' || currentVariantId === 'sittuyin' || currentVariantId === 'shogi';
                     const fenToSend = isDynamicFenVariant && typeof (engine as any).getFen === 'function'
                         ? (engine as any).getFen()
                         : (engine as any).initialFen;
@@ -109,7 +110,11 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                     } else if (bestMoveStr && bestMoveStr !== '(none)') {
                         const parsed = uciToMove(bestMoveStr, engine.board.rows);
                         if (parsed) {
-                            if (parsed.from.x === parsed.to.x && parsed.from.y === parsed.to.y) {
+                            if (parsed.dropPiece && typeof (engine as any).dropPiece === 'function') {
+                                // Shogi drop move (e.g. P@e4)
+                                const dropName = uciCharToPieceName(parsed.dropPiece);
+                                executed = (engine as any).dropPiece(dropName, parsed.to);
+                            } else if (parsed.from.x === parsed.to.x && parsed.from.y === parsed.to.y) {
                                 // In-place deferred promotion (e.g. Sittuyin d6d6f)
                                 if (typeof (engine as any).promotePawnInPlace === 'function') {
                                     executed = (engine as any).promotePawnInPlace(parsed.to);

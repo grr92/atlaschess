@@ -41,5 +41,13 @@ describe('VariantRegistry', () => {
         expect(historical.some(v => v.id === 'tamerlane')).toBe(true);
         expect(historical.some(v => v.id === 'grant_acedrex')).toBe(true);
         expect(historical.some(v => v.id === 'courier')).toBe(true);
+
+        const regional = VariantRegistry.getByCategory('regional');
+        const regionalIds = regional.map(v => v.id);
+        const janggiIdx = regionalIds.indexOf('janggi');
+        const shogiIdx = regionalIds.indexOf('shogi');
+        const makrukIdx = regionalIds.indexOf('makruk');
+        expect(shogiIdx).toBe(janggiIdx + 1);
+        expect(makrukIdx).toBe(shogiIdx + 1);
     });
 });

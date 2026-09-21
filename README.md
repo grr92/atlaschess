@@ -8,7 +8,7 @@ This is my very first software project outside my CS studies, and it has been de
 
 ## Features
 
-- **Rich Catalog of 13 Chess Variants:**
+- **Rich Catalog of 14 Chess Variants:**
     - **Standard:** Classic FIDE Chess (8×8).
     - **Historical Ancestors & Medieval Variants:**
         - **Chaturanga** (6th c. India, 8×8) — The ancient forefather of chess featuring Gajas, Mantris, and early infantry tactics.
@@ -21,6 +21,7 @@ This is my very first software project outside my CS studies, and it has been de
     - **Living Regional Variants:**
         - **Xiangqi** (Chinese Chess, 9×10) — Played across the River and inside the Nine Palaces, featuring jumping Cannons, crossing Soldiers, and a toggle between traditional calligraphy (Hanzi) and modern Westernized pieces.
         - **Janggi** (Korean Chess, 9×10) — Fast-paced Korean chess with customizable starting formations (Sang-Ma swaps), wide-sweeping Elephants, Palace diagonals, and turn-passing / Bikjang mechanics.
+        - **Shogi** (Japanese Chess, 9×9) — Uncheckered 9×9 board with 40 wedge-shaped pieces. Features the famous piece drop mechanism (captured enemy pieces become part of the captor's reserve in dedicated *Komadai* trays and can be dropped onto vacant squares), dual-piece set support (traditional Japanese Kanji vs. Westernized chess icons), 3-rank promotion zone, and authentic end rules (Uchifuzume pawn-drop mate prohibition, Sennichite repetition & perpetual check, and Jishogi impasse rule).
         - **Makruk** (Thai Chess, 8×8) — Traditional uncheckered board with Seeds, Nobles, 6th-rank Bia promotions, and authentic Board & Piece Counting rules.
         - **Ouk Chaktrang** (Cambodian Chess, 8×8) — Ancient Khmer counterpart to Makruk featuring dynamic opening moves (Lord's knight leap and Seed's two-square advance before the first capture) and full countdown systems.
         - **Sittuyin** (Burmese Chess, 8×8) — Traditional Myanmar chess on an uncheckered monochrome board with large diagonals, featuring the interactive *Sit-tee* troop deployment phase, staggered pawn chains, diagonal promotions, and lone king counting rules.
@@ -33,18 +34,19 @@ This is my very first software project outside my CS studies, and it has been de
         - 8-sided die (d8) in *Grant Acedrex*.
         - Optional dice-less mode toggle where supported.
 - **Dual-Engine AI Architecture:**
-    - **Fairy-Stockfish 14:** High-performance native UCI engine embedded via Electron IPC for Classic Chess and standard regional/historical games (*Xiangqi*, *Janggi*, *Makruk*, *Ouk Chaktrang*, *Shatranj*, *Chaturanga*, *Courier*).
+    - **Fairy-Stockfish 14:** High-performance native UCI engine embedded via Electron IPC for Classic Chess and standard regional/historical games (*Xiangqi*, *Janggi*, *Shogi* with dynamic SFEN and piece-drops, *Makruk*, *Ouk Chaktrang*, *Shatranj*, *Chaturanga*, *Courier*).
     - **Native Minimax Heuristic Engine:** Custom TypeScript game-theory engine with Alpha-Beta pruning built specifically for complex non-standard geometries and mechanics (*Tamerlane's* 112 squares, Citadels, 11 pawn varieties; *Grant Acedrex's* 12×12 d8; 4-player *Chaturaji* and *Four Seasons*).
 - **Interactive Variant Codex & Customization:**
     - **Variant Codex:** Integrated educational modal with complete rules, piece movement guides, historical context, and pro tips for every variant.
-    - **Calligraphy / Icon Style Toggle:** Instant switching between traditional Chinese/Korean characters and graphical icons for Xiangqi and Janggi.
-    - **Pre-Game Formation Setup:** Interactive modal to configure custom initial setups (such as horse/elephant placement in Janggi) before starting the match.
+    - **Calligraphy / Icon Style Toggle:** Instant switching between traditional characters and graphical icons for *Xiangqi*, *Janggi*, and *Shogi*.
+    - **Piece Drop Trays (*Komadai*):** Interactive in-hand piece pools for Shogi with instant drop placement and count badges.
+    - **Pre-Game Formation Setup:** Interactive modal to configure custom initial setups (such as horse/elephant placement in Janggi or *Sit-tee* in Sittuyin) before starting the match.
 - **Endgame & Counting HUD:**
     - Dedicated **Makruk & Ouk Chaktrang Counting Widget**: Real-time HUD showing remaining fleeing moves (Piece Count) and 64-board limits, with interactive start/stop controls for the disadvantaged player and automatic draw enforcement.
 - **Undo & State Rewind:**
     - Universal *Undo* button utilizing deep event replay for guaranteed state consistency across multi-player turns, dice rolls, and AI matches (automatically rewinds 2 plies in PvE).
 - **Save & Load (.atlas):**
-    - Seamless game persistence allowing you to export and reload entire game states—including move history, captured pieces, dice outcomes, counting clocks, and active formations—via custom `.atlas` JSON files.
+    - Seamless game persistence allowing you to export and reload entire game states—including move history, captured/in-hand pieces, position repetition signatures, dice outcomes, counting clocks, and active formations—via custom `.atlas` JSON files, with full post-load undo capability.
 - **Smart HUD & Audio:**
     - Dynamic Captured Pieces tracker with real-time material balance and advantage calculation.
     - Animated dice widgets displaying active rolled pieces and eligible moves.
@@ -144,7 +146,7 @@ Make sure you have [Node.js](https://nodejs.org/) installed on your machine.
 - [x] AI Opponent integration (Fairy-Stockfish & Native Minimax Engine with difficulty levels).
 - [x] Implement move sound effects.
 - [x] Implement settings (language and mute options).
-- [ ] Add more historical and regional variants.
+- [x] Add more historical and regional variants.
 
 ## Feedback & Suggestions
 
@@ -188,6 +190,9 @@ I highly value your feedback! Feel free to open an issue to suggest new features
 **Janggi Pieces**
   - Attribution: By Hari Seldon - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/User:Hari_Seldon
 
+**Shogi Pieces**
+  - Attribution: By Luffykudo - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/User:Luffykudo
+
 **Makruk Pieces**
   - Attribution: By Yevrowl - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/User:Yevrowl
 
@@ -212,8 +217,3 @@ I highly value your feedback! Feel free to open an issue to suggest new features
 
 This project is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)**.
 You are free to share and adapt the material for non-commercial purposes, as long as you give appropriate credit. See the [LICENSE](https://creativecommons.org/licenses/by-nc/4.0/) details for more information.
-
-## Planned Variants
-
-- Regional:
-  - Shogi (Japan)

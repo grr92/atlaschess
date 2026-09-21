@@ -50,15 +50,48 @@ export function moveToUci(
     return `${fromStr}${toStr}${promoStr}`;
 }
 
+export interface ParsedUciMove {
+    from: Position;
+    to: Position;
+    promotionPiece?: string;
+    dropPiece?: string;
+}
+
 /**
- * Parses a UCI move string (e.g. "e2e4", "e7e8q") into { from, to, promotionPiece }.
+ * Parses a UCI move string (e.g. "e2e4", "e7e8q", "P@e4", "e6e7+") into { from, to, promotionPiece, dropPiece }.
  */
 export function uciToMove(
     uciStr: string,
     totalRows: number = 8
-): { from: Position; to: Position; promotionPiece?: string } | null {
-    if (!uciStr || uciStr.length < 4 || uciStr === '(none)') {
+): ParsedUciMove | null {
+    if (!uciStr || uciStr.length < 3 || uciStr === '(none)') {
         return null;
+    }
+
+    // Drop move (e.g. "P@e4" or "b@d5")
+    if (uciStr.includes('@')) {
+        const dropMatch = uciStr.match(/^([a-zA-Z])@([a-z]\d+)$/i);
+        if (dropMatch) {
+            const dropPieceChar = dropMatch[1].toUpperCase();
+            const to = uciSquareToPosition(dropMatch[2], totalRows);
+            return {
+                from: { x: -1, y: -1 },
+                to,
+                dropPiece: dropPieceChar
+            };
+        }
+    }
+
+    // Shogi promotion move (e.g. "e6e7+")
+    if (uciStr.endsWith('+')) {
+        const promoMatch = uciStr.match(/^([a-z]\d+)([a-z]\d+)\+$/i);
+        if (promoMatch) {
+            return {
+                from: uciSquareToPosition(promoMatch[1], totalRows),
+                to: uciSquareToPosition(promoMatch[2], totalRows),
+                promotionPiece: '+'
+            };
+        }
     }
 
     // In cases with double-digit ranks (e.g. 10x11 boards like "e2e10"), regex parses file+rank
@@ -120,7 +153,16 @@ export function historyToUciMoves(history: Move[], totalRows: number = 8): strin
             if (move.isPass || move.san === 'pass') {
                 return '0000';
             }
+            if (move.isDrop && move.dropPiece) {
+                const char = move.dropPiece.replace(/^Shogi/, '')[0].toUpperCase();
+                const toStr = positionToUciSquare(move.to, totalRows);
+                return `${char}@${toStr}`;
+            }
             if (!move.from || move.from.x < 0) return null;
+
+            if (move.isPromotion || move.san?.endsWith('+')) {
+                return `${positionToUciSquare(move.from, totalRows)}${positionToUciSquare(move.to, totalRows)}+`;
+            }
 
             let promoPiece: string | undefined = undefined;
             if (move.san?.includes('=Q')) promoPiece = 'Queen';

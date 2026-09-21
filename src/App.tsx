@@ -99,7 +99,9 @@ const App = () => {
     const togglePieceStyle = () => {
         setRegionalPieceStyle(regionalPieceStyle === 'text' ? 'icon' : 'text');
     };
-    const pieceStyleToggleLabel = regionalPieceStyle === 'text' ? t.gameplay.iconPieces : t.gameplay.textPieces;
+    const pieceStyleToggleLabel = regionalPieceStyle === 'text'
+        ? t.gameplay.pieceStyleInternational
+        : t.gameplay.pieceStyleTraditional;
 
     const getGameStateLabel = () => {
         if (gameState === 'check') return t.gameplay.check;

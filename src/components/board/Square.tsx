@@ -5,6 +5,7 @@ import type { ContextAction } from '../../core/engine/BaseEngine';
 import { getPieceImage, getSquareBackground } from '../../utils/pieceMapper';
 import { PieceBadges } from './PieceBadges';
 import { useTranslation } from '../../i18n';
+import { useGameStore } from '../../store/useGameStore';
 
 export interface SquareProps {
     x: number;
@@ -71,6 +72,7 @@ export const Square: React.FC<SquareProps> = ({
     onExecuteAction,
 }) => {
     const { t } = useTranslation();
+    const regionalPieceStyle = useGameStore(state => state.regionalPieceStyle);
 
     // If square is out of bounds (e.g. empty spaces around Tamerlane citadels)
     if (!isPlayable) {
@@ -79,7 +81,7 @@ export const Square: React.FC<SquareProps> = ({
 
     const isLight = (x + y) % 2 === 0;
     const bgImage = getSquareBackground(x, y, currentVariantId);
-    const pieceImage = isHidden ? null : getPieceImage(piece);
+    const pieceImage = isHidden ? null : getPieceImage(piece, regionalPieceStyle);
 
     // Coordinate logic and Tamerlane variant adjustment
     const isTamerlane = currentVariantId === 'tamerlane';

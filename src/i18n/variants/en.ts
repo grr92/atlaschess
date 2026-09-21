@@ -79,6 +79,12 @@ export const variantMeta_en: Record<string, VariantMetaI18n> = {
         tag: '8x8 Board',
         desc: 'Traditional Burmese chess played on a board marked with the Sit-ke-min diagonals, featuring staggered pawns and variable, customizable initial piece positions.',
     },
+    shogi: {
+        title: 'Shogi',
+        origin: 'Heian Period • Japan',
+        tag: '9x9 Board',
+        desc: 'Traditional Japanese chess. Renowned for its piece drop mechanic (captured pieces rejoin the battle), territory promotions, and exceptional tactical depth.',
+    },
 };
 
 export const variantCodex_en: Record<string, VariantCodexI18n> = {
@@ -875,6 +881,72 @@ export const variantCodex_en: Record<string, VariantCodexI18n> = {
             leftBoxDesc: 'Traditional sets are miniature sculptures carved in wood or ivory (in official red and black or green) portraying the epic clash of the Ramayana (Yama Zatdaw): Prince Rama and his faithful monkey general Hanuman opposing the demon king Ravana. Traditional craftsmen constructed massive elevated board tables (sittuyin-kon) with sliding drawers beneath the playing surface, designed for players sitting or squatting on the floor. In classical play, pieces are slammed down onto the uncheckered wood with combative, resonant cracks reminiscent of weapon strikes. Structurally twinned with Thai Makruk and Cambodian Ouk Chaktrang as noted by chess historian Jean-Louis Cazaux, Sittuyin suffered severe decline and scarcity of antique carved sets over five decades of military dictatorship and economic hardship in the 20th century, largely overshadowed by international chess yet kept alive in northwestern Myanmar.',
             rightBoxTitle: 'The Sit-tee Encampment, Sit-ke-min Diagonals, and Classical Play',
             rightBoxDesc: 'Played on an uncheckered 64-square board crossed by two corner-to-corner diagonals called Sit-ke-min ("lines of the general"), games begin with the Sit-tee (troop deployment) phase. Behind fixed staggered pawns, each commander secretly positions their officers; in official tournaments, a cloth curtain is hung across the center to conceal army formations until both sides are marshaled. In 1913, H. J. R. Murray described this process across three distinct stages (initial placement, unrestricted maneuver, and open warfare). Pawns promote to General only upon reaching the Sit-ke-min diagonals and strictly when the player\'s original General has fallen. The objective is to checkmate (khwè) the opposing king, while stalemate is strictly forbidden. Chess encyclopedist Anne Sunnucks also documented historical variants employing three dice for triple-move turns.',
+        },
+    },
+    shogi: {
+        name: 'Shogi',
+        rules: {
+            intro: 'Shogi (將棋, "general\'s game"), or Japanese chess, is played on an uncheckered 9×9 board. The wedge-shaped pieces point toward the opponent. Sente (Black / White pieces at bottom) moves first. The goal is to checkmate the opposing King. Shogi\'s most famous feature is the drop rule: captured enemy pieces become part of the captor\'s reserve and can be dropped onto any vacant square as friendly pieces.',
+            bullets: [
+                {
+                    title: 'The King (Gyoku / Osho):',
+                    desc: 'Moves one square in any direction (orthogonal or diagonal). Checkmating the opposing King wins the game.',
+                    pieceName: 'ShogiKing',
+                },
+                {
+                    title: 'The Rook (Hisha) & Promoted Dragon (Ryu):',
+                    desc: 'The Rook moves any number of free squares orthogonally. When promoted, it becomes a Dragon King (Ryu), retaining rook moves plus moving one square diagonally.',
+                    pieceName: 'ShogiRook',
+                },
+                {
+                    title: 'The Bishop (Kaku) & Promoted Horse (Uma):',
+                    desc: 'The Bishop moves any number of free squares diagonally. When promoted, it becomes a Dragon Horse (Uma), retaining bishop moves plus moving one square orthogonally.',
+                    pieceName: 'ShogiBishop',
+                },
+                {
+                    title: 'The Gold General (Kin):',
+                    desc: 'Moves one square orthogonally, or one square diagonally forward (6 directions in total). Cannot promote.',
+                    pieceName: 'ShogiGold',
+                },
+                {
+                    title: 'The Silver General (Gin):',
+                    desc: 'Moves one square diagonally, or one square orthogonally forward (5 directions in total). Promotes to Promoted Silver (Narigin), moving identically to a Gold General.',
+                    pieceName: 'ShogiSilver',
+                },
+                {
+                    title: 'The Knight (Keima):',
+                    desc: 'Jumps forward two squares and one square sideways (only the two forward-most knight moves). Can jump over pieces. Promotes to Promoted Knight (Narikei), moving like a Gold General.',
+                    pieceName: 'ShogiKnight',
+                },
+                {
+                    title: 'The Lance (Kyosha):',
+                    desc: 'Moves any number of free squares straight forward along its file. Promotes to Promoted Lance (Narikyo), moving like a Gold General.',
+                    pieceName: 'ShogiLance',
+                },
+                {
+                    title: 'The Pawn (Fuhyo) & Tokin:',
+                    desc: 'Moves and captures one square straight forward. Promotes to Tokin, moving identically to a Gold General.',
+                    pieceName: 'ShogiPawn',
+                },
+                {
+                    title: 'Dropping Pieces:',
+                    desc: 'Instead of moving a piece on the board, you may drop a piece from your reserve onto any empty square in its unpromoted state. Restrictions: no dropping pieces with no legal moves left; Nifu rule (no dropping a pawn on a file containing another of your unpromoted pawns); Uchifuzume rule (a pawn cannot be dropped to deliver instant checkmate).',
+                    iconType: 'check',
+                },
+                {
+                    title: 'Promotion Zone:',
+                    desc: 'The three farthest ranks comprise the promotion zone. When a piece enters, exits, or moves within this zone, it may promote. Promotion is mandatory if the piece would otherwise have no legal moves.',
+                    iconType: 'check',
+                },
+            ],
+            proTip: 'Pro Tip: Material is never permanently lost in Shogi. Castling your King in a secure structure (such as Mino or Yagura) is essential before coordinating an offensive with drops.',
+        },
+        history: {
+            intro: 'Shogi is derived from Indian Chaturanga, transmitted to Japan via China during the Heian period (with archaeological pieces dating to 1058). By the 16th century, the rules of standard shogi were established. Although there is no clear historical record of exactly when piece drops were introduced, this unique mechanic gives the game immense tactical dynamism and an almost zero draw rate.',
+            leftBoxTitle: 'The Edo Period & Meijin System',
+            leftBoxDesc: 'During the Tokugawa Shogunate (Edo period), Shogi was officially sponsored by the state. The hereditary schools (the Ōhashi house, its branch family, and the Itō house) competed before the Shogun, establishing the prestigious Meijin title.',
+            rightBoxTitle: 'Professional Shogi & Major Titles',
+            rightBoxDesc: 'Today, the Japan Shogi Association (JSA) sanctions eight major professional title matches. Legendary masters such as Yoshiharu Habu (the first to hold seven titles simultaneously) and Sōta Fujii (holder of all eight titles) have elevated Shogi into a celebrated mind sport.',
         },
     },
 };
