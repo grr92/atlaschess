@@ -9,6 +9,15 @@ export interface IEvaluationStrategy {
 
 export class DefaultEvaluationStrategy implements IEvaluationStrategy {
     evaluate(engine: BaseEngine, perspectiveColor: PieceColor): number {
+        // Terminal states
+        if (engine.state === 'checkmate') {
+            const losingColor = engine.currentTurn;
+            return perspectiveColor === losingColor ? -100000 : 100000;
+        }
+        if (engine.state === 'draw') {
+            return 0;
+        }
+
         let whiteScore = 0;
         let blackScore = 0;
         const board = engine.board;

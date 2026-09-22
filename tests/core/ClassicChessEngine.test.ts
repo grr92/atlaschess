@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { ClassicChessEngine } from '../../src/core/engine/ClassicChessEngine';
 import { ClassicChess } from '../../src/core/variants/ClassicChess';
 import { King, Rook, Queen, Pawn } from '../../src/core/pieces/piecesIndex';
+import { historyToUciMoves } from '../../src/utils/uciNotation';
 
 describe('ClassicChessEngine', () => {
     it('should initialize standard chess setup with 20 legal opening moves for White', () => {
@@ -112,5 +113,29 @@ describe('ClassicChessEngine', () => {
         const promotedPiece = engine.board.getPieceAt(4, 0);
         expect(promotedPiece).toBeInstanceOf(Queen);
         expect(promotedPiece?.color).toBe('white');
+    });
+
+    it('should generate exact standard FEN for initial position and after 1. e4', () => {
+        const engine = new ClassicChessEngine(new ClassicChess());
+        expect(engine.getFen()).toBe('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
+
+        // 1. e4
+        engine.executeMove({ x: 4, y: 6 }, { x: 4, y: 4 });
+        expect(engine.getFen()).toBe('rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1');
+    });
+
+    it('should not append + to UCI moves when a check occurs in chess', () => {
+        const engine = new ClassicChessEngine(new ClassicChess());
+
+        // 1. e4 e5 2. Qh5 Nc6 3. Qxf7+ (Scholar's attack check)
+        engine.executeMove({ x: 4, y: 6 }, { x: 4, y: 4 }); // e4
+        engine.executeMove({ x: 4, y: 1 }, { x: 4, y: 3 }); // e5
+        engine.executeMove({ x: 3, y: 7 }, { x: 7, y: 3 }); // Qh5
+        engine.executeMove({ x: 1, y: 0 }, { x: 2, y: 2 }); // Nc6
+        engine.executeMove({ x: 7, y: 3 }, { x: 5, y: 1 }); // Qxf7+
+
+        const uciMoves = historyToUciMoves(engine.history, 8);
+        expect(uciMoves[uciMoves.length - 1]).toBe('h5f7');
+        expect(uciMoves[uciMoves.length - 1].endsWith('+')).toBe(false);
     });
 });

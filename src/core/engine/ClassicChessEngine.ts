@@ -115,4 +115,79 @@ export class ClassicChessEngine extends BaseEngine {
     protected postTurnHook(): void {
         this.updatePositionHistory();
     }
+
+    /**
+     * Generates a valid standard FEN string for the current board position,
+     * including piece placement, active color, castling rights, en passant target square,
+     * halfmove clock, and fullmove number.
+     */
+    public getFen(): string {
+        const rows: string[] = [];
+
+        for (let y = 0; y < 8; y++) {
+            let emptyCount = 0;
+            let rowStr = '';
+
+            for (let x = 0; x < 8; x++) {
+                const p = this.board.getPieceAt(x, y);
+                if (!p) {
+                    emptyCount++;
+                } else {
+                    if (emptyCount > 0) {
+                        rowStr += emptyCount;
+                        emptyCount = 0;
+                    }
+                    let char = 'p';
+                    switch (p.name) {
+                        case 'King': char = 'k'; break;
+                        case 'Queen': char = 'q'; break;
+                        case 'Rook': char = 'r'; break;
+                        case 'Bishop': char = 'b'; break;
+                        case 'Knight': char = 'n'; break;
+                        case 'Pawn': char = 'p'; break;
+                    }
+                    rowStr += p.color === 'white' ? char.toUpperCase() : char.toLowerCase();
+                }
+            }
+            if (emptyCount > 0) rowStr += emptyCount;
+            rows.push(rowStr);
+        }
+
+        const placement = rows.join('/');
+        const activeColor = this.currentTurn === 'white' ? 'w' : 'b';
+
+        // Castling rights (King and Rooks must not have moved and be on their original squares)
+        let castling = '';
+        const wk = this.board.getPieceAt(4, 7);
+        if (wk && wk.name === 'King' && !wk.hasMoved) {
+            const h1Rook = this.board.getPieceAt(7, 7);
+            if (h1Rook && h1Rook.name === 'Rook' && !h1Rook.hasMoved) castling += 'K';
+            const a1Rook = this.board.getPieceAt(0, 7);
+            if (a1Rook && a1Rook.name === 'Rook' && !a1Rook.hasMoved) castling += 'Q';
+        }
+        const bk = this.board.getPieceAt(4, 0);
+        if (bk && bk.name === 'King' && !bk.hasMoved) {
+            const h8Rook = this.board.getPieceAt(7, 0);
+            if (h8Rook && h8Rook.name === 'Rook' && !h8Rook.hasMoved) castling += 'k';
+            const a8Rook = this.board.getPieceAt(0, 0);
+            if (a8Rook && a8Rook.name === 'Rook' && !a8Rook.hasMoved) castling += 'q';
+        }
+        if (!castling) castling = '-';
+
+        // En passant target square
+        let ep = '-';
+        if (this.history.length > 0) {
+            const lastMove = this.history[this.history.length - 1];
+            if (lastMove?.piece?.name === 'Pawn' && Math.abs(lastMove.from.y - lastMove.to.y) === 2) {
+                const epY = (lastMove.from.y + lastMove.to.y) / 2;
+                const file = String.fromCharCode(97 + lastMove.to.x);
+                ep = `${file}${8 - epY}`;
+            }
+        }
+
+        const halfmove = this.halfMoveClock || 0;
+        const fullmove = Math.floor(this.history.length / 2) + 1;
+
+        return `${placement} ${activeColor} ${castling} ${ep} ${halfmove} ${fullmove}`;
+    }
 }

@@ -160,7 +160,10 @@ export function historyToUciMoves(history: Move[], totalRows: number = 8): strin
             }
             if (!move.from || move.from.x < 0) return null;
 
-            if (move.isPromotion || move.san?.endsWith('+')) {
+            // Shogi piece promotions in UCI are indicated by a '+' suffix (e.g. 7g7f+)
+            // In standard chess and other variants, '+' in SAN represents check, not promotion!
+            const isShogiPromotion = move.isPromotion && (move.piece?.name?.startsWith('Shogi') || totalRows === 9);
+            if (isShogiPromotion) {
                 return `${positionToUciSquare(move.from, totalRows)}${positionToUciSquare(move.to, totalRows)}+`;
             }
 

@@ -87,11 +87,11 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                             break;
                     }
 
-                    const isDynamicFenVariant = currentVariantId === 'makruk' || currentVariantId === 'sittuyin' || currentVariantId === 'shogi';
-                    const fenToSend = isDynamicFenVariant && typeof (engine as any).getFen === 'function'
+                    const hasDynamicFen = typeof (engine as any).getFen === 'function';
+                    const fenToSend = hasDynamicFen
                         ? (engine as any).getFen()
                         : (engine as any).initialFen;
-                    const movesToSend = isDynamicFenVariant
+                    const movesToSend = hasDynamicFen
                         ? []
                         : historyToUciMoves(engine.history, engine.board.rows);
 

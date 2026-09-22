@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { CourierEngine } from '../../src/core/engine/CourierEngine';
 import { CourierChess } from '../../src/core/variants/CourierChess';
 import { VariantRegistry } from '../../src/core/variants/variantRegistry';
+import { HeuristicAiEngine } from '../../src/core/ai/HeuristicAiEngine';
 import {
     CourierKing,
     Courier,
@@ -209,6 +210,47 @@ describe('CourierEngine', () => {
         // If it's black turn, king cannot escape because file 0 and 1 are covered
         engine.currentTurn = 'black';
         engine.updateGameState();
+        expect(engine.state).toBe('checkmate');
+    });
+
+    it('should generate valid standard FEN matching Fairy-Stockfish notation', () => {
+        const engine = new CourierEngine(new CourierChess());
+        const fen = engine.getFen();
+        expect(fen).toBe('rnbemkfwebnr/pppppppppppp/12/12/12/12/PPPPPPPPPPPP/RNBEMKFWEBNR w - - 0 1');
+    });
+
+    it('should find checkmate in 1 using Heuristic AI when in a mating position', () => {
+        const engine = new CourierEngine(new CourierChess());
+        engine.board.clear();
+
+        // White pieces (Human)
+        engine.board.setPiece(new CourierKing('w_k', 'white', { x: 11, y: 7 }), 11, 7);
+        engine.board.setPiece(new CourierPawn('w_p1', 'white', { x: 1, y: 5 }), 1, 5);
+        engine.board.setPiece(new CourierPawn('w_p2', 'white', { x: 8, y: 5 }), 8, 5);
+        engine.board.setPiece(new Knight('w_n', 'white', { x: 3, y: 4 }), 3, 4);
+
+        // Black pieces (AI)
+        engine.board.setPiece(new CourierKing('b_k', 'black', { x: 5, y: 2 }), 5, 2);
+        engine.board.setPiece(new Rook('b_r1', 'black', { x: 1, y: 6 }), 1, 6);
+        engine.board.setPiece(new Rook('b_r2', 'black', { x: 0, y: 0 }), 0, 0);
+        engine.board.setPiece(new Courier('b_c', 'black', { x: 4, y: 3 }), 4, 3);
+        engine.board.setPiece(new CourierPawn('b_p1', 'black', { x: 2, y: 3 }), 2, 3);
+        engine.board.setPiece(new CourierPawn('b_p2', 'black', { x: 7, y: 3 }), 7, 3);
+
+        engine.currentTurn = 'black';
+        engine.updateGameState();
+
+        // Verify FEN output
+        expect(engine.getFen()).toBe('r11/12/5k6/2p1e2p4/3N8/1P6P3/1r10/11K b - - 0 1');
+
+        // AI should immediately pick Rook a8 -> a1 (0, 0 -> 0, 7) checkmate, NOT capture the knight at (3, 4)
+        const bestMove = HeuristicAiEngine.findBestMove(engine, 'hard');
+        expect(bestMove).toBeDefined();
+        expect(bestMove?.from).toEqual({ x: 0, y: 0 });
+        expect(bestMove?.to).toEqual({ x: 0, y: 7 });
+
+        // Executing the move should lead to checkmate
+        expect(engine.executeMove(bestMove!.from, bestMove!.to)).toBe(true);
         expect(engine.state).toBe('checkmate');
     });
 

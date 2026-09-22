@@ -63,16 +63,33 @@ const App = () => {
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
     // state to allow reviewing the board after game over
     const [isGameOverDismissed, setIsGameOverDismissed] = useState(false);
+    // state to delay the appearance of the game over modal so players can see the final move
+    const [isGameOverDelayed, setIsGameOverDelayed] = useState(false);
 
     const isGameOver = gameState === 'checkmate' || gameState === 'draw';
-    const isGameOverModalOpen = isGameOver && !isGameOverDismissed;
+    const isGameOverModalOpen = isGameOver && isGameOverDelayed && !isGameOverDismissed;
 
-    // Reset game over dismissed state whenever a game is active or moves are undone
+    // Reset game over dismissed & delayed states whenever a game is active or moves are undone
     useEffect(() => {
         if (gameState === 'playing' || gameState === 'check') {
             setIsGameOverDismissed(false);
+            setIsGameOverDelayed(false);
         }
     }, [gameState]);
+
+    // Delay game over modal opening to let players observe the final move and board state
+    useEffect(() => {
+        if (!isGameOver) {
+            setIsGameOverDelayed(false);
+            return;
+        }
+
+        const timer = setTimeout(() => {
+            setIsGameOverDelayed(true);
+        }, 1200);
+
+        return () => clearTimeout(timer);
+    }, [isGameOver]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {

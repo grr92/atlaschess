@@ -3,9 +3,10 @@ import { useGameStore } from '../../src/store/useGameStore';
 import { ShogiEngine } from '../../src/core/engine/ShogiEngine';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as os from 'os';
 
 describe('Generate and verify Shogi save files', () => {
-    const downloadsDir = 'C:\\Users\\Usuario\\Downloads';
+    const downloadsDir = os.tmpdir();
 
     it('Scenario 1: Jaque Mate (Checkmate)', () => {
         // Setup: Black King at (0, 0), White Dragon at (1, 1), White King at (4, 8)

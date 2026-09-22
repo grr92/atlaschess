@@ -222,7 +222,15 @@ export class HeuristicAiEngine {
         beta: number,
         rootColor: PieceColor
     ): number {
-        if (depth === 0 || engine.state === 'checkmate' || engine.state === 'draw') {
+        if (engine.state === 'checkmate') {
+            const losingColor = engine.currentTurn;
+            const score = 100000 + depth * 1000;
+            return rootColor === losingColor ? -score : score;
+        }
+        if (engine.state === 'draw') {
+            return 0;
+        }
+        if (depth === 0) {
             return this.evaluateBoard(engine, rootColor);
         }
 

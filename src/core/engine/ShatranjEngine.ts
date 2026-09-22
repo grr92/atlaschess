@@ -24,4 +24,41 @@ export class ShatranjEngine extends BaseEngine {
             }
         }
     }
+
+    public getFen(): string {
+        const rows: string[] = [];
+
+        for (let y = 0; y < 8; y++) {
+            let emptyCount = 0;
+            let rowStr = '';
+
+            for (let x = 0; x < 8; x++) {
+                const p = this.board.getPieceAt(x, y);
+                if (!p) {
+                    emptyCount++;
+                } else {
+                    if (emptyCount > 0) {
+                        rowStr += emptyCount;
+                        emptyCount = 0;
+                    }
+                    let char = '';
+                    switch (p.name) {
+                        case 'Shah': case 'King': char = 'k'; break;
+                        case 'Ferz': case 'Queen': char = 'q'; break;
+                        case 'Rukh': case 'Rook': char = 'r'; break;
+                        case 'Pil': case 'Bishop': char = 'b'; break;
+                        case 'Asb': case 'Knight': char = 'n'; break;
+                        case 'Sarbaz': case 'Pawn': default: char = 'p'; break;
+                    }
+                    rowStr += p.color === 'white' ? char.toUpperCase() : char.toLowerCase();
+                }
+            }
+            if (emptyCount > 0) rowStr += emptyCount;
+            rows.push(rowStr);
+        }
+
+        const placement = rows.join('/');
+        const activeColor = this.currentTurn === 'white' ? 'w' : 'b';
+        return `${placement} ${activeColor} - - 0 ${Math.floor(this.history.length / 2) + 1}`;
+    }
 }

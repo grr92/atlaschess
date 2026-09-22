@@ -7,7 +7,7 @@ import {
     Ferz, Pil, Asb, Rukh, Raja, Ratha, Asva, Mantri, Gaja, Padati, Sarbaz,
     ChaturajiKing, ChaturajiElephant, ChaturajiHorse, ChaturajiBoat, ChaturajiPawn,
     GrantKing, Aanca, Unicorn, Lion, Giraffe, Crocodile, GrantPawn,
-    CourierKing, Courier, CourierBishop, CourierQueen, Schleich, Sage,
+    CourierKing, Courier, CourierBishop, CourierQueen, Schleich, Sage, CourierPawn,
     FourSeasonsKing, FourSeasonsGeneral, FourSeasonsRook, FourSeasonsKnight, FourSeasonsBishop, FourSeasonsPawn,
     XiangqiGeneral, XiangqiAdvisor, XiangqiElephant, XiangqiHorse, XiangqiChariot, XiangqiCannon, XiangqiSoldier,
     JanggiGeneral, JanggiGuard, JanggiElephant, JanggiHorse, JanggiChariot, JanggiCannon, JanggiSoldier,
@@ -73,6 +73,7 @@ export function populateCustomPieces(
             case 'CourierQueen': pieceInstance = new CourierQueen(p.id, p.color, p.position); break;
             case 'Schleich': pieceInstance = new Schleich(p.id, p.color, p.position); break;
             case 'Sage': pieceInstance = new Sage(p.id, p.color, p.position); break;
+            case 'CourierPawn': pieceInstance = new CourierPawn(p.id, p.color, p.position); break;
             // Four Seasons Chess
             case 'FourSeasonsKing': pieceInstance = new FourSeasonsKing(p.id, p.color, p.position); break;
             case 'FourSeasonsGeneral': pieceInstance = new FourSeasonsGeneral(p.id, p.color, p.position); break;
