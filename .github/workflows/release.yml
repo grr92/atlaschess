@@ -61,19 +61,33 @@ jobs:
             release/*.AppImage
             release/*.deb
 
-      - name: Upload Binaries to GitHub Release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/v')
+  release:
+    name: Publish Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
+          fetch-depth: 0
+
+      - name: Extract Commit Message
+        id: commit_info
+        shell: bash
+        run: |
+          echo "MSG<<EOF" >> $GITHUB_OUTPUT
+          git log -1 --pretty=format:"%B" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
           name: Atlas Chess ${{ github.ref_name }}
           body: ${{ steps.commit_info.outputs.MSG }}
           draft: false
           prerelease: false
-          files: |
-            release/*.exe
-            release/*.dmg
-            release/*.zip
-            release/*.AppImage
-            release/*.deb
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

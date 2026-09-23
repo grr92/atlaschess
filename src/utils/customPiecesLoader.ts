@@ -16,12 +16,37 @@ import {
 } from '../core/pieces/piecesIndex';
 import { FourSeasonsEngine } from '../core/engine/FourSeasonsEngine';
 import { createShogiPiece } from '../core/variants/shogi/shogiSetup';
+import type { PieceName } from '../types';
+
+/**
+ * Represents a piece as serialized in a .atlas save file.
+ * All fields are written by the save system and read back here on load.
+ */
+export interface SerializedPiece {
+    id: string;
+    name: PieceName | string; // string fallback for future-proofing
+    color: PieceColor;
+    position: { x: number; y: number };
+    hasMoved?: boolean;
+    // TamerlanePawn-specific
+    pawnType?: any;
+    pawnName?: string;
+    promotionStage?: number;
+    isRestingOnLastRank?: boolean;
+    // GrantPawn-specific
+    originFile?: number;
+    // FourSeasonsPawn-specific
+    direction?: { dx: number; dy: number };
+    // Ne (Sittuyin pawn)-specific
+    hasLostPromotion?: boolean;
+    [key: string]: any;
+}
 
 export function populateCustomPieces(
     engine: BaseEngine,
-    customPieces: any[],
+    customPieces: SerializedPiece[],
     currentTurn?: PieceColor,
-    annexedArmies?: any
+    annexedArmies?: Record<string, PieceColor[]>
 ): void {
     engine.board.clear();
 
@@ -41,7 +66,7 @@ export function populateCustomPieces(
             case 'Asb': pieceInstance = new Asb(p.id, p.color, p.position); break;
             case 'Rukh': pieceInstance = new Rukh(p.id, p.color, p.position); break;
             case 'TamerlanePawn': {
-                const tp = new TamerlanePawn(p.id, p.color, p.position, p.pawnType, p.pawnName);
+                const tp = new TamerlanePawn(p.id, p.color, p.position, p.pawnType as any, p.pawnName || '');
                 if (p.promotionStage !== undefined) tp.promotionStage = p.promotionStage;
                 if (p.isRestingOnLastRank !== undefined) tp.isRestingOnLastRank = p.isRestingOnLastRank;
                 pieceInstance = tp;
@@ -132,7 +157,7 @@ export function populateCustomPieces(
             case 'Ywatha': pieceInstance = new Yahhta(p.id, p.color, p.position); break;
             case 'Ne': {
                 const ne = new Ne(p.id, p.color, p.position);
-                if ((p as any).hasLostPromotion) {
+                if (p.hasLostPromotion) {
                     ne.hasLostPromotion = true;
                 }
                 pieceInstance = ne;
@@ -154,7 +179,7 @@ export function populateCustomPieces(
         engine.currentTurn = currentTurn;
     }
     if (engine instanceof FourSeasonsEngine && annexedArmies) {
-        engine.annexedArmies = annexedArmies;
+        engine.annexedArmies = annexedArmies as any;
     }
     engine.updateGameState();
 }

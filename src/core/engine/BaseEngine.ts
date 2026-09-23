@@ -7,6 +7,7 @@ import type { ICheckStrategy } from './strategies/CheckStrategy';
 import type { IVictoryStrategy } from './strategies/VictoryStrategy';
 import type { IEvaluationStrategy } from '../ai/strategies/EvaluationStrategy';
 import { DefaultEvaluationStrategy } from '../ai/strategies/EvaluationStrategy';
+import type { VariantOptions } from '../variants/variantRegistry';
 
 export type PreMoveInterception = GameInterception;
 export type PostMoveInterception = GameInterception;
@@ -26,7 +27,7 @@ export abstract class BaseEngine {
     protected checkStrategy?: ICheckStrategy;
     protected victoryStrategy?: IVictoryStrategy;
     protected evaluationStrategy?: IEvaluationStrategy;
-    variantOptions?: any;
+    variantOptions?: VariantOptions;
 
     constructor(
         variant: GameVariant,
@@ -44,24 +45,26 @@ export abstract class BaseEngine {
         this.evaluationStrategy = evaluationStrategy;
     }
 
-    getVariantOptions(): any {
+    getVariantOptions(): VariantOptions | undefined {
         return this.variantOptions;
     }
 
     /**
      * Options to use when resetting or restarting a match for this engine.
      */
-    getResetOptions(): any {
+    getResetOptions(): VariantOptions | undefined {
         return this.getVariantOptions();
     }
+
 
     /**
      * Restores variant-specific custom state (e.g. counting rules, stages, options)
      * from serialized variantOptions. Subclasses override as needed.
      */
-    restoreCustomState(_options: any): void {
+    restoreCustomState(_options: VariantOptions): void {
         // Base implementation does nothing
     }
+
 
     /**
      * Optional custom status/phase label for variants with specialized stages (e.g. 'Sit-tee').
@@ -133,13 +136,11 @@ export abstract class BaseEngine {
 
         this.afterMoveHook(piece, from, to, capturedPiece, promotionPiece);
 
-        // Switch turn polymorphically (supports 2-player, 4-player, etc.)
+        // rotateTurn() is polymorphic — subclasses can override it to support 4-player rotation
         this.rotateTurn();
-
-        // Update game state (detects check, mate, draws)
         this.updateGameState();
 
-        // Prepare promotion letter for SAN
+        // Map piece name to its SAN promotion character
         let promotedToChar: string | undefined = undefined;
         if (promotionPiece) {
             switch(promotionPiece) {
@@ -150,17 +151,13 @@ export abstract class BaseEngine {
             }
         }
 
-        // Build standard algebraic notation
         const san = buildSAN(this, piece, from, to, capturedPiece, disambiguator, promotedToChar);
-
-        // Save to history
         this.history.push({ piece, from, to, capturedPiece, san });
-
-        // Trigger final hook
         this.postTurnHook();
 
         return true;
     }
+
 
     isKingInCheck(color: PieceColor, board: Board = this.board): boolean {
         if (this.checkStrategy) {
