@@ -1,6 +1,7 @@
 import { Piece } from '../core/pieces/piecesIndex';
 import type {Position} from '../types';
 import { BaseEngine } from '../core/engine/BaseEngine';
+import { getPieceMetadata } from '../core/pieces/pieceRegistry';
 
 // Supports huge boards for different board size variants (e.g. Grand chess)
 export const getFile = (x: number) => String.fromCharCode(97 + x);
@@ -10,8 +11,8 @@ export const getRank = (y: number, totalRows: number) => (totalRows - y).toStrin
 
 // Ambiguity detector (Must be executed BEFORE moving the piece)
 export const getDisambiguator = (engine: BaseEngine, piece: Piece, from: Position, to: Position): string => {
-    // Those pieces cannot cause ambiguity
-    if (['Pawn', 'Padati', 'King', 'Raja', 'Shah', 'GrantKing', 'CourierKing', 'Gaja', 'Mantri'].includes(piece.name) || piece.name.includes('Pawn') || piece.name.includes('pawn')) return '';
+    // Pieces that are unique per color (kings, royals, single-instance pieces) never need disambiguation
+    if (!getPieceMetadata(piece.name)?.disambiguates) return '';
 
     const ambiguousPieces: Position[] = [];
 

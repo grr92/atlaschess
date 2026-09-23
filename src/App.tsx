@@ -6,23 +6,14 @@ import { Board } from './components/board/Board';
 import { XiangqiBoard } from './components/board/XiangqiBoard';
 import { JanggiBoard } from './components/board/JanggiBoard';
 import { VariantsCatalog } from "./components/ui/VariantCatalog";
-import { MoveHistory } from './components/board/MoveHistory';
-import { CapturedPieces } from './components/board/CapturedPieces';
-import { ChaturajiStakesCounter } from './components/board/ChaturajiStakesCounter';
-import { Undo2, RefreshCcw, Save, Bot, Volume2, VolumeX, Settings, SkipForward, Trophy } from 'lucide-react';
-import { BackButton } from "./components/ui/BackButton";
-import { GameTimer } from "./components/board/GameTimer";
-import { InfoButton } from "./components/ui/InfoButton";
+import { GameSidebar } from './components/board/GameSidebar';
+import { GameHeader } from './components/board/GameHeader';
+import { GameControls } from './components/board/GameControls';
+import { ConfirmModal } from './components/modals/ConfirmModal';
 import { VariantInfoModal } from "./components/modals/VariantInfoModal";
 import { SettingsModal } from "./components/modals/SettingsModal";
 import { GameOverModal } from "./components/modals/GameOverModal";
-import { D8DiceWidget } from "./components/board/D8DiceWidget";
-import { MakrukCountingWidget } from "./components/board/MakrukCountingWidget";
-import { SittuyinCountingWidget } from "./components/board/SittuyinCountingWidget";
-import { ChaturajiEngine } from "./core/engine/ChaturajiEngine";
-import { FourSeasonsEngine, type FourSeasonsColor } from "./core/engine/FourSeasonsEngine";
 import { VariantRegistry } from "./core/variants/variantRegistry";
-import { useTranslation } from './i18n';
 
 const BOARD_COMPONENTS: Record<string, React.ComponentType> = {
     grid: Board,
@@ -31,45 +22,20 @@ const BOARD_COMPONENTS: Record<string, React.ComponentType> = {
 };
 
 const App = () => {
-    const { t, getVariantMeta } = useTranslation();
     const currentScreen = useNavStore((state) => state.currentScreen);
     const setScreen = useNavStore((state) => state.setScreen);
+    const { gameState, currentVariantId, resetGame } = useGameStore();
 
-    const {
-        engine,
-        currentTurn,
-        gameState,
-        currentVariantId,
-        resetGame,
-        undoMove,
-        history,
-        saveGame,
-        gameMode,
-        playerColor,
-        isAiThinking,
-        isMuted,
-        toggleMute,
-        regionalPieceStyle,
-        setRegionalPieceStyle,
-        passTurn,
-        isRollingDice
-    } = useGameStore();
-
-    // state to control the confirmation pop-ups
     const [confirmAction, setConfirmAction] = useState<'exit' | 'restart' | null>(null);
-    // state for the info modal
     const [infoModalOpen, setInfoModalOpen] = useState(false);
-    // state for settings modal
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    // state to allow reviewing the board after game over
     const [isGameOverDismissed, setIsGameOverDismissed] = useState(false);
-    // state to delay the appearance of the game over modal so players can see the final move
     const [isGameOverDelayed, setIsGameOverDelayed] = useState(false);
 
     const isGameOver = gameState === 'checkmate' || gameState === 'draw';
     const isGameOverModalOpen = isGameOver && isGameOverDelayed && !isGameOverDismissed;
 
-    // Reset game over dismissed & delayed states whenever a game is active or moves are undone
+    // Reset dismissed/delayed flags when a new game starts or a move is undone
     useEffect(() => {
         if (gameState === 'playing' || gameState === 'check') {
             setIsGameOverDismissed(false);
@@ -77,125 +43,36 @@ const App = () => {
         }
     }, [gameState]);
 
-    // Delay game over modal opening to let players observe the final move and board state
+    // Delay the game-over modal so players can observe the final position before it appears
     useEffect(() => {
-        if (!isGameOver) {
-            setIsGameOverDelayed(false);
-            return;
-        }
-
-        const timer = setTimeout(() => {
-            setIsGameOverDelayed(true);
-        }, 1200);
-
+        if (!isGameOver) { setIsGameOverDelayed(false); return; }
+        const timer = setTimeout(() => setIsGameOverDelayed(true), 1200);
         return () => clearTimeout(timer);
     }, [isGameOver]);
 
+    // Keyboard shortcut: Escape dismisses the topmost open panel/modal
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') {
-                if (document.activeElement instanceof HTMLElement) {
-                    document.activeElement.blur();
-                }
-                if (confirmAction) {
-                    setConfirmAction(null);
-                } else if (isGameOverModalOpen) {
-                    setIsGameOverDismissed(true);
-                } else if (infoModalOpen) {
-                    setInfoModalOpen(false);
-                } else if (isSettingsOpen) {
-                    setIsSettingsOpen(false);
-                } else if (currentScreen === 'GAME') {
-                    setConfirmAction('exit');
-                }
-            }
+            if (e.key !== 'Escape') return;
+            if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
+            if (confirmAction)           setConfirmAction(null);
+            else if (isGameOverModalOpen) setIsGameOverDismissed(true);
+            else if (infoModalOpen)      setInfoModalOpen(false);
+            else if (isSettingsOpen)     setIsSettingsOpen(false);
+            else if (currentScreen === 'GAME') setConfirmAction('exit');
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [confirmAction, isGameOverModalOpen, infoModalOpen, isSettingsOpen, currentScreen]);
 
-    // function to process the "yes" confirmation
     const handleConfirm = () => {
-        if (confirmAction === 'exit') {
-            setScreen('MENU');
-        } else if (confirmAction === 'restart') {
-            resetGame();
-        }
+        if (confirmAction === 'exit') setScreen('MENU');
+        else if (confirmAction === 'restart') resetGame();
         setConfirmAction(null);
     };
 
-    const currentVariantMeta = getVariantMeta(currentVariantId);
     const currentVariantDef = VariantRegistry.get(currentVariantId);
     const ActiveBoard = BOARD_COMPONENTS[currentVariantDef?.boardType ?? 'grid'] ?? Board;
-
-    const togglePieceStyle = () => {
-        setRegionalPieceStyle(regionalPieceStyle === 'text' ? 'icon' : 'text');
-    };
-    const pieceStyleToggleLabel = regionalPieceStyle === 'text'
-        ? t.gameplay.pieceStyleInternational
-        : t.gameplay.pieceStyleTraditional;
-
-    const getGameStateLabel = () => {
-        if (gameState === 'check') return t.gameplay.check;
-        if (currentVariantId === 'four_seasons' && engine instanceof FourSeasonsEngine) {
-            if (gameState === 'checkmate') {
-                if (engine.winnerColor) {
-                    const winnerName = getPlayerColorName(engine.winnerColor);
-                    return `🏆 ${winnerName}`;
-                }
-                return t.gameplay.checkmate;
-            }
-            if (gameState === 'draw') return t.gameplay.draw;
-        }
-        if (currentVariantId === 'chaturaji' && engine instanceof ChaturajiEngine) {
-            if (gameState === 'checkmate' || gameState === 'draw') {
-                const match = engine.getMatchWinner();
-                if (match.winner) {
-                    const winnerName = getPlayerColorName(match.winner);
-                    return `🏆 ${winnerName} (${match.maxStakes} ${t.gameplay.wonStakes.toLowerCase()})`;
-                }
-                if (match.isTie && match.maxStakes > 0) {
-                    return `🤝 ${t.gameplay.draw} (${match.maxStakes} ${t.gameplay.wonStakes.toLowerCase()})`;
-                }
-                return t.gameplay.draw;
-            }
-        }
-        const customStatus = engine?.getCustomStatus();
-        if (customStatus) {
-            return customStatus;
-        }
-        if (gameState === 'checkmate') return t.gameplay.checkmate;
-        if (gameState === 'draw') return t.gameplay.draw;
-        return t.gameplay.playing;
-    };
-
-    const getPlayerColorDot = (color: string) => {
-        switch (color) {
-            case 'white': return 'bg-white shadow-white/50';
-            case 'black': return 'bg-slate-900 border border-white/40 shadow-black';
-            case 'red': return 'bg-red-500 shadow-red-500/50';
-            case 'green': return 'bg-emerald-500 shadow-emerald-500/50';
-            case 'yellow': return 'bg-amber-400 shadow-amber-400/50';
-            case 'blue': return 'bg-sky-500 shadow-sky-500/50';
-            default: return 'bg-white';
-        }
-    };
-
-    const getPlayerColorName = (color: string) => {
-        const key = color as keyof typeof t.common;
-        return t.common[key] || color;
-    };
-
-    const activeController = engine ? engine.getActiveController() : currentTurn;
-    const isPlayerTurn = gameMode !== 'vs_ai' || activeController === playerColor;
-    const canPass = Boolean(
-        currentVariantDef?.supportsPassTurn &&
-        isPlayerTurn &&
-        !isAiThinking &&
-        !isRollingDice &&
-        (gameState === 'playing' || gameState === 'check') &&
-        (typeof (engine as any)?.canPassTurn === 'function' ? (engine as any).canPassTurn() : true)
-    );
 
     return (
         <main className="min-h-screen bg-gradient-to-b from-atlas-grad to-atlas-back to-[150px] text-atlas-titleText">
@@ -204,238 +81,36 @@ const App = () => {
 
             {currentScreen === 'GAME' && (
                 <div className="flex flex-col items-center justify-center min-h-screen p-4">
-
                     <div className="flex flex-col lg:flex-row justify-center items-stretch gap-6 w-full max-w-[90rem]">
 
-                        {/* 1. left column: gameplay buttons and captured pieces */}
-                        <div className="flex flex-col w-full lg:w-56 xl:w-64 flex-shrink-0 min-h-0">
+                        <GameSidebar
+                            onExitRequest={() => setConfirmAction('exit')}
+                            onRestartRequest={() => setConfirmAction('restart')}
+                        />
 
-                            <div className="flex items-end h-12 pb-2 gap-2 mb-2 lg:mb-0">
-                                <BackButton onClick={() => setConfirmAction('exit')} />
-
-                                <div className="relative group/undo">
-                                    <button
-                                        onClick={undoMove}
-                                        disabled={history.length === 0}
-                                        className="bg-atlas-surface/80 hover:bg-atlas-hover disabled:opacity-30 disabled:hover:bg-atlas-surface/80 disabled:cursor-not-allowed text-slate-300 hover:text-amber-400 p-2.5 rounded-xl font-bold transition-all duration-200 border border-white/10 hover:border-amber-500/40 shadow-md hover:scale-105 active:scale-95 disabled:hover:scale-100 flex items-center justify-center backdrop-blur-md"
-                                    >
-                                        <Undo2 className="w-5 h-5 transition-colors"/>
-                                    </button>
-                                    <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-slate-900 border border-white/10 text-slate-200 text-xs px-2.5 py-1 rounded-lg opacity-0 group-hover/undo:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl whitespace-nowrap">
-                                        {t.gameplay.tooltips.undo}
-                                    </span>
-                                </div>
-
-                                <div className="relative group/restart">
-                                    <button
-                                        onClick={() => setConfirmAction('restart')}
-                                        className="bg-atlas-surface/80 hover:bg-atlas-hover text-slate-300 hover:text-amber-400 p-2.5 rounded-xl font-bold transition-all duration-200 border border-white/10 hover:border-amber-500/40 shadow-md hover:scale-105 active:scale-95 flex items-center justify-center backdrop-blur-md"
-                                    >
-                                        <RefreshCcw className="w-5 h-5 transition-colors"/>
-                                    </button>
-                                    <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-slate-900 border border-white/10 text-slate-200 text-xs px-2.5 py-1 rounded-lg opacity-0 group-hover/restart:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl whitespace-nowrap">
-                                        {t.gameplay.tooltips.restart}
-                                    </span>
-                                </div>
-
-                                <div className="relative group/save">
-                                    <button
-                                        onClick={saveGame}
-                                        disabled={history.length === 0}
-                                        className="bg-atlas-surface/80 hover:bg-atlas-hover disabled:opacity-30 disabled:hover:bg-atlas-surface/80 disabled:cursor-not-allowed text-slate-300 hover:text-amber-400 p-2.5 rounded-xl font-bold transition-all duration-200 border border-white/10 hover:border-amber-500/40 shadow-md hover:scale-105 active:scale-95 disabled:hover:scale-100 flex items-center justify-center backdrop-blur-md"
-                                    >
-                                        <Save className="w-5 h-5 transition-colors"/>
-                                    </button>
-                                    <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-slate-900 border border-white/10 text-slate-200 text-xs px-2.5 py-1 rounded-lg opacity-0 group-hover/save:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl whitespace-nowrap">
-                                        {t.gameplay.tooltips.save}
-                                    </span>
-                                </div>
-                            </div>
-
-                            {/* perfect mirror of the right column (history) */}
-                            <div className="flex-1 relative w-full min-h-[250px] lg:min-h-0">
-                                <div className="absolute inset-0 py-4">
-                                    <CapturedPieces />
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* 2. center column: board and texts */}
                         <div className="flex flex-col flex-shrink-0 items-center lg:items-stretch">
-
-                            <div className="flex justify-between items-center h-14 pb-2 px-2 w-full gap-2">
-                                <h2 className="text-atlas-titleText text-xl sm:text-2xl font-black tracking-tight flex items-center gap-2 capitalize flex-shrink-0 whitespace-nowrap">
-                                    {currentVariantMeta?.title || currentVariantId}
-                                </h2>
-                                {currentVariantDef?.hasPieceStyleToggle && (
-                                    <button
-                                        onClick={togglePieceStyle}
-                                        className="ml-2 px-3 py-1 text-xs font-bold uppercase tracking-wider bg-atlas-surface/80 border border-white/20 rounded hover:bg-white/10 transition-colors"
-                                    >
-                                        {pieceStyleToggleLabel}
-                                    </button>
-                                )}
-                                <div className="flex items-center gap-2 flex-shrink-0">
-                                    <D8DiceWidget />
-                                    <MakrukCountingWidget />
-                                    <SittuyinCountingWidget />
-                                    {canPass && (
-                                        <button
-                                            onClick={passTurn}
-                                            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded-full text-xs font-bold transition-all shadow-md active:scale-95 flex-shrink-0"
-                                            title={t.gameplay.passTurn}
-                                        >
-                                            <SkipForward className="w-3.5 h-3.5" />
-                                            <span>{t.gameplay.passTurn}</span>
-                                        </button>
-                                    )}
-                                    <div className="flex items-center gap-2.5 bg-atlas-surface/80 px-3 py-1.5 rounded-full border border-white/10 shadow-md backdrop-blur-md flex-shrink-0">
-                                    {isAiThinking ? (
-                                        <div className="flex items-center gap-2 text-amber-400 font-bold text-xs animate-pulse">
-                                            <Bot className="w-4 h-4 animate-spin text-amber-400" />
-                                            <span>{t.gameplay.aiThinking}</span>
-                                        </div>
-                                    ) : (
-                                        (() => {
-                                            const activeColor = engine ? engine.getActiveController() : currentTurn;
-
-                                            return (
-                                                <div className="flex items-center gap-2">
-                                                    <div className={`w-3.5 h-3.5 rounded-full ring-2 ring-amber-400/50 ${getPlayerColorDot(activeColor)} shadow-md`} />
-                                                    <span className="text-xs uppercase font-bold tracking-wider text-atlas-titleText">
-                                                        {getPlayerColorName(activeColor)}
-                                                    </span>
-                                                    {currentVariantId === 'four_seasons' && engine instanceof FourSeasonsEngine && engine.annexedArmies[currentTurn as FourSeasonsColor]?.length > 1 && (
-                                                        <div className="flex items-center gap-1 bg-amber-500/15 border border-amber-500/30 px-1.5 py-0.5 rounded text-[10px] text-amber-300 font-bold" title="Armies commanded by active player">
-                                                            <span>+{engine.annexedArmies[currentTurn as FourSeasonsColor].filter((c: FourSeasonsColor) => c !== currentTurn).length}</span>
-                                                            <div className="flex items-center -space-x-1 ml-0.5">
-                                                                {engine.annexedArmies[currentTurn as FourSeasonsColor]
-                                                                    .filter((c: FourSeasonsColor) => c !== currentTurn)
-                                                                    .map((c: FourSeasonsColor) => (
-                                                                        <div key={c} className={`w-2.5 h-2.5 rounded-full ${getPlayerColorDot(c)} ring-1 ring-slate-900`} title={getPlayerColorName(c)} />
-                                                                    ))
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                    {gameMode === 'vs_ai' && (
-                                                        <span className="text-[10px] px-1.5 py-0.2 bg-amber-500/15 border border-amber-500/30 text-amber-300 font-bold rounded">
-                                                            {activeColor === playerColor ? t.gameplay.turnYou : t.gameplay.turnAi}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            );
-                                        })()
-                                    )}
-                                    <span className="text-white/20">|</span>
-                                    <span className={`text-xs font-bold uppercase tracking-wider ${
-                                        gameState === 'check' ? 'text-amber-400 animate-pulse' :
-                                        gameState === 'checkmate' ? 'text-red-400' :
-                                        gameState === 'draw' ? 'text-sky-400' : 'text-emerald-400'
-                                    }`}>
-                                        {getGameStateLabel()}
-                                    </span>
-                                    {isGameOver && isGameOverDismissed && (
-                                        <button
-                                            onClick={() => setIsGameOverDismissed(false)}
-                                            className="ml-1 flex items-center gap-1 px-2.5 py-0.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded-full text-[11px] font-bold transition-all shadow-sm active:scale-95 animate-pulse"
-                                            title={t.gameplay.viewResult}
-                                        >
-                                            <Trophy className="w-3 h-3 text-amber-400" />
-                                            <span>{t.gameplay.viewResult}</span>
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
+                            <GameHeader
+                                onShowResult={() => setIsGameOverDismissed(false)}
+                            />
+                            <ActiveBoard />
                         </div>
 
-                        <ActiveBoard />
-
-                        </div>
-
-                        {/* 3. right column: utility buttons, timer and match history */}
-                        <div className="w-full lg:w-72 flex-shrink-0 flex flex-col min-h-0">
-
-                            {/* header wrapper containing the utility buttons (sound, settings, info) and the timer */}
-                            <div className="flex justify-between items-end w-full gap-2 mb-2 lg:mb-0">
-                                <div className="flex items-end h-12 pb-2 gap-2">
-                                    <div className="relative group/mute">
-                                        <button
-                                            onClick={toggleMute}
-                                            className="bg-atlas-surface/80 hover:bg-atlas-hover text-slate-300 hover:text-amber-400 p-2.5 rounded-xl font-bold transition-all duration-200 border border-white/10 hover:border-amber-500/40 shadow-md hover:scale-105 active:scale-95 flex items-center justify-center backdrop-blur-md"
-                                        >
-                                            {isMuted ? (
-                                                <VolumeX className="w-5 h-5 text-red-400 hover:text-red-300 transition-colors" />
-                                            ) : (
-                                                <Volume2 className="w-5 h-5 transition-colors" />
-                                            )}
-                                        </button>
-                                        <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-slate-900 border border-white/10 text-slate-200 text-xs px-2.5 py-1 rounded-lg opacity-0 group-hover/mute:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl whitespace-nowrap">
-                                            {isMuted ? t.gameplay.tooltips.unmute : t.gameplay.tooltips.mute}
-                                        </span>
-                                    </div>
-
-                                    <div className="relative group/settings">
-                                        <button
-                                            onClick={() => setIsSettingsOpen(true)}
-                                            className="bg-atlas-surface/80 hover:bg-atlas-hover text-slate-300 hover:text-amber-400 p-2.5 rounded-xl font-bold transition-all duration-200 border border-white/10 hover:border-amber-500/40 shadow-md hover:scale-105 active:scale-95 flex items-center justify-center backdrop-blur-md"
-                                        >
-                                            <Settings className="w-5 h-5 transition-colors" />
-                                        </button>
-                                        <span className="absolute -top-9 left-1/2 -translate-x-1/2 bg-slate-900 border border-white/10 text-slate-200 text-xs px-2.5 py-1 rounded-lg opacity-0 group-hover/settings:opacity-100 transition-opacity pointer-events-none z-50 shadow-xl whitespace-nowrap">
-                                            {t.gameplay.tooltips.settings}
-                                        </span>
-                                    </div>
-
-                                    <InfoButton onClick={() => setInfoModalOpen(true)} />
-                                </div>
-
-                                <div className="flex-1">
-                                    <GameTimer />
-                                </div>
-                            </div>
-
-                            <div className="flex-1 relative w-full min-h-[300px] lg:min-h-0">
-                                <div className="absolute inset-0 py-4">
-                                    {currentVariantId === 'chaturaji' ? <ChaturajiStakesCounter /> : <MoveHistory />}
-                                </div>
-                            </div>
-                        </div>
-
+                        <GameControls
+                            onInfoOpen={() => setInfoModalOpen(true)}
+                            onSettingsOpen={() => setIsSettingsOpen(true)}
+                        />
                     </div>
 
                     {confirmAction && (
-                        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
-                            <div className="bg-atlas-surface p-7 rounded-3xl shadow-2xl border border-amber-500/40 text-center max-w-sm w-full animate-in fade-in zoom-in duration-200 backdrop-blur-xl">
-                                <h3 className="text-2xl font-black mb-3 text-atlas-titleText tracking-tight">
-                                    {confirmAction === 'exit' ? t.gameplay.confirmExitTitle : t.gameplay.confirmRestartTitle}
-                                </h3>
-                                <p className="text-slate-300 text-sm mb-8 leading-relaxed">
-                                    {confirmAction === 'exit'
-                                        ? t.gameplay.confirmExitDesc
-                                        : t.gameplay.confirmRestartDesc}
-                                </p>
-                                <div className="flex gap-3 justify-center">
-                                    <button
-                                        onClick={() => setConfirmAction(null)}
-                                        className="flex-1 bg-atlas-secSurface hover:bg-atlas-secHover text-slate-200 py-3 rounded-xl font-bold transition-all border border-white/10 shadow-sm hover:scale-105 active:scale-95"
-                                    >
-                                        {t.common.no}
-                                    </button>
-                                    <button
-                                        onClick={handleConfirm}
-                                        className="flex-1 bg-red-900/40 hover:bg-red-900/60 text-red-300 border border-red-500/40 py-3 rounded-xl font-bold transition-all shadow-sm hover:scale-105 active:scale-95"
-                                    >
-                                        {t.common.yes}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                        <ConfirmModal
+                            action={confirmAction}
+                            onConfirm={handleConfirm}
+                            onCancel={() => setConfirmAction(null)}
+                        />
                     )}
                 </div>
             )}
 
-            {/* info modal */}
             {infoModalOpen && (
                 <VariantInfoModal
                     variantId={currentVariantId}
@@ -443,35 +118,17 @@ const App = () => {
                 />
             )}
 
-            {/* settings modal */}
             <SettingsModal
                 isOpen={isSettingsOpen}
                 onClose={() => setIsSettingsOpen(false)}
             />
 
-            {/* game over modal */}
             <GameOverModal
                 isOpen={isGameOverModalOpen}
                 onClose={() => setIsGameOverDismissed(true)}
             />
 
-            {currentScreen === 'VARIANTS' && (
-                <VariantsCatalog />
-            )}
-
-            {/*
-            {currentScreen === 'SETTINGS' && (
-                <div className="flex flex-col items-center justify-center min-h-screen p-4">
-                    <div className="max-w-md w-full bg-atlas-surface rounded-2xl p-8 shadow-2xl text-center">
-                        <h2 className="text-3xl font-bold mb-6">Settings</h2>
-                        <p className="opacity-60 mb-8">
-                            Game configuration options will go here.
-                        </p>
-                        <BackButton onClick={() => setScreen('MENU')} />
-                    </div>
-                </div>
-            )}
-            */}
+            {currentScreen === 'VARIANTS' && <VariantsCatalog />}
         </main>
     );
 };

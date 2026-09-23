@@ -23,14 +23,18 @@ import { Janggi } from './Janggi';
 import { JanggiEngine } from '../engine/JanggiEngine';
 import { Makruk } from './Makruk';
 import { MakrukEngine } from '../engine/MakrukEngine';
-import { OukChaktrang } from './OukChaktrang';
+// OukChaktrang is identical to Makruk except for the variant name, so it reuses the Makruk class directly.
 import { OukChaktrangEngine } from '../engine/OukChaktrangEngine';
+
 import { Sittuyin } from './Sittuyin';
 import { SittuyinEngine } from '../engine/SittuyinEngine';
 import { Shogi } from './Shogi';
 import { ShogiEngine } from '../engine/ShogiEngine';
 
 export type VariantCategory = 'standard' | 'historical' | 'regional';
+
+/** Options passed to engine and variant factories. Typed as a flexible record. */
+export type VariantOptions = Record<string, any>;
 
 export interface VariantDefinition {
     id: string;
@@ -47,8 +51,8 @@ export interface VariantDefinition {
     catalogPieceColor?: PieceColor;
     hasPieceStyleToggle?: boolean;
     isMonochromeBoard?: boolean;
-    defaultOptions?: any;
-    createEngine: (options?: any) => BaseEngine;
+    defaultOptions?: VariantOptions;
+    createEngine: (options?: VariantOptions) => BaseEngine;
 }
 
 export class VariantRegistry {
@@ -74,15 +78,21 @@ export class VariantRegistry {
         return this.variants.get(id)?.title ?? id;
     }
 
-    static createEngine(variantId: string, options?: any): BaseEngine {
+    static createEngine(variantId: string, options?: VariantOptions): BaseEngine {
         const variant = this.variants.get(variantId);
         if (variant) {
             return variant.createEngine(options);
+        }
+        // Unknown variant IDs indicate a bug (e.g. a save file from a removed variant).
+        // We fall back to Classic Chess rather than crashing, but we throw in dev to catch the issue early.
+        if (import.meta.env.DEV) {
+            throw new Error(`Variant '${variantId}' is not registered in VariantRegistry. Check the variant ID or register it before use.`);
         }
         console.warn(`Variant '${variantId}' unknown in registry. Defaulting to Classic Chess.`);
         return new ClassicChessEngine(new ClassicChess());
     }
 }
+
 
 // Built-in variant registrations
 VariantRegistry.register({
@@ -214,7 +224,7 @@ VariantRegistry.register({
     defaultPlayerColor: 'blue',
     hasPieceStyleToggle: true,
     supportsPassTurn: true,
-    createEngine: (options?: any) => new JanggiEngine(new Janggi(options), options)
+    createEngine: (options?: VariantOptions) => new JanggiEngine(new Janggi(options), options)
 });
 
 VariantRegistry.register({
@@ -243,7 +253,7 @@ VariantRegistry.register({
     playerColors: ['white', 'black'],
     defaultPlayerColor: 'white',
     catalogPieceColor: 'black',
-    createEngine: (options?: any) => new MakrukEngine(new Makruk(), options)
+    createEngine: (options?: VariantOptions) => new MakrukEngine(new Makruk(), options)
 });
 
 VariantRegistry.register({
@@ -257,7 +267,8 @@ VariantRegistry.register({
     playerColors: ['white', 'black'],
     defaultPlayerColor: 'white',
     catalogPieceColor: 'black',
-    createEngine: (options?: any) => new OukChaktrangEngine(new OukChaktrang(), options)
+    createEngine: (options?: VariantOptions) => new OukChaktrangEngine(new Makruk(), options)
+
 });
 
 VariantRegistry.register({
@@ -272,7 +283,7 @@ VariantRegistry.register({
     defaultPlayerColor: 'red',
     catalogPieceColor: 'red',
     defaultOptions: { deploy: true },
-    createEngine: (options?: any) => new SittuyinEngine(new Sittuyin(), options)
+    createEngine: (options?: VariantOptions) => new SittuyinEngine(new Sittuyin(), options)
 });
 
 

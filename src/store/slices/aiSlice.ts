@@ -1,12 +1,12 @@
 import type { StoreSlice, AiSliceState, AiSliceActions } from '../types';
-import type { Position } from '../../types';
+import { hasSubTurn, hasCanPassTurn, hasFen, hasInitialFen, hasDropPiece, hasInPlacePromotion } from '../../types';
 import { historyToUciMoves, uciToMove } from '../../utils/uciNotation';
 import { HeuristicAiEngine } from '../../core/ai/HeuristicAiEngine';
 import { TamerlaneEngine } from '../../core/engine/TamerlaneEngine';
-import { ChaturajiEngine } from '../../core/engine/ChaturajiEngine';
 import { DICE_PIECE_MAP, CHATURAJI_DICE_PIECE_MAP, FOUR_SEASONS_DICE_PIECE_MAP } from '../../utils/diceMapper';
 import { soundManager } from '../../utils/soundManager';
 import { uciCharToPieceName } from '../../core/variants/shogi/shogiSetup';
+
 
 export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, get) => ({
     gameMode: 'pvp',
@@ -87,11 +87,13 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                             break;
                     }
 
-                    const hasDynamicFen = typeof (engine as any).getFen === 'function';
-                    const fenToSend = hasDynamicFen
-                        ? (engine as any).getFen()
-                        : (engine as any).initialFen;
-                    const movesToSend = hasDynamicFen
+                    // Determine the FEN source: engines with a dynamic getFen() send only the FEN;
+                    // engines without it send the initial FEN + move list (legacy UCI protocol).
+                    const usesDynamicFen = hasFen(engine);
+                    const fenToSend = usesDynamicFen
+                        ? engine.getFen()
+                        : (hasInitialFen(engine) ? engine.initialFen : '');
+                    const movesToSend = usesDynamicFen
                         ? []
                         : historyToUciMoves(engine.history, engine.board.rows);
 
@@ -104,20 +106,21 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                     });
 
                     if (bestMoveStr === '0000') {
-                        if (typeof (engine as any).canPassTurn !== 'function' || (engine as any).canPassTurn()) {
+                        // Stockfish passes the turn (0000 = null move); only allow if the engine permits it
+                        if (!hasCanPassTurn(engine) || engine.canPassTurn()) {
                             executed = engine.passTurn();
                         }
                     } else if (bestMoveStr && bestMoveStr !== '(none)') {
                         const parsed = uciToMove(bestMoveStr, engine.board.rows);
                         if (parsed) {
-                            if (parsed.dropPiece && typeof (engine as any).dropPiece === 'function') {
+                            if (parsed.dropPiece && hasDropPiece(engine)) {
                                 // Shogi drop move (e.g. P@e4)
                                 const dropName = uciCharToPieceName(parsed.dropPiece);
-                                executed = (engine as any).dropPiece(dropName, parsed.to);
+                                executed = engine.dropPiece(dropName, parsed.to);
                             } else if (parsed.from.x === parsed.to.x && parsed.from.y === parsed.to.y) {
                                 // In-place deferred promotion (e.g. Sittuyin d6d6f)
-                                if (typeof (engine as any).promotePawnInPlace === 'function') {
-                                    executed = (engine as any).promotePawnInPlace(parsed.to);
+                                if (hasInPlacePromotion(engine)) {
+                                    executed = engine.promotePawnInPlace(parsed.to);
                                 }
                             } else {
                                 const piece = engine.board.getPieceAt(parsed.from.x, parsed.from.y);
@@ -135,16 +138,17 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                 }
             }
 
-            // 3. Robust Fallback: If Fairy-Stockfish failed or was unable to execute the move, use Heuristic Engine
+            // 3. Robust fallback: if Fairy-Stockfish failed or produced no move, use the heuristic engine
             if (!executed) {
                 const fallbackMove = HeuristicAiEngine.findBestMove(engine, aiDifficulty, allowedPieces);
                 if (fallbackMove) {
                     executed = engine.executeMove(fallbackMove.from, fallbackMove.to, fallbackMove.promotionPiece);
-                } else if (typeof (engine as any).canPassTurn === 'function' && (engine as any).canPassTurn()) {
-                    // In variants where passing is allowed or forced on stalemate (like Janggi)
+                } else if (hasCanPassTurn(engine) && engine.canPassTurn()) {
+                    // In variants where passing is valid when no legal moves exist (e.g. Janggi)
                     executed = engine.passTurn();
                 }
             }
+
 
             if (executed) {
                 // Play sound effect for AI move
@@ -157,7 +161,7 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                     soundManager.playMove();
                 }
 
-                // Check post-move interception (succession in Tamerlane, etc.)
+                // Auto-handle post-move interceptions for AI (Tamerlane succession, Chaturaji king rescue)
                 const postInterception = engine.getPostMoveInterception(lastMove);
                 if (postInterception && postInterception.type === 'SUCCESSION_CHOICE' && engine instanceof TamerlaneEngine) {
                     // Auto-crown first royal for AI
@@ -169,39 +173,15 @@ export const createAiSlice: StoreSlice<AiSliceState & AiSliceActions> = (set, ge
                     }
                 }
 
-                // Auto-handle King Rescue in Chaturaji for AI
-                if (engine instanceof ChaturajiEngine) {
-                    if (engine.pendingKingRescueChoice) {
-                        engine.confirmKingRescue();
-                    }
-                    if (engine.pendingKingPlacement) {
-                        const partnerColor = engine.pendingKingPlacement.color;
-                        const initialThrone = ChaturajiEngine.INITIAL_THRONES[partnerColor];
-                        const candidateSquares: Position[] = [];
-                        for (let y = 0; y < 8; y++) {
-                            for (let x = 0; x < 8; x++) {
-                                if (engine.board.getPieceAt(x, y) === null) {
-                                    candidateSquares.push({ x, y });
-                                }
-                            }
-                        }
-                        candidateSquares.sort((a, b) => {
-                            const distA = Math.abs(a.x - initialThrone.x) + Math.abs(a.y - initialThrone.y);
-                            const distB = Math.abs(b.x - initialThrone.x) + Math.abs(b.y - initialThrone.y);
-                            return distA - distB;
-                        });
-                        if (candidateSquares.length > 0) {
-                            engine.placeRescuedKing(candidateSquares[0]);
-                        }
-                    }
-                }
+                // Delegate Chaturaji king rescue resolution to the shared AI helper
+                HeuristicAiEngine.autoResolveSimulatedRescue(engine);
 
                 set({
                     selectedPosition: null,
                     legalMoves: [],
                     gameState: engine.state,
                     currentTurn: engine.currentTurn,
-                    subTurn: (engine as any).subTurn || 1,
+                    subTurn: (hasSubTurn(engine) ? engine.subTurn : 1),
                     history: [...engine.history],
                     isAiThinking: false,
                     activeInterception: null,

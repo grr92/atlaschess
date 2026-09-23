@@ -62,4 +62,60 @@ export interface Move {
 }
 
 export type GameState = 'playing' | 'check' | 'checkmate' | 'draw';
+
+// ---------------------------------------------------------------------------
+// Engine capability interfaces
+// These narrow the BaseEngine type when a specific engine feature is needed,
+// avoiding unsafe `as any` casts throughout the store and UI code.
+// ---------------------------------------------------------------------------
+
+/** Engines that track sub-turns (e.g. multi-phase turns in Chaturaji). */
+export interface ISubTurnEngine {
+    subTurn: number;
+}
+
+/** Engines where passing the turn may be conditionally forbidden. */
+export interface IPassTurnEngine {
+    canPassTurn(): boolean;
+}
+
+/** Engines that expose a full FEN string for their current position. */
+export interface IFenEngine {
+    getFen(): string;
+}
+
+/** Engines that expose a starting FEN for the initial position. */
+export interface IInitialFenEngine {
+    initialFen: string;
+}
+
+/** Engines that support dropping pieces from hand (e.g. Shogi). */
+export interface IDropEngine {
+    dropPiece(pieceName: string, pos: { x: number; y: number }): boolean;
+}
+
+/** Engines that support in-place pawn promotion (e.g. Sittuyin). */
+export interface IInPlacePromotionEngine {
+    promotePawnInPlace(pos: { x: number; y: number }): boolean;
+}
+
+// Type guards — use these instead of `as any` casts.
+export const hasSubTurn = (e: unknown): e is ISubTurnEngine =>
+    typeof e === 'object' && e !== null && typeof (e as ISubTurnEngine).subTurn === 'number';
+
+export const hasCanPassTurn = (e: unknown): e is IPassTurnEngine =>
+    typeof e === 'object' && e !== null && typeof (e as IPassTurnEngine).canPassTurn === 'function';
+
+export const hasFen = (e: unknown): e is IFenEngine =>
+    typeof e === 'object' && e !== null && typeof (e as IFenEngine).getFen === 'function';
+
+export const hasInitialFen = (e: unknown): e is IInitialFenEngine =>
+    typeof e === 'object' && e !== null && typeof (e as IInitialFenEngine).initialFen === 'string';
+
+export const hasDropPiece = (e: unknown): e is IDropEngine =>
+    typeof e === 'object' && e !== null && typeof (e as IDropEngine).dropPiece === 'function';
+
+export const hasInPlacePromotion = (e: unknown): e is IInPlacePromotionEngine =>
+    typeof e === 'object' && e !== null && typeof (e as IInPlacePromotionEngine).promotePawnInPlace === 'function';
+
 export * from './interceptions';

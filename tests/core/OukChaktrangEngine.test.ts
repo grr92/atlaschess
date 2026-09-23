@@ -1,13 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { OukChaktrangEngine } from '../../src/core/engine/OukChaktrangEngine';
-import { OukChaktrang } from '../../src/core/variants/OukChaktrang';
+import { Makruk } from '../../src/core/variants/Makruk';
 import { VariantRegistry } from '../../src/core/variants/variantRegistry';
 import { Khun, Ruea, Ma } from '../../src/core/pieces/piecesIndex';
+
 
 describe('Ouk Chaktrang (Cambodian Chess)', () => {
     describe('Board Setup & Inheritance', () => {
         it('should correctly initialize 8x8 board with Ouk Chaktrang variant', () => {
-            const engine = new OukChaktrangEngine(new OukChaktrang());
+            const engine = new OukChaktrangEngine(new Makruk());
             expect(engine.board.rows).toBe(8);
             expect(engine.board.cols).toBe(8);
             expect(engine.currentTurn).toBe('white');
@@ -15,7 +16,7 @@ describe('Ouk Chaktrang (Cambodian Chess)', () => {
         });
 
         it('should generate initial FEN with DEde special opening rights', () => {
-            const engine = new OukChaktrangEngine(new OukChaktrang());
+            const engine = new OukChaktrangEngine(new Makruk());
             const fen = engine.getFen();
             expect(fen).toBe('rnsmksnr/8/pppppppp/8/8/PPPPPPPP/8/RNSKMSNR w DEde - 0 1');
         });
@@ -23,7 +24,7 @@ describe('Ouk Chaktrang (Cambodian Chess)', () => {
 
     describe('Lord\'s Special Opening Move (Knight Leap)', () => {
         it('should allow Lord to leap like a horse on first move when not in check and no captures occurred', () => {
-            const engine = new OukChaktrangEngine(new OukChaktrang());
+            const engine = new OukChaktrangEngine(new Makruk());
             // White Lord on d1 (x=3, y=7).
             // Normal 1-step moves: c2 (2,6), d2 (3,6), e2 (4,6)
             // Knight leaps: b2 (1,6), f2 (5,6)
@@ -42,7 +43,7 @@ describe('Ouk Chaktrang (Cambodian Chess)', () => {
         });
 
         it('should NOT allow Lord to leap like a horse once it has already moved', () => {
-            const engine = new OukChaktrangEngine(new OukChaktrang());
+            const engine = new OukChaktrangEngine(new Makruk());
             // Move Lord normally to d2
             engine.executeMove({ x: 3, y: 7 }, { x: 3, y: 6 });
             // Black plays e6e5
@@ -58,7 +59,7 @@ describe('Ouk Chaktrang (Cambodian Chess)', () => {
         });
 
         it('should NOT allow Lord to leap like a horse if currently in check', () => {
-            const engine = new OukChaktrangEngine(new OukChaktrang());
+            const engine = new OukChaktrangEngine(new Makruk());
             engine.board.clear();
 
             // White Lord on d1 (3, 7) - unmoved
@@ -79,7 +80,7 @@ describe('Ouk Chaktrang (Cambodian Chess)', () => {
         });
 
         it('should NOT allow Lord to leap like a horse if ANY piece has been captured in the game', () => {
-            const engine = new OukChaktrangEngine(new OukChaktrang());
+            const engine = new OukChaktrangEngine(new Makruk());
 
             // 1. d3d4
             engine.executeMove({ x: 3, y: 5 }, { x: 3, y: 4 });
@@ -106,7 +107,7 @@ describe('Ouk Chaktrang (Cambodian Chess)', () => {
 
     describe('Seed\'s Special Opening Move (Two-Square Advance)', () => {
         it('should allow Seed to advance two squares forward on first move when no captures occurred', () => {
-            const engine = new OukChaktrangEngine(new OukChaktrang());
+            const engine = new OukChaktrangEngine(new Makruk());
 
             // White moves cowrie in front of Seed: e3e4 (4,5 -> 4,4)
             engine.executeMove({ x: 4, y: 5 }, { x: 4, y: 4 });
@@ -127,7 +128,7 @@ describe('Ouk Chaktrang (Cambodian Chess)', () => {
         });
 
         it('should NOT allow Seed to advance two squares forward once it has already moved', () => {
-            const engine = new OukChaktrangEngine(new OukChaktrang());
+            const engine = new OukChaktrangEngine(new Makruk());
 
             // White moves Seed diagonally to d2 (3, 6)
             engine.executeMove({ x: 4, y: 7 }, { x: 3, y: 6 });
@@ -143,7 +144,7 @@ describe('Ouk Chaktrang (Cambodian Chess)', () => {
         });
 
         it('should NOT allow Seed to advance two squares forward if ANY piece has been captured in the game', () => {
-            const engine = new OukChaktrangEngine(new OukChaktrang());
+            const engine = new OukChaktrangEngine(new Makruk());
 
             // 1. d3d4
             engine.executeMove({ x: 3, y: 5 }, { x: 3, y: 4 });
@@ -172,7 +173,7 @@ describe('Ouk Chaktrang (Cambodian Chess)', () => {
 
     describe('Makruk Counting Rules Inheritance', () => {
         it('should trigger board counting (64 moves) when no cowries remain', () => {
-            const engine = new OukChaktrangEngine(new OukChaktrang());
+            const engine = new OukChaktrangEngine(new Makruk());
             engine.board.clear();
 
             const whiteKhun = new Khun('k_w', 'white', { x: 3, y: 7 });
@@ -187,7 +188,7 @@ describe('Ouk Chaktrang (Cambodian Chess)', () => {
         });
 
         it('should declare DRAW if the counting player checkmates without stopping the count', () => {
-            const engine = new OukChaktrangEngine(new OukChaktrang());
+            const engine = new OukChaktrangEngine(new Makruk());
             engine.board.clear();
 
             // White has advantage (score 10)

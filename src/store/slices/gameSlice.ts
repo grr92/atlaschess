@@ -1,6 +1,9 @@
-import type { StoreSlice, GameSliceState, GameSliceActions } from '../types';
+import type { StoreSlice, GameSliceState, GameSliceActions, AppLanguage } from '../types';
+
 import type { Position, PieceColor, InterceptionDecision } from '../../types';
+import { hasSubTurn, hasCanPassTurn } from '../../types';
 import type { BaseEngine } from '../../core/engine/BaseEngine';
+
 import { TamerlaneEngine } from '../../core/engine/TamerlaneEngine';
 import { ChaturajiEngine } from '../../core/engine/ChaturajiEngine';
 import { FourSeasonsEngine } from '../../core/engine/FourSeasonsEngine';
@@ -31,14 +34,15 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
     isRollingDice: false,
     availableDiceValues: [],
     isMuted: soundManager.getMuted(),
-    language: (typeof window !== 'undefined' && (localStorage.getItem('atlas_language') as any)) || 'en',
+    language: (typeof window !== 'undefined' && (localStorage.getItem('atlas_language') as AppLanguage | null)) || 'en',
+
     initialCustomPieces: null,
     initialCustomTurn: null,
     initialAnnexedArmies: null,
     regionalPieceStyle: 'text',
     lastAction: null,
 
-    initGame: (variantId = 'classic', mode, playerColor, difficulty, useDiceRule = false, variantOptions?: any) => {
+    initGame: (variantId = 'classic', mode, playerColor, difficulty, useDiceRule = false, variantOptions?: Record<string, unknown>) => {
         const engine = VariantRegistry.createEngine(variantId, variantOptions);
         const variantDef = VariantRegistry.get(variantId);
 
@@ -86,7 +90,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             legalMoves: [],
             gameState: engine.state,
             currentTurn: engine.currentTurn,
-            subTurn: (engine as any).subTurn || 1,
+            subTurn: (hasSubTurn(engine) ? engine.subTurn : 1),
             history: engine.history,
             currentVariantId: variantId,
             activeInterception: null,
@@ -122,7 +126,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
         }
     },
 
-    rollDiceForCurrentTurn: (engineOverride?: BaseEngine, turnOverride?: PieceColor) => {
+    rollDiceForCurrentTurn: async (engineOverride?: BaseEngine, turnOverride?: PieceColor) => {
         const engine = engineOverride || get().engine;
         const currentTurn = turnOverride || (engine ? engine.currentTurn : get().currentTurn);
         const currentVariantId = get().currentVariantId;
@@ -139,44 +143,43 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
 
         set({ isRollingDice: true, availableDiceValues: availableNumbers });
 
-        setTimeout(() => {
-            set({
-                currentDiceRoll: chosenRoll,
-                isRollingDice: false
-            });
+        // Wait for the dice animation to finish before revealing the result
+        const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
+        await delay(700);
 
-            // Four Seasons Chess: If no piece matching the rolled die has legal moves, the turn is lost
-            if (currentVariantId === 'four_seasons') {
-                const currentEng = get().engine;
-                if (currentEng instanceof FourSeasonsEngine && currentEng.state !== 'checkmate' && currentEng.state !== 'draw') {
-                    const hasMoves = hasLegalMovesForDiceRoll(currentEng, chosenRoll, currentVariantId);
-                    if (!hasMoves) {
-                        setTimeout(() => {
-                            const activeEng = get().engine;
-                            if (activeEng instanceof FourSeasonsEngine && activeEng.state !== 'checkmate' && activeEng.state !== 'draw') {
-                                activeEng.rotateTurn();
-                                set({
-                                    currentTurn: activeEng.currentTurn,
-                                    gameState: activeEng.state,
-                                    selectedPosition: null,
-                                    legalMoves: [],
-                                });
-                                get().rollDiceForCurrentTurn();
+        set({ currentDiceRoll: chosenRoll, isRollingDice: false });
 
-                                if (get().gameMode === 'vs_ai') {
-                                    const nextCtrl = activeEng.getActiveController();
-                                    if (nextCtrl !== get().playerColor) {
-                                        setTimeout(() => {
-                                            get().triggerAiMove();
-                                        }, 850);
-                                    }
-                                }
+        // Four Seasons Chess: if no piece matching the rolled die has legal moves, the turn passes automatically
+        if (currentVariantId === 'four_seasons') {
+            const activeEng = get().engine;
+            if (activeEng instanceof FourSeasonsEngine && activeEng.state !== 'checkmate' && activeEng.state !== 'draw') {
+                const hasMoves = hasLegalMovesForDiceRoll(activeEng, chosenRoll, currentVariantId);
+                if (!hasMoves) {
+                    // Let the player see the "no valid piece" state before rotating
+                    await delay(900);
+
+                    const engAfterWait = get().engine;
+                    if (engAfterWait instanceof FourSeasonsEngine && engAfterWait.state !== 'checkmate' && engAfterWait.state !== 'draw') {
+                        engAfterWait.rotateTurn();
+                        set({
+                            currentTurn: engAfterWait.currentTurn,
+                            gameState: engAfterWait.state,
+                            selectedPosition: null,
+                            legalMoves: [],
+                        });
+                        get().rollDiceForCurrentTurn();
+
+                        if (get().gameMode === 'vs_ai') {
+                            const nextCtrl = engAfterWait.getActiveController();
+                            if (nextCtrl !== get().playerColor) {
+                                await delay(850);
+                                get().triggerAiMove();
                             }
-                        }, 900);
+                        }
                     }
                 }
             }
-        }, 700);
+        }
     },
 
     selectSquare: (pos: Position) => {
@@ -212,9 +215,9 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
                 }
             }
 
-            // Check if clicked piece can be removed
-            const pieceAtSquare = engine.board.getPieceAt(pos.x, pos.y);
-            if (pieceAtSquare && pieceAtSquare.color === currentDeployColor && pieceAtSquare.name !== 'Ne') {
+            // Check if the clicked piece can be picked up and returned to the deploy pool
+            if (engine.isSquareRemovable(pos)) {
+                const pieceAtSquare = engine.board.getPieceAt(pos.x, pos.y)!;
                 const removedName = pieceAtSquare.name as SittuyinPieceName;
                 get().removeSittuyinPiece(pos);
                 get().selectSittuyinDeployPiece(removedName);
@@ -292,7 +295,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
                         legalMoves: [],
                         gameState: engine.state,
                         currentTurn: engine.currentTurn,
-                        subTurn: (engine as any).subTurn || 1,
+                        subTurn: (hasSubTurn(engine) ? engine.subTurn : 1),
                         history: [...engine.history],
                         activeInterception: postInterception || null,
                         lastAction: 'move',
@@ -365,7 +368,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             // Replay history on a temporary simulation engine to track who controlled each move
             const simEngine = VariantRegistry.createEngine(currentVariantId, variantOptions);
             if (initialCustomPieces) {
-                populateCustomPieces(simEngine, initialCustomPieces, initialCustomTurn || undefined, initialAnnexedArmies);
+                populateCustomPieces(simEngine, initialCustomPieces, initialCustomTurn || undefined, initialAnnexedArmies || undefined);
             }
             if (useDiceRule && (simEngine instanceof ChaturajiEngine || simEngine instanceof FourSeasonsEngine)) {
                 simEngine.useDiceRule = true;
@@ -401,7 +404,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
         // Create a clean engine instance for replay
         const engine = VariantRegistry.createEngine(currentVariantId, variantOptions);
         if (initialCustomPieces) {
-            populateCustomPieces(engine, initialCustomPieces, initialCustomTurn || undefined, initialAnnexedArmies);
+            populateCustomPieces(engine, initialCustomPieces, initialCustomTurn || undefined, initialAnnexedArmies || undefined);
         }
         if (useDiceRule && (engine instanceof ChaturajiEngine || engine instanceof FourSeasonsEngine)) {
             engine.useDiceRule = true;
@@ -426,7 +429,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             legalMoves: [],
             gameState: engine.state,
             currentTurn: engine.currentTurn,
-            subTurn: (engine as any).subTurn || 1,
+            subTurn: (hasSubTurn(engine) ? engine.subTurn : 1),
             history: engine.history,
             activeInterception: postInterception || null,
             gameTime: originalTime,
@@ -446,7 +449,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
         if (!engine || !variantDef?.supportsPassTurn || gameState === 'checkmate' || gameState === 'draw' || isAiThinking) return;
 
         // If engine implements specific passing prerequisites (e.g. Janggi forbidding pass when in check)
-        if (typeof (engine as any).canPassTurn === 'function' && !(engine as any).canPassTurn()) return;
+        if ((hasCanPassTurn(engine) && !engine.canPassTurn())) return;
 
         // In vs_ai mode, only human player can manually trigger passTurn from UI
         const activeController = engine.getActiveController();
@@ -462,7 +465,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
                 legalMoves: [],
                 gameState: engine.state,
                 currentTurn: engine.currentTurn,
-                subTurn: (engine as any).subTurn || 1,
+                subTurn: (hasSubTurn(engine) ? engine.subTurn : 1),
                 history: [...engine.history],
                 lastAction: 'move',
             });
@@ -487,6 +490,36 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
         const { engine, activeInterception, gameMode, useDiceRule } = get();
         if (!engine || !activeInterception) return;
 
+        /**
+         * Shared post-move state update for all interception branches that hand
+         * control to the next player. Handles dice roll and AI trigger if needed.
+         */
+        const applyPostInterceptionState = (nextInterception: typeof activeInterception | null = null) => {
+            set({
+                activeInterception: nextInterception,
+                selectedPosition: null,
+                legalMoves: [],
+                gameState: engine.state,
+                currentTurn: engine.currentTurn,
+                subTurn: (hasSubTurn(engine) ? engine.subTurn : 1),
+                history: [...engine.history],
+                lastAction: 'move',
+            });
+
+            if (!nextInterception) {
+                if (useDiceRule) {
+                    get().rollDiceForCurrentTurn();
+                }
+
+                if (gameMode === 'vs_ai') {
+                    pendingAiTimeout = setTimeout(() => {
+                        pendingAiTimeout = null;
+                        get().triggerAiMove();
+                    }, useDiceRule ? 850 : 200);
+                }
+            }
+        };
+
         if (decision.type === 'PROMOTION' && activeInterception.type === 'PROMOTION') {
             const success = engine.executeMove(activeInterception.from, activeInterception.to, decision.pieceName);
 
@@ -502,30 +535,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
                 }
 
                 const postInterception = engine.getPostMoveInterception(lastMove);
-
-                set({
-                    activeInterception: postInterception || null,
-                    selectedPosition: null,
-                    legalMoves: [],
-                    gameState: engine.state,
-                    currentTurn: engine.currentTurn,
-                    subTurn: (engine as any).subTurn || 1,
-                    history: [...engine.history],
-                    lastAction: 'move',
-                });
-
-                if (!postInterception) {
-                    if (useDiceRule) {
-                        get().rollDiceForCurrentTurn();
-                    }
-
-                    if (gameMode === 'vs_ai') {
-                        pendingAiTimeout = setTimeout(() => {
-                            pendingAiTimeout = null;
-                            get().triggerAiMove();
-                        }, useDiceRule ? 850 : 200);
-                    }
-                }
+                applyPostInterceptionState(postInterception || null);
             }
             return;
         }
@@ -536,28 +546,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             }
 
             soundManager.playMove();
-
-            set({
-                activeInterception: null,
-                selectedPosition: null,
-                legalMoves: [],
-                gameState: engine.state,
-                currentTurn: engine.currentTurn,
-                subTurn: (engine as any).subTurn || 1,
-                history: [...engine.history],
-                lastAction: 'move',
-            });
-
-            if (useDiceRule) {
-                get().rollDiceForCurrentTurn();
-            }
-
-            if (gameMode === 'vs_ai') {
-                pendingAiTimeout = setTimeout(() => {
-                    pendingAiTimeout = null;
-                    get().triggerAiMove();
-                }, useDiceRule ? 850 : 200);
-            }
+            applyPostInterceptionState(null);
             return;
         }
 
@@ -573,7 +562,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
                 legalMoves: [],
                 gameState: 'draw',
                 currentTurn: engine.currentTurn,
-                subTurn: (engine as any).subTurn || 1,
+                subTurn: (hasSubTurn(engine) ? engine.subTurn : 1),
                 history: [...engine.history],
                 lastAction: 'move',
             });
@@ -586,7 +575,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             set({
                 activeInterception: null,
                 gameState: engine.state,
-                subTurn: (engine as any).subTurn || 1,
+                subTurn: (hasSubTurn(engine) ? engine.subTurn : 1),
                 history: [...engine.history],
             });
             return;
@@ -599,7 +588,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
 
             set({
                 activeInterception: nextInterception || null,
-                subTurn: (engine as any).subTurn || 1,
+                subTurn: (hasSubTurn(engine) ? engine.subTurn : 1),
             });
             return;
         }
@@ -611,7 +600,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
                 activeInterception: null,
                 gameState: engine.state,
                 currentTurn: engine.currentTurn,
-                subTurn: (engine as any).subTurn || 1,
+                subTurn: (hasSubTurn(engine) ? engine.subTurn : 1),
             });
 
             if (useDiceRule) {
@@ -631,27 +620,7 @@ export const createGameSlice: StoreSlice<GameSliceState & GameSliceActions> = (s
             const success = engine.resolveInterception(decision);
             if (success) {
                 soundManager.playMove();
-                set({
-                    activeInterception: null,
-                    selectedPosition: null,
-                    legalMoves: [],
-                    gameState: engine.state,
-                    currentTurn: engine.currentTurn,
-                    subTurn: (engine as any).subTurn || 1,
-                    history: [...engine.history],
-                    lastAction: 'move',
-                });
-
-                if (useDiceRule) {
-                    get().rollDiceForCurrentTurn();
-                }
-
-                if (gameMode === 'vs_ai') {
-                    pendingAiTimeout = setTimeout(() => {
-                        pendingAiTimeout = null;
-                        get().triggerAiMove();
-                    }, useDiceRule ? 850 : 200);
-                }
+                applyPostInterceptionState(null);
             }
             return;
         }

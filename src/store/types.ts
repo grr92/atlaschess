@@ -2,6 +2,7 @@ import type { StateCreator } from 'zustand';
 import type { Position, GameState, Move, PieceColor, GameInterception, InterceptionDecision } from '../types';
 import type { BaseEngine } from '../core/engine/BaseEngine';
 import type { SittuyinPieceName } from '../core/variants/sittuyin/sittuyinSetup';
+import type { SerializedPiece } from '../utils/customPiecesLoader';
 
 export type GameMode = 'pvp' | 'vs_ai';
 export type AiDifficulty = 'easy' | 'medium' | 'hard';
@@ -23,9 +24,9 @@ export interface GameSliceState {
     availableDiceValues: number[];
     isMuted: boolean;
     language: AppLanguage;
-    initialCustomPieces?: any[] | null;
+    initialCustomPieces?: SerializedPiece[] | null;
     initialCustomTurn?: PieceColor | null;
-    initialAnnexedArmies?: any | null;
+    initialAnnexedArmies?: Record<string, PieceColor[]> | null;
     regionalPieceStyle: 'text' | 'icon';
     lastAction: 'move' | 'undo' | 'load' | null;
 }
@@ -37,7 +38,7 @@ export interface GameSliceActions {
         playerColor?: PieceColor,
         aiDifficulty?: AiDifficulty,
         useDiceRule?: boolean,
-        variantOptions?: any
+        variantOptions?: Record<string, unknown>
     ) => void;
     selectSquare: (pos: Position) => void;
     resetGame: () => void;
@@ -45,13 +46,14 @@ export interface GameSliceActions {
     passTurn: () => void;
     resolveInterception: (decision: InterceptionDecision) => void;
     cancelInterception: () => void;
-    rollDiceForCurrentTurn: (engineOverride?: BaseEngine, turnOverride?: PieceColor) => void;
+    rollDiceForCurrentTurn: (engineOverride?: BaseEngine, turnOverride?: PieceColor) => Promise<void>;
     toggleMute: () => void;
     setLanguage: (lang: AppLanguage) => void;
     setRegionalPieceStyle: (style: 'text' | 'icon') => void;
     toggleMakrukCounting: () => void;
     executeContextAction: (pos: Position, actionId?: string) => void;
 }
+
 
 export interface SittuyinSliceState {
     sittuyinSelectedPiece: SittuyinPieceName | null;

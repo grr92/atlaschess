@@ -1,22 +1,8 @@
 import type { BaseEngine } from '../../engine/BaseEngine';
 import type { PieceColor } from '../../../types';
-import type { ChaturajiEngine, ChaturajiColor } from '../../engine/ChaturajiEngine';
+import { ChaturajiEngine, type ChaturajiColor } from '../../engine/ChaturajiEngine';
 import { getPieceValue } from '../../pieces/pieceRegistry';
 import type { IEvaluationStrategy } from './EvaluationStrategy';
-
-const INITIAL_THRONES: Record<ChaturajiColor, { x: number; y: number }> = {
-    red: { x: 7, y: 4 },
-    green: { x: 3, y: 7 },
-    yellow: { x: 0, y: 3 },
-    blue: { x: 4, y: 0 }
-};
-
-const PARTNER_MAP: Record<ChaturajiColor, ChaturajiColor> = {
-    red: 'yellow',
-    yellow: 'red',
-    green: 'blue',
-    blue: 'green'
-};
 
 export class ChaturajiEvaluationStrategy implements IEvaluationStrategy {
     evaluate(engine: BaseEngine, perspectiveColor: PieceColor): number {
@@ -24,7 +10,7 @@ export class ChaturajiEvaluationStrategy implements IEvaluationStrategy {
 
         const chaturaji = engine as unknown as ChaturajiEngine;
         const root = perspectiveColor as ChaturajiColor;
-        const partner = PARTNER_MAP[root];
+        const partner = ChaturajiEngine.PARTNER_MAP[root];
 
         // 1. Check terminal game state
         if (chaturaji.state === 'checkmate' || chaturaji.state === 'draw') {
@@ -51,7 +37,7 @@ export class ChaturajiEvaluationStrategy implements IEvaluationStrategy {
 
         // 3. Material, Throne Proximity, and Pawn advances
         const board = chaturaji.board;
-        const partnerThrone = INITIAL_THRONES[partner];
+        const partnerThrone = ChaturajiEngine.INITIAL_THRONES[partner];
         const isPartnerControlled = chaturaji.partnerControlled[partner] === root;
         if (isPartnerControlled) {
             totalScore += 2000; // Strategic advantage: commanding 2 armies
@@ -78,7 +64,7 @@ export class ChaturajiEvaluationStrategy implements IEvaluationStrategy {
                         // Distance to enemy initial thrones
                         for (const enemyColor of [enemy1Color, enemy2Color]) {
                             if (!chaturaji.throneVisits[root].has(enemyColor)) {
-                                const enemyThrone = INITIAL_THRONES[enemyColor];
+                                const enemyThrone = ChaturajiEngine.INITIAL_THRONES[enemyColor];
                                 const dist = Math.abs(x - enemyThrone.x) + Math.abs(y - enemyThrone.y);
                                 pieceScore += Math.max(0, 200 - dist * 20);
                             }

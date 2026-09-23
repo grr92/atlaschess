@@ -1,6 +1,7 @@
 import type { Position, PieceColor } from '../../types';
 import type { BaseEngine } from '../engine/BaseEngine';
 import type { Piece } from '../pieces/Piece';
+import { ChaturajiEngine } from '../engine/ChaturajiEngine';
 
 export interface AiMoveResult {
     from: Position;
@@ -97,18 +98,15 @@ export class HeuristicAiEngine {
      * Automatically resolves Chaturaji's pending King rescue choice/placement in simulated engine instances.
      */
     public static autoResolveSimulatedRescue(engine: BaseEngine): void {
-        if ('pendingKingRescueChoice' in engine && (engine as any).pendingKingRescueChoice) {
-            (engine as any).confirmKingRescue();
+        if (!(engine instanceof ChaturajiEngine)) return;
+
+        if (engine.pendingKingRescueChoice) {
+            engine.confirmKingRescue();
         }
-        if ('pendingKingPlacement' in engine && (engine as any).pendingKingPlacement) {
-            const partnerColor = (engine as any).pendingKingPlacement.color;
-            const throneMap: Record<string, { x: number; y: number }> = {
-                red: { x: 7, y: 4 },
-                green: { x: 3, y: 7 },
-                yellow: { x: 0, y: 3 },
-                blue: { x: 4, y: 0 }
-            };
-            const throne = throneMap[partnerColor] || { x: 0, y: 0 };
+
+        if (engine.pendingKingPlacement) {
+            const partnerColor = engine.pendingKingPlacement.color;
+            const throne = ChaturajiEngine.INITIAL_THRONES[partnerColor];
             const emptySquares: Position[] = [];
             for (let r = 0; r < 8; r++) {
                 for (let c = 0; c < 8; c++) {
@@ -123,7 +121,7 @@ export class HeuristicAiEngine {
                 return distA - distB;
             });
             if (emptySquares.length > 0) {
-                (engine as any).placeRescuedKing(emptySquares[0]);
+                engine.placeRescuedKing(emptySquares[0]);
             }
         }
     }

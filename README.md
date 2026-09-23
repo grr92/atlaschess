@@ -184,16 +184,16 @@ I highly value your feedback! Feel free to open an issue to suggest new features
 - **Colour Pieces (Chaturaji)**
   - Attibution: By SpinningSpark work: NikNaks, CC BY-SA 3.0, https://commons.wikimedia.org/wiki/User:Spinningspark
 
-**Xiangqi Pieces**
+- **Xiangqi Pieces**
   - Attribution: By Inductiveload - Own work, Public Domain, https://commons.wikimedia.org/wiki/User:Inductiveload
 
-**Janggi Pieces**
+- **Janggi Pieces**
   - Attribution: By Hari Seldon - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/User:Hari_Seldon
 
-**Shogi Pieces**
+- **Shogi Pieces**
   - Attribution: By Luffykudo - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/User:Luffykudo
 
-**Makruk Pieces**
+- **Makruk Pieces**
   - Attribution: By Yevrowl - Own work, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/User:Yevrowl
 
 - **Knight from the Atlas Chess Fusion Logo:**
